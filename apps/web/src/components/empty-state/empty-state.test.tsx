@@ -24,13 +24,23 @@ describe('truthful page presentation', () => {
     );
   });
 
-  it('disables unavailable project creation and explains when quality views appear', () => {
+  it('offers real project setup and explains when quality views appear', () => {
     const html = renderToStaticMarkup(<Overview />);
-    expect(html).toMatch(/<button[^>]*disabled=""[^>]*>/);
-    expect(html).toContain('aria-describedby="create-project-note"');
-    expect(html).toContain('Project creation is coming soon.');
+    expect(html).toContain('href="/projects/new"');
+    expect(html).toContain('Create a real project');
     expect(html).toContain('What will appear here');
     expect(html).toContain('No results are shown until there is real evidence');
+  });
+
+  it('shows a real project with unavailable API import and no invented results', () => {
+    const html = renderToStaticMarkup(
+      <Overview projectName="Payments &lt;test&gt;" />,
+    );
+    expect(html).toContain('Your project:');
+    expect(html).toContain('No API has been imported');
+    expect(html).toMatch(/<button[^>]*disabled=""[^>]*>/);
+    expect(html).toContain('API import is coming in a future milestone.');
+    expect(html).not.toMatch(/<table|<meter|<progress/);
   });
 
   it('exposes one current navigation item through aria-current', () => {

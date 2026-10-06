@@ -22,3 +22,5 @@ minimumReleaseAgeExclude:
   - '@typescript-eslint/utils@8.71.1'
   - '@typescript-eslint/visitor-keys@8.71.1'
   - typescript-eslint@8.71.1
+patchedDependencies:
+  '@supabase/auth-js@2.117.2': patches/@supabase__auth-js@2.117.2.patch

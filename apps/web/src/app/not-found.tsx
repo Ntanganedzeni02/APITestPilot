@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Button } from '../components/ui/button';
+import { clearContextAction } from '../lib/tenancy/actions';
 
 export default function NotFound() {
   return (
@@ -12,6 +13,9 @@ export default function NotFound() {
       <Button asChild variant="outline">
         <Link href="/">Return to Overview</Link>
       </Button>
+      <form action={clearContextAction} className="mt-4">
+        <Button variant="ghost">Reset workspace selection</Button>
+      </form>
     </section>
   );
 }

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Future persistence adapters, mappings and repository implementations.",
+  "description": "Supabase persistence adapter for authenticated workspace and project operations.",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -17,5 +17,9 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.117.2",
+    "@testpilot/domain": "workspace:*"
   }
 }

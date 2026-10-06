@@ -22,3 +22,5 @@ Desktop.ini
 .idea/
 .vscode/
 /apps/web/next-env.d.ts
+/supabase/.temp/
+/supabase/.branches/

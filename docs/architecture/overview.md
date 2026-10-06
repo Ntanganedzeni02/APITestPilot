@@ -2,16 +2,16 @@
 
 ## Current reality
 
-M0.3 completes the engineering foundation: tooling, nine package workspaces, the
-separate runner workspace and GitHub Actions CI exist. Workspaces compile empty
-exports; their product responsibilities below remain planned. M1.1 initializes
-apps/web as @testpilot/web with Next.js App Router, React, Tailwind and locally
-owned shadcn/ui Button/Sheet components. Responsive grouped navigation, theme
-selection and honest empty-state pages are implemented. No deployment, authentication,
-project creation, database, AI or execution capability exists.
+M1.2 adds Supabase SSR authentication, protected product routes, workspaces,
+membership, projects and logical environments to the M1.1 Next.js shell. Atomic
+creation functions, membership-based RLS and minimal creation audit events live
+in version-controlled migrations. The implementation requires a configured
+Supabase instance; local PostgreSQL policy verification does not prove live Auth.
+Responsive navigation, theme selection and truthful future-feature empty states
+remain. No deployment, API import, AI or execution capability exists.
 
-The web app has framework/UI dependencies but no TestPilot workspace dependencies.
-The nine packages and runner still have no runtime dependencies. Domain manifests
+The web app composes @testpilot/domain and @testpilot/database. Database depends
+on domain and Supabase JS. Other empty packages and runner remain dependency-free. Domain manifests
 must remain dependency-free, and ESLint restricts domain imports to relative
 modules. Tooling tests check package discovery, uniqueness and dependency cycles.
 These controls do not constitute a complete enforcement of all future layer
@@ -22,8 +22,10 @@ boundaries; relative imports can still require architectural review.
 Presentation -> Application -> Domain. Infrastructure implements interfaces
 owned by application/domain. Composition connects adapters; provider and
 framework details must not leak into domain logic.
-Application orchestration placement will be decided with the first scoped use
-cases; M0.1 does not invent another package.
+Application composition and server actions live in apps/web/src/lib/auth and
+lib/tenancy. Database implements the domain-owned TenantRepository interface;
+React presentation does not issue Supabase queries. This avoids an additional
+application package before there is a concrete need.
 
 | Repository path          | Future product responsibility                               |
 | ------------------------ | ----------------------------------------------------------- |
@@ -43,7 +45,8 @@ cases; M0.1 does not invent another package.
 
 Workspace names match directory names under `@testpilot/`, including
 `@testpilot/api-runner`. The runner has no startup script or execution behavior.
-Database contains no provider, schema or migration; api-spec contains no parser;
+Database contains the M1.2 Supabase tenant adapter; supabase/migrations owns schema
+and policies. api-spec contains no parser;
 behaviour-graph contains no graph operations; test-engine contains no execution;
 safety contains no policy engine; ai contains no SDK/provider/workflow; evidence
 contains no processing. Shared is for technical primitives, not domain concepts.
@@ -57,23 +60,30 @@ Shared must not become a business-logic dumping ground.
 TypeScript is the language direction; Node.js/TypeScript the runner direction.
 Next.js, Tailwind CSS, shadcn/ui, React Flow and Recharts are web intentions.
 PostgreSQL is the initial persistence/graph direction; Supabase the managed
-backend candidate. Zod is the validation candidate. BullMQ/Redis are queue
+backend selected for M1.2. Zod is the validation candidate. BullMQ/Redis are queue
 candidates; Vitest/Playwright testing intentions; Vercel a web hosting candidate;
 containers the worker deployment direction; Sentry an observability candidate.
 AI uses provider-independent abstractions. TypeScript and Vitest are configured
 as engineering tooling in M0.2. M1.1 installs Next.js, React, Tailwind and the
-minimal shadcn/ui primitives. Other planned product technologies remain uninstalled.
+minimal shadcn/ui primitives. M1.2 installs Supabase JS and SSR. Other planned
+product technologies remain uninstalled.
 
 ## Web presentation boundary
 
-apps/web/src/app owns App Router entry points. `/` is Overview; the twelve
-approved area paths are pre-rendered through `[area]/page.tsx` with unknown areas
-rejected. Navigation/purpose metadata lives in src/lib/navigation.ts; this contains
-no project or user records. src/components separates the application shell,
-navigation, empty-state presentation and UI primitives. Server components render
-pages; client components handle navigation, the modal sheet and theme selection.
-AppShell accepts future context/account control slots without invented selections.
-Semantic tokens live in globals.css. This is presentation, not domain logic.
+apps/web/src/app owns route groups: (auth) renders the four auth pages without a
+product sidebar; (setup) owns onboarding/workspace creation; (product) renders the
+authenticated shell, Overview, project list/creation and approved future-area
+empty states. All product pages render dynamically. Proxy verifies claims and
+refreshes cookies; each server operation independently verifies the live user.
+All auth/product responses are private/no-store. Unknown or unauthorized context
+is unavailable without exposing tenant details.
+
+HTTP-only context cookies hold untrusted workspace/project selection hints;
+membership and project relationships are resolved server-side on each request.
+Navigation metadata has no tenant data. Existing context/account shell slots now
+render real persisted selections and sign-out. Client components handle forms,
+pending states, mobile navigation and theme; business rules remain in domain.
+See [ADR 0005](../adr/0005-supabase-identity-and-tenant-context.md).
 
 Choose the simplest architecture consistent with these boundaries. Further
 infrastructure requires a concrete need and ADR.

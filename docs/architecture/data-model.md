@@ -1,7 +1,35 @@
 # Conceptual data model
 
-Status: conceptual only. Names below are future concepts, not implemented tables,
-columns, migrations, constraints or a finalized schema.
+Status: M1.2 implements the identity/tenant tables below. All other concepts in
+the future-model table remain unimplemented.
+
+## Implemented identity model
+
+`auth.users` belongs to Supabase Auth. No duplicate user/profile table is needed.
+The migration is `supabase/migrations/20261006000100_identity_tenancy.sql`.
+
+| Table             | Columns and constraints                                                                                                                                  |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| workspaces        | UUID id; normalized 2–80 character name; created_by FK to auth.users; created_at/updated_at                                                              |
+| workspace_members | composite PK workspace_id/user_id; both FKs; role check OWNER/ADMIN/MEMBER; created_at; user/workspace lookup index                                      |
+| projects          | UUID id; workspace FK; normalized name; created_by FK; created_at/updated_at; unique id/workspace for scoped references; workspace/time/id index         |
+| environments      | UUID id; project FK; type check DEVELOPMENT/STAGING/PRODUCTION; created_at/updated_at; unique project/type                                               |
+| audit_logs        | UUID id; workspace FK; optional project with composite workspace FK; actor FK; WORKSPACE_CREATED/PROJECT_CREATED check; created_at; workspace/time index |
+
+Names may repeat; UUIDs are stable identities, so no slug uniqueness conflict
+exists. Timestamps default to transaction time. M1.2 exposes no rename/update
+operation; updated_at equals created_at until a future reviewed mutation design.
+Workspace/project deletion and membership administration are also unimplemented.
+FK cascades express ownership for future controlled deletion, not permission to
+delete. Auth-user deletion requires handling creator/audit references explicitly.
+
+Workspace creation writes OWNER membership and audit atomically. Project creation
+writes exactly three logical environments and its audit atomically. Environments
+have no base URL, credentials or secrets. Creation functions take no actor ID.
+All tenant tables have membership-based RLS and direct mutation access closed.
+See [security](security.md) and [ADR 0005](../adr/0005-supabase-identity-and-tenant-context.md).
+
+## Future conceptual model
 
 | Area          | Concepts                                                                                                                        |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------- |
@@ -21,7 +49,7 @@ columns, migrations, constraints or a finalized schema.
 ## Ownership and relationships
 
 Users join workspaces through membership; workspaces contain projects.
-Projects contain environments and restricted environment secrets.
+Projects contain implemented logical environments; restricted environment secrets remain future concepts.
 Specifications have versions; normalized resources, endpoints, parameters,
 schemas and graph interpretations retain their source version.
 
@@ -35,7 +63,8 @@ human decisions. Memory, AI runs and audits preserve provenance and project scop
 
 Enforce workspace/project authorization on tenant-owned records and prevent
 cross-tenant references. Browser-supplied workspace_id is never proof of access.
-Exact keys, constraints, retention and enforcement mechanisms need future design.
+Keys/constraints/RLS for M1.2 are implemented above. Retention and enforcement for
+future evidence/execution concepts still need design.
 
 ## Graph and evidence
 

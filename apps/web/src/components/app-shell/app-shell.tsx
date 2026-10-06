@@ -2,13 +2,7 @@
 
 import { useState, type ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
-import {
-  ChevronDown,
-  ChevronRight,
-  Folder,
-  Menu,
-  ShieldCheck,
-} from 'lucide-react';
+import { ChevronRight, Menu, ShieldCheck } from 'lucide-react';
 import { findProductRoute } from '../../lib/navigation';
 import { Navigation } from '../navigation/navigation';
 import { Button } from '../ui/button';
@@ -24,13 +18,14 @@ import { ThemeControl } from './theme-control';
 
 interface AppShellProps {
   children: ReactNode;
-  // Future authorized workspace/project/environment and account controls.
+  sidebarControls?: ReactNode;
   contextControls?: ReactNode;
   accountControls?: ReactNode;
 }
 
 export function AppShell({
   children,
+  sidebarControls,
   contextControls,
   accountControls,
 }: AppShellProps) {
@@ -51,24 +46,9 @@ export function AppShell({
           <Brand />
         </div>
         <div className="px-4 pb-6">
-          <Button
-            variant="outline"
-            disabled
-            aria-describedby="project-status"
-            className="w-full justify-between"
-          >
-            <span className="flex items-center gap-2">
-              <Folder aria-hidden="true" />
-              No project selected
-            </span>
-            <ChevronDown aria-hidden="true" />
-          </Button>
-          <p
-            id="project-status"
-            className="mt-2 px-1 text-[11px] text-muted-foreground"
-          >
-            Project setup is coming soon.
-          </p>
+          {sidebarControls ?? (
+            <p className="text-xs text-muted-foreground">No project selected</p>
+          )}
         </div>
         <Navigation pathname={pathname} />
         <div className="flex items-center gap-2 border-t border-border px-6 py-4 text-[11px] text-muted-foreground">
@@ -101,9 +81,9 @@ export function AppShell({
                   <div className="mb-7 pr-10">
                     <Brand />
                   </div>
-                  <p className="mb-5 px-3 text-xs text-muted-foreground">
-                    No project selected
-                  </p>
+                  <div className="mb-5 px-3">
+                    {sidebarControls ?? 'No project selected'}
+                  </div>
                   <Navigation
                     pathname={pathname}
                     onNavigate={() => setMobileOpen(false)}

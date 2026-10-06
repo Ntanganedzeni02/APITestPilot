@@ -2,7 +2,13 @@ import type { ProductRoute } from '../../lib/navigation';
 import { RouteIcon } from '../navigation/route-icon';
 import { EmptyState } from './empty-state';
 
-export function ProductPage({ route }: { route: ProductRoute }) {
+export function ProductPage({
+  route,
+  hasProject = false,
+}: {
+  route: ProductRoute;
+  hasProject?: boolean;
+}) {
   return (
     <div className="space-y-8">
       <div>
@@ -18,7 +24,9 @@ export function ProductPage({ route }: { route: ProductRoute }) {
         description={route.emptyDescription}
       >
         <span className="mt-6 rounded-full border border-border px-3 py-1 text-[11px] text-muted-foreground">
-          This area is awaiting project setup
+          {hasProject
+            ? 'This capability is planned for a future milestone'
+            : 'This area is awaiting project setup'}
         </span>
       </EmptyState>
     </div>

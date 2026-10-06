@@ -8,6 +8,7 @@ import {
   ListChecks,
 } from 'lucide-react';
 import { Button } from '../ui/button';
+import Link from 'next/link';
 
 const futureViews = [
   {
@@ -43,7 +44,13 @@ const futureViews = [
   },
 ];
 
-export function Overview() {
+export function Overview({
+  projectName,
+  createHref = '/projects/new',
+}: {
+  projectName?: string | undefined;
+  createHref?: string;
+}) {
   return (
     <div>
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
@@ -56,7 +63,7 @@ export function Overview() {
         </div>
         <span className="mt-1 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted-foreground">
           <span className="size-1.5 rounded-full bg-muted-foreground" />
-          Awaiting project setup
+          {projectName ? 'Awaiting API import' : 'Awaiting project setup'}
         </span>
       </div>
 
@@ -72,24 +79,39 @@ export function Overview() {
             id="onboarding-title"
             className="text-2xl font-semibold tracking-tight"
           >
-            Start with your first project.
+            {projectName
+              ? `Your project: ${projectName}`
+              : 'Start with your first project.'}
           </h2>
           <p className="mt-3 max-w-md text-sm leading-6 text-muted-foreground">
-            Give your API a home for its specification, test plans and evidence.
+            {projectName
+              ? 'Your project is ready. No API has been imported. API import will be available in a future milestone.'
+              : 'Give your API a home for its specification, test plans and evidence.'}{' '}
             Your release picture will take shape here as verified results become
             available.
           </p>
           <div className="mt-6">
-            <Button disabled aria-describedby="create-project-note">
-              <FolderPlus aria-hidden="true" />
-              Create a project
-              <ArrowRight aria-hidden="true" />
-            </Button>
+            {projectName ? (
+              <Button disabled aria-describedby="create-project-note">
+                <FileCode2 aria-hidden="true" />
+                Import an API
+              </Button>
+            ) : (
+              <Button asChild>
+                <Link href={createHref}>
+                  <FolderPlus aria-hidden="true" />
+                  Create a project
+                  <ArrowRight aria-hidden="true" />
+                </Link>
+              </Button>
+            )}
             <p
               id="create-project-note"
               className="mt-3 text-xs text-muted-foreground"
             >
-              Project creation is coming soon.
+              {projectName
+                ? 'API import is coming in a future milestone.'
+                : 'Create a real project with development, staging and production environments.'}
             </p>
           </div>
         </div>
