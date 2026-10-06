@@ -9,9 +9,17 @@ repository tests and tooling. No product code or product tests exist.
 `tooling/foundation.test.ts` checks workspace/compiler contracts and verifies
 that unchecked indexed access produces a compiler diagnostic. It is a tooling fixture.
 No pass-with-no-tests option hides missing tests.
+M0.3 adds `tooling/workspaces.test.ts` to verify expected boundaries, unique names,
+consistent scripts/configuration, domain manifest independence, absence of circular
+workspace dependencies and required documentation. It exercises the actual ESLint
+configuration with forbidden domain imports and an allowed relative import.
+These checks verify engineering architecture, not product behavior.
 
 `pnpm lint`, `pnpm typecheck` and `pnpm format:check` validate tooling.
-There is no application build tool or build command.
+`pnpm build` compiles empty workspace exports and declaration files. This is a
+boundary compilation check, not an application build. GitHub Actions runs these
+checks with frozen-lockfile installation. Packages have no individual test scripts
+because they have no behavior to test; the root owns foundation verification.
 
 ## Intended tooling and coverage
 

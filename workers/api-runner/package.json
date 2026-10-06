@@ -1,0 +1,21 @@
+{
+  "name": "@testpilot/api-runner",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Future deterministic API test execution; boundary only, no runnable service.",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint . --max-warnings 0"
+  }
+}

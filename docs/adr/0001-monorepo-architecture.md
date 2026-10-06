@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted in M0.1. Workspace tooling established in M0.2; product packages pending.
+Accepted in M0.1. Workspace tooling established in M0.2; empty package and runner
+boundaries established in M0.3. Product implementation remains pending.
 
 ## Context
 
@@ -18,4 +19,7 @@ One all-in-one web application; separate repositories per component.
 
 ## Consequences
 
-Changes and documentation remain together. Package discipline and future dependency enforcement are required. M0.2 configures pnpm workspace discovery; architectural directories remain placeholders without package implementations.
+Changes and documentation remain together. M0.3 establishes private TypeScript
+package boundaries and CI, with no runtime dependencies or product implementations.
+Domain independence and workspace cycles are checked; broader layer enforcement
+still requires future design. apps/web remains intentionally uninitialized.

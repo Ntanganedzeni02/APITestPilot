@@ -4,10 +4,11 @@ TestPilot is a planned AI-powered API quality and testing SaaS platform.
 Give it your API to understand behavior, investigate risks and provide
 evidence-backed release confidence.
 
-**M0.2: monorepo tooling foundation. Product implementation has not started.**
-pnpm workspaces, strict TypeScript, ESLint, Prettier and Vitest are configured.
-Documentation and architectural placeholders remain intact. No web application,
-database, AI integration, runner or product build tooling exists.
+**M0.3: engineering foundation implemented. Product implementation has not started.**
+pnpm workspaces, strict TypeScript, ESLint, Prettier, Vitest and GitHub Actions CI
+are configured. Nine package boundaries and the API runner boundary build and
+typecheck empty exports only. No database, AI integration or functioning runner exists.
+`apps/web` remains intentionally uninitialized until M1.1.
 
 ## Documentation map
 
@@ -27,6 +28,8 @@ database, AI integration, runner or product build tooling exists.
   [runner](docs/adr/0003-separate-api-runner.md),
   [AI abstraction](docs/adr/0004-provider-independent-ai.md)
 
-Planned directories separate apps/web, workers/api-runner and focused packages.
-Application, worker and package directories contain only empty .gitkeep files.
-Tooling checks live in `tooling/`; see [setup](docs/development/setup.md).
+Directories separate `apps/web`, `workers/api-runner` and focused packages.
+Each implemented boundary contains a manifest, TypeScript config and empty source
+export. Root `pnpm build` verifies workspace compilation; other engineering checks
+and setup are documented in [setup](docs/development/setup.md).
+CI exists in [.github/workflows/ci.yml](.github/workflows/ci.yml); it has no deployment.

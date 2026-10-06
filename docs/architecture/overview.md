@@ -2,9 +2,16 @@
 
 ## Current reality
 
-M0.2 adds executable repository tooling; application, worker and package directories
-remain placeholders. All product components below are planned; no product runtime,
-architectural import enforcement or deployment is implemented.
+M0.3 completes the engineering foundation: tooling, nine package workspaces, the
+separate runner workspace and GitHub Actions CI exist. Workspaces compile empty
+exports; their product responsibilities below remain planned. No product runtime
+or deployment exists. `apps/web` remains an uninitialized placeholder until M1.1.
+
+There are no inter-package or external runtime dependencies. Domain manifests
+must remain dependency-free, and ESLint restricts domain imports to relative
+modules. Tooling tests check package discovery, uniqueness and dependency cycles.
+These controls do not constitute a complete enforcement of all future layer
+boundaries; relative imports can still require architectural review.
 
 ## Dependency direction
 
@@ -14,7 +21,7 @@ framework details must not leak into domain logic.
 Application orchestration placement will be decided with the first scoped use
 cases; M0.1 does not invent another package.
 
-| Planned path             | Responsibility                                              |
+| Repository path          | Future product responsibility                               |
 | ------------------------ | ----------------------------------------------------------- |
 | apps/web                 | Presentation and web delivery calling application use cases |
 | workers/api-runner       | Separate constrained API execution process                  |
@@ -28,7 +35,14 @@ cases; M0.1 does not invent another package.
 | packages/evidence        | Sanitized capture and traceability                          |
 | packages/shared          | Small genuinely shared utilities                            |
 | tests                    | Future cross-boundary/system tests                          |
-| tooling                  | Future repository engineering tools                         |
+| tooling                  | Implemented foundation verification; no product logic       |
+
+Workspace names match directory names under `@testpilot/`, including
+`@testpilot/api-runner`. The runner has no startup script or execution behavior.
+Database contains no provider, schema or migration; api-spec contains no parser;
+behaviour-graph contains no graph operations; test-engine contains no execution;
+safety contains no policy engine; ai contains no SDK/provider/workflow; evidence
+contains no processing. Shared is for technical primitives, not domain concepts.
 
 Domain must not import React, Next.js, Supabase, Redis, BullMQ, Vercel, AI
 providers or UI frameworks. Keep business logic out of framework handlers.
