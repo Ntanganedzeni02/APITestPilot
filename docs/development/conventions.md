@@ -1,22 +1,34 @@
 # Development conventions
 
-Documentation conventions apply now; code/tooling conventions remain intentions.
+## Configured tooling
+Use pnpm and preserve its lockfile. Root scripts are engineering entry points.
+ESLint flat config applies recommended JavaScript/TypeScript correctness rules
+with zero warnings permitted. Prettier owns formatting independently; no
+React/Next.js rules or formatting plugins are installed. EditorConfig specifies
+UTF-8, LF, two spaces and final newlines.
 
+The shared TypeScript base enforces strictness, unchecked-index protection,
+exact optional properties, override checks and unused-code checks. It excludes
+ambient types and DOM globals; tooling explicitly adds Node types.
+Future packages extend the base, set source include paths and provide working
+typecheck scripts. Root typecheck checks tooling then recursively runs available
+package typechecks. NodeNext is the initial module/resolution mode; a future
+bundler app may override those modes/add DOM libraries without weakening strictness.
+Architectural import boundaries are documented but not automatically enforced yet.
+
+## Documentation and scope
 Use concise Markdown, relative links and explicit planned/implemented labels.
-Keep binding rules in AGENTS.md and cross-reference related documents.
-Never invent implementation facts, benchmarks or setup commands.
-Number significant ADRs and include Status, Context, Decision, Alternatives
-considered and Consequences.
+Keep binding rules in AGENTS.md; cross-reference related docs. Never invent
+implementation facts, benchmarks or setup commands. Number ADRs with Status,
+Context, Decision, Alternatives considered and Consequences.
 
-Future TypeScript should use clear domain names and explicit validated contracts.
-Maintain presentation -> application -> domain dependency direction; isolate
-framework/provider integration in adapters. Shared utilities need concrete uses.
+Maintain presentation -> application -> domain; isolate framework/provider
+integration in adapters. Preserve tenant scope and provenance. Shared utilities
+need concrete uses. Label mocks/fixtures as development/test data.
+Leave no unexplained TODOs or silently ignored failures.
 
-Preserve tenant scope and provenance through boundaries. Use structured test
-representations, deterministic assertions and explicit error categories.
-Label mocks/fixtures as development/test data.
-Leave no unexplained TODOs; report existing failures.
-
-Keep work scoped to the milestone. Update docs and report applicable validation.
-Package manager, formatting, CI, branching and module layout require future
-decisions; none is configured here.
+Generated outputs, local runtime bootstrap and local environment files are
+ignored; real secrets must never be committed. No environment contract exists.
+Only pnpm's lockfile belongs here; do not add other package-manager lockfiles.
+CI, branching and application module placement remain future decisions.
+M0.2 adds tooling only; stop at the authorized milestone.

@@ -1,8 +1,9 @@
 # Architecture overview
 
 ## Current reality
-Only documentation and empty directories exist. All components below are planned;
-no runtime, dependency enforcement or deployment is implemented.
+M0.2 adds executable repository tooling; application, worker and package directories
+remain placeholders. All product components below are planned; no product runtime,
+architectural import enforcement or deployment is implemented.
 
 ## Dependency direction
 Presentation -> Application -> Domain. Infrastructure implements interfaces
@@ -38,7 +39,8 @@ PostgreSQL is the initial persistence/graph direction; Supabase the managed
 backend candidate. Zod is the validation candidate. BullMQ/Redis are queue
 candidates; Vitest/Playwright testing intentions; Vercel a web hosting candidate;
 containers the worker deployment direction; Sentry an observability candidate.
-AI uses provider-independent abstractions. None is installed or configured.
+AI uses provider-independent abstractions. TypeScript and Vitest are configured
+as engineering tooling in M0.2; product technologies remain uninstalled.
 
 Choose the simplest architecture consistent with these boundaries. Further
 infrastructure requires a concrete need and ADR.

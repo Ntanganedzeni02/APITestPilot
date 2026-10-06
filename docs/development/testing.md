@@ -1,13 +1,20 @@
 # Testing strategy
 
 ## Current tooling
-No test runner, lint, typecheck or build tooling is configured.
-M0.1 validation checks required files, relative links, ADR sections, placeholders
-and milestone scope. These checks are not application tests.
+M0.2 configures Vitest with a Node environment, explicit imports and mock cleanup.
+`pnpm test` runs once; `pnpm exec vitest` enables local watch mode.
+The root config discovers tests in future package source/tests directories,
+repository tests and tooling. No product code or product tests exist.
+`tooling/foundation.test.ts` checks workspace/compiler contracts and verifies
+that unchecked indexed access produces a compiler diagnostic. It is a tooling fixture.
+No pass-with-no-tests option hides missing tests.
+
+`pnpm lint`, `pnpm typecheck` and `pnpm format:check` validate tooling.
+There is no application build tool or build command.
 
 ## Intended tooling and coverage
-Vitest is the unit/integration candidate; Playwright the end-to-end candidate.
-Neither is installed. Future verification should cover:
+Vitest is installed for unit/integration testing. Playwright remains a future
+end-to-end candidate and is neither installed nor configured. Future checks cover:
 - Deterministic parsing, invariants, graph provenance and structured-output
   validation, including malformed/adversarial imported content.
 - Policy decisions, approvals, restrictive production defaults, side effects

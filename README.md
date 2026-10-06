@@ -4,10 +4,10 @@ TestPilot is a planned AI-powered API quality and testing SaaS platform.
 Give it your API to understand behavior, investigate risks and provide
 evidence-backed release confidence.
 
-**M0.1: repository foundation only. Product implementation has not started.**
-Only documentation and empty structural placeholders exist. No application
-stack, dependencies, database, AI integration, runner or test/build tooling
-is configured.
+**M0.2: monorepo tooling foundation. Product implementation has not started.**
+pnpm workspaces, strict TypeScript, ESLint, Prettier and Vitest are configured.
+Documentation and architectural placeholders remain intact. No web application,
+database, AI integration, runner or product build tooling exists.
 
 ## Documentation map
 - [Engineering constitution](AGENTS.md)
@@ -27,4 +27,5 @@ is configured.
   [AI abstraction](docs/adr/0004-provider-independent-ai.md)
 
 Planned directories separate apps/web, workers/api-runner and focused packages.
-All non-documentation directories contain only empty .gitkeep files.
+Application, worker and package directories contain only empty .gitkeep files.
+Tooling checks live in `tooling/`; see [setup](docs/development/setup.md).
