@@ -1,5 +1,12 @@
 # Security and multi-tenancy
 
+M1.3 API imports are bounded untrusted JSON/YAML. External references, unsafe keys
+and unsupported reference scopes fail; no URLs are fetched. Examples/defaults/
+vendor extensions are omitted, and credential-bearing server URLs rejected.
+Immutable imports use application authorization, RPC membership/project checks,
+composite foreign keys and independent RLS. Direct mutations are revoked. See
+[import policy](../development/api-knowledge.md).
+
 Status: M1.2 implements authentication/tenant database controls described below.
 Remaining execution, secrets and AI requirements are future controls. Local SQL
 policy tests passed; live Supabase/Auth/PostgREST verification is still required.

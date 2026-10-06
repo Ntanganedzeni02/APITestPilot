@@ -8,9 +8,10 @@ creation functions, membership-based RLS and minimal creation audit events live
 in version-controlled migrations. The implementation requires a configured
 Supabase instance; local PostgreSQL policy verification does not prove live Auth.
 Responsive navigation, theme selection and truthful future-feature empty states
-remain. No deployment, API import, AI or execution capability exists.
+remain. M1.3 adds deterministic OpenAPI knowledge imports and API Map. No deployment,
+AI or execution capability exists.
 
-The web app composes @testpilot/domain and @testpilot/database. Database depends
+The web app composes @testpilot/domain, @testpilot/api-spec and @testpilot/database. Database depends
 on domain and Supabase JS. Other empty packages and runner remain dependency-free. Domain manifests
 must remain dependency-free, and ESLint restricts domain imports to relative
 modules. Tooling tests check package discovery, uniqueness and dependency cycles.
@@ -23,7 +24,7 @@ Presentation -> Application -> Domain. Infrastructure implements interfaces
 owned by application/domain. Composition connects adapters; provider and
 framework details must not leak into domain logic.
 Application composition and server actions live in apps/web/src/lib/auth and
-lib/tenancy. Database implements the domain-owned TenantRepository interface;
+lib/tenancy and lib/api-knowledge. Database implements domain-owned tenant and API knowledge repositories;
 React presentation does not issue Supabase queries. This avoids an additional
 application package before there is a concrete need.
 
@@ -46,7 +47,8 @@ application package before there is a concrete need.
 Workspace names match directory names under `@testpilot/`, including
 `@testpilot/api-runner`. The runner has no startup script or execution behavior.
 Database contains the M1.2 Supabase tenant adapter; supabase/migrations owns schema
-and policies. api-spec contains no parser;
+and policies. api-spec validates/parses/normalizes bounded OpenAPI imports, with
+vendor schemas/types encapsulated and local-only reference resolution;
 behaviour-graph contains no graph operations; test-engine contains no execution;
 safety contains no policy engine; ai contains no SDK/provider/workflow; evidence
 contains no processing. Shared is for technical primitives, not domain concepts.

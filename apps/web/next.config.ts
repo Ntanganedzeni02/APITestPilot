@@ -10,6 +10,7 @@ const rootEnvironment = fileURLToPath(
 if (existsSync(rootEnvironment)) process.loadEnvFile(rootEnvironment);
 
 const config: NextConfig = {
+  experimental: { serverActions: { bodySizeLimit: '3mb' } },
   agentRules: false,
   turbopack: { root: fileURLToPath(new URL('../..', import.meta.url)) },
 };

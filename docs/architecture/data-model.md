@@ -1,6 +1,6 @@
 # Conceptual data model
 
-Status: M1.2 implements the identity/tenant tables below. All other concepts in
+Status: M1.2 implements identity/tenant tables; M1.3 adds API imports. Other concepts in
 the future-model table remain unimplemented.
 
 ## Implemented identity model
@@ -30,6 +30,13 @@ All tenant tables have membership-based RLS and direct mutation access closed.
 See [security](security.md) and [ADR 0005](../adr/0005-supabase-identity-and-tenant-context.md).
 
 ## Future conceptual model
+
+M1.3 implements `api_imports`: workspace/project scope, actor/time, source format,
+filename/byte count/fingerprint, sanitized source JSONB and normalized knowledge
+JSONB. `(project_id, workspace_id)` references the scoped project key. Each import
+gets a new UUID; operation keys/source pointers are scoped to it. See
+[ADR 0006](../adr/0006-immutable-api-knowledge-imports.md) and
+[API knowledge development](../development/api-knowledge.md).
 
 | Area          | Concepts                                                                                                                        |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------- |

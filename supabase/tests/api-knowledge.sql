@@ -1,0 +1,46 @@
+-- Run ONLY on the disposable local compatibility DB after both migrations.
+begin;
+create temp table api_results(label text not null);
+grant select,insert on api_results to authenticated,anon;
+create function pg_temp.assert_true(result boolean,label text) returns void language plpgsql as $$
+begin if result is distinct from true then raise exception 'FAIL: %',label; end if; insert into pg_temp.api_results values(label); end; $$;
+create function pg_temp.expect_error(command text,expected text,label text) returns void language plpgsql as $$
+declare actual text; begin begin execute command; exception when others then actual:=sqlstate; end; perform pg_temp.assert_true(actual=expected,label); end; $$;
+insert into auth.users(id,email) values ('13000000-0000-0000-0000-000000000001','m13-a@example.invalid'),('13000000-0000-0000-0000-000000000002','m13-b@example.invalid');
+set local role authenticated;
+select set_config('request.jwt.claim.sub','13000000-0000-0000-0000-000000000001',true);
+select set_config('test.m13_wa',public.create_workspace('M13 fixture A')::text,true);
+select set_config('test.m13_pa',public.create_project(current_setting('test.m13_wa')::uuid,'M13 project A')::text,true);
+select set_config('test.m13_knowledge','{"modelVersion":1,"title":"SQL fixture","version":"1","openapiVersion":"3.0.3","operations":[],"components":{}}',true);
+select set_config('test.m13_first',public.import_api_spec(current_setting('test.m13_wa')::uuid,current_setting('test.m13_pa')::uuid,'json',null,100,repeat('a',64),'{}',current_setting('test.m13_knowledge')::jsonb)::text,true);
+select set_config('test.m13_second',public.import_api_spec(current_setting('test.m13_wa')::uuid,current_setting('test.m13_pa')::uuid,'json',null,100,repeat('a',64),'{}',current_setting('test.m13_knowledge')::jsonb)::text,true);
+select pg_temp.assert_true(current_setting('test.m13_first')<>current_setting('test.m13_second'),'reimport creates distinct immutable identity');
+select pg_temp.assert_true((select count(*)=2 from public.api_imports),'complete imports stored');
+select pg_temp.assert_true((select bool_and(created_by=auth.uid()) from public.api_imports),'actor derived from auth');
+select pg_temp.expect_error('select public.import_api_spec(current_setting(''test.m13_wa'')::uuid,current_setting(''test.m13_pa'')::uuid,''json'',null,100,repeat(''a'',64),''{}'',''{}'')','23514','missing normalized keys rejected');
+select pg_temp.expect_error('select public.import_api_spec(current_setting(''test.m13_wa'')::uuid,current_setting(''test.m13_pa'')::uuid,''json'',null,2097153,repeat(''a'',64),''{}'',current_setting(''test.m13_knowledge'')::jsonb)','23514','oversize rejected');
+select pg_temp.assert_true((select count(*)=2 from public.api_imports),'failed imports leave no partial row');
+select pg_temp.expect_error('update public.api_imports set source_hash=repeat(''b'',64)','42501','direct update denied');
+select pg_temp.expect_error('delete from public.api_imports','42501','direct delete denied');
+select pg_temp.expect_error('insert into public.api_imports(id) values(gen_random_uuid())','42501','direct insert denied');
+select set_config('request.jwt.claim.sub','13000000-0000-0000-0000-000000000002',true);
+select set_config('test.m13_wb',public.create_workspace('M13 fixture B')::text,true);
+select set_config('test.m13_pb',public.create_project(current_setting('test.m13_wb')::uuid,'M13 project B')::text,true);
+select pg_temp.assert_true((select count(*)=0 from public.api_imports),'B cannot read A imports');
+select pg_temp.expect_error('select public.import_api_spec(current_setting(''test.m13_wa'')::uuid,current_setting(''test.m13_pa'')::uuid,''json'',null,100,repeat(''a'',64),''{}'',current_setting(''test.m13_knowledge'')::jsonb)','42501','B cannot import into A workspace');
+select pg_temp.expect_error('select public.import_api_spec(current_setting(''test.m13_wb'')::uuid,current_setting(''test.m13_pa'')::uuid,''json'',null,100,repeat(''a'',64),''{}'',current_setting(''test.m13_knowledge'')::jsonb)','42501','cross-workspace project reference rejected');
+select public.import_api_spec(current_setting('test.m13_wb')::uuid,current_setting('test.m13_pb')::uuid,'json',null,100,repeat('b',64),'{}',current_setting('test.m13_knowledge')::jsonb);
+select pg_temp.assert_true((select count(*)=1 from public.api_imports),'B reads own import only');
+select set_config('request.jwt.claim.sub','13000000-0000-0000-0000-000000000001',true);
+select pg_temp.assert_true((select count(*)=0 from public.api_imports where workspace_id=current_setting('test.m13_wb')::uuid),'A cannot read B imported knowledge');
+reset role;
+select pg_temp.assert_true((select relrowsecurity from pg_class where oid='public.api_imports'::regclass),'RLS enabled');
+select pg_temp.assert_true(not has_table_privilege('anon','public.api_imports','SELECT'),'anon cannot read');
+select pg_temp.assert_true(not has_function_privilege('anon','public.import_api_spec(uuid,uuid,text,text,integer,text,jsonb,jsonb)','EXECUTE'),'anon cannot invoke import');
+select pg_temp.assert_true(has_table_privilege('authenticated','public.api_imports','SELECT'),'authenticated read grant');
+select pg_temp.assert_true(not has_table_privilege('authenticated','public.api_imports','UPDATE'),'no update grant');
+select pg_temp.assert_true(has_function_privilege('authenticated','public.import_api_spec(uuid,uuid,text,text,integer,text,jsonb,jsonb)','EXECUTE'),'authenticated import grant');
+select pg_temp.assert_true((select prosecdef and proconfig @> array['search_path=""'] from pg_proc where oid='public.import_api_spec(uuid,uuid,text,text,integer,text,jsonb,jsonb)'::regprocedure),'definer has empty search path');
+select pg_temp.expect_error('insert into public.api_imports(workspace_id,project_id,created_by,source_format,source_bytes,source_hash,source_document,knowledge) values(current_setting(''test.m13_wa'')::uuid,current_setting(''test.m13_pb'')::uuid,''13000000-0000-0000-0000-000000000001'',''json'',100,repeat(''a'',64),''{}'',current_setting(''test.m13_knowledge'')::jsonb)','23503','composite foreign key enforced independently');
+select count(*) as passed_assertions from pg_temp.api_results;
+rollback;

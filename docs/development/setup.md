@@ -51,6 +51,12 @@ workspace; root test includes tooling, domain and application/adapter contract t
 
 ## Web application
 
+M1.3 adds deterministic OpenAPI imports and API Map. See
+[API knowledge setup and limits](api-knowledge.md). Both migrations are deployed to
+Development Supabase per supplied status evidence; development commands do not apply migrations.
+Build both api-spec and database dependency closures before web-only development
+on a fresh checkout. Root build/typecheck builds them in dependency order.
+
 ```sh
 pnpm --filter @testpilot/web dev
 pnpm --filter @testpilot/web typecheck

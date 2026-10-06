@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start --hostname 127.0.0.1",
     "lint": "eslint . --max-warnings 0",
-    "typecheck": "pnpm --filter @testpilot/database... build && next typegen && tsc --noEmit",
+    "typecheck": "pnpm --filter @testpilot/api-spec... build && pnpm --filter @testpilot/database... build && next typegen && tsc --noEmit",
     "test": "vitest run --root ../.. apps/web/src"
   },
   "dependencies": {
@@ -16,6 +16,7 @@
     "@radix-ui/react-slot": "1.4.0",
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.117.2",
+    "@testpilot/api-spec": "workspace:*",
     "@testpilot/database": "workspace:*",
     "@testpilot/domain": "workspace:*",
     "class-variance-authority": "0.7.1",

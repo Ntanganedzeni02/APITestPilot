@@ -63,7 +63,9 @@ export function Overview({
         </div>
         <span className="mt-1 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted-foreground">
           <span className="size-1.5 rounded-full bg-muted-foreground" />
-          {projectName ? 'Awaiting API import' : 'Awaiting project setup'}
+          {projectName
+            ? 'Awaiting verified QA evidence'
+            : 'Awaiting project setup'}
         </span>
       </div>
 
@@ -85,16 +87,18 @@ export function Overview({
           </h2>
           <p className="mt-3 max-w-md text-sm leading-6 text-muted-foreground">
             {projectName
-              ? 'Your project is ready. No API has been imported. API import will be available in a future milestone.'
+              ? 'Your project is ready. Open API Map to import or inspect its API specifications.'
               : 'Give your API a home for its specification, test plans and evidence.'}{' '}
             Your release picture will take shape here as verified results become
             available.
           </p>
           <div className="mt-6">
             {projectName ? (
-              <Button disabled aria-describedby="create-project-note">
-                <FileCode2 aria-hidden="true" />
-                Import an API
+              <Button asChild aria-describedby="create-project-note">
+                <Link href="/api-map">
+                  <FileCode2 aria-hidden="true" />
+                  Open API Map
+                </Link>
               </Button>
             ) : (
               <Button asChild>
@@ -110,7 +114,7 @@ export function Overview({
               className="mt-3 text-xs text-muted-foreground"
             >
               {projectName
-                ? 'API import is coming in a future milestone.'
+                ? 'Import OpenAPI JSON or YAML to build real API knowledge.'
                 : 'Create a real project with development, staging and production environments.'}
             </p>
           </div>

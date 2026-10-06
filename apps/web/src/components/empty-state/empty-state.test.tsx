@@ -32,14 +32,13 @@ describe('truthful page presentation', () => {
     expect(html).toContain('No results are shown until there is real evidence');
   });
 
-  it('shows a real project with unavailable API import and no invented results', () => {
+  it('offers real API Map navigation without inventing results', () => {
     const html = renderToStaticMarkup(
       <Overview projectName="Payments &lt;test&gt;" />,
     );
     expect(html).toContain('Your project:');
-    expect(html).toContain('No API has been imported');
-    expect(html).toMatch(/<button[^>]*disabled=""[^>]*>/);
-    expect(html).toContain('API import is coming in a future milestone.');
+    expect(html).toContain('href="/api-map"');
+    expect(html).toContain('Open API Map');
     expect(html).not.toMatch(/<table|<meter|<progress/);
   });
 

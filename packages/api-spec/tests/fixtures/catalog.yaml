@@ -1,0 +1,22 @@
+openapi: 3.0.3
+info:
+  title: Catalog YAML development fixture
+  version: 1.0.0
+paths:
+  /items:
+    get:
+      operationId: listItems
+      responses:
+        '200':
+          description: Items
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+components:
+  schemas:
+    Item:
+      type: object
+      properties:
+        id:
+          type: string

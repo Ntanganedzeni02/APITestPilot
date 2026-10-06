@@ -4,6 +4,9 @@ import { fileURLToPath } from 'node:url';
 export default defineConfig({
   resolve: {
     alias: {
+      '@testpilot/api-spec': fileURLToPath(
+        new URL('./packages/api-spec/src/index.ts', import.meta.url),
+      ),
       '@testpilot/domain': fileURLToPath(
         new URL('./packages/domain/src/index.ts', import.meta.url),
       ),
