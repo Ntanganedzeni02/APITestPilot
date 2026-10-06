@@ -1,0 +1,115 @@
+@import 'tailwindcss';
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+  --background: #f7f8fa;
+  --foreground: #1e252d;
+  --surface: #ffffff;
+  --sidebar: #f1f3f6;
+  --muted: #edf0f3;
+  --muted-foreground: #596571;
+  --border: #dce1e7;
+  --primary: #245e48;
+  --primary-foreground: #ffffff;
+  --success: #26734d;
+  --warning: #946000;
+  --danger: #b63242;
+  --information: #2a62a7;
+  --ring: #26734d;
+  --overlay: #0b101a99;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #101316;
+  --foreground: #e7ecef;
+  --surface: #161a1e;
+  --sidebar: #121619;
+  --muted: #1d2329;
+  --muted-foreground: #a0abb5;
+  --border: #2b333a;
+  --primary: #a8d6c0;
+  --primary-foreground: #15251e;
+  --success: #8ecfac;
+  --warning: #e2bc6b;
+  --danger: #ed8b98;
+  --information: #90b8ea;
+  --ring: #a8d6c0;
+  --overlay: #05080cb3;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-sidebar: var(--sidebar);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-information: var(--information);
+  --color-ring: var(--ring);
+  --color-overlay: var(--overlay);
+  --font-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  --font-mono: 'Cascadia Code', 'SFMono-Regular', Consolas, monospace;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    margin: 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  button,
+  select,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+}
+
+@layer components {
+  .page-title {
+    @apply mt-2 text-3xl font-semibold tracking-tight;
+  }
+  .eyebrow {
+    @apply text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground;
+  }
+  .nav-link {
+    @apply flex min-h-9 items-center gap-3 rounded-md px-3 text-[13px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground;
+  }
+  .nav-link-active {
+    @apply bg-muted font-medium text-foreground;
+    box-shadow: inset 2px 0 0 var(--primary);
+  }
+  .skip-link {
+    @apply fixed left-4 top-4 z-[100] -translate-y-24 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground focus:translate-y-0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
+}

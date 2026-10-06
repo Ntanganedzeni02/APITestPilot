@@ -4,11 +4,12 @@ TestPilot is a planned AI-powered API quality and testing SaaS platform.
 Give it your API to understand behavior, investigate risks and provide
 evidence-backed release confidence.
 
-**M0.3: engineering foundation implemented. Product implementation has not started.**
+**M1.1: web application foundation and SaaS shell.**
 pnpm workspaces, strict TypeScript, ESLint, Prettier, Vitest and GitHub Actions CI
 are configured. Nine package boundaries and the API runner boundary build and
-typecheck empty exports only. No database, AI integration or functioning runner exists.
-`apps/web` remains intentionally uninitialized until M1.1.
+typecheck empty exports only. `apps/web` is a Next.js App Router application with
+responsive navigation, semantic light/dark themes and truthful empty-state routes.
+No authentication, project creation, database, AI integration or functioning runner exists.
 
 ## Documentation map
 
@@ -29,7 +30,12 @@ typecheck empty exports only. No database, AI integration or functioning runner 
   [AI abstraction](docs/adr/0004-provider-independent-ai.md)
 
 Directories separate `apps/web`, `workers/api-runner` and focused packages.
-Each implemented boundary contains a manifest, TypeScript config and empty source
-export. Root `pnpm build` verifies workspace compilation; other engineering checks
+The nine package boundaries and runner contain empty source exports. The web app
+has presentation components and routes, with no TestPilot domain dependencies.
+Root `pnpm build` builds Next.js and verifies workspace compilation; other checks
 and setup are documented in [setup](docs/development/setup.md).
 CI exists in [.github/workflows/ci.yml](.github/workflows/ci.yml); it has no deployment.
+
+Run `pnpm --filter @testpilot/web dev` and open http://127.0.0.1:3000.
+The shell resembles the intended authenticated product, but access control is not
+implemented. Do not load customer data or expose it as a protected service.

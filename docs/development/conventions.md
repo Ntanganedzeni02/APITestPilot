@@ -5,13 +5,14 @@
 Use pnpm and preserve its lockfile. Root scripts are engineering entry points.
 ESLint flat config applies recommended JavaScript/TypeScript correctness rules
 with zero warnings permitted. Prettier owns formatting independently; no
-React/Next.js rules or formatting plugins are installed. EditorConfig specifies
+formatting plugins are installed. M1.1 adds the official Next recommended and
+Core Web Vitals lint rules for apps/web without downgrading ESLint. EditorConfig specifies
 UTF-8, LF, two spaces and final newlines.
 
 The shared TypeScript base enforces strictness, unchecked-index protection,
 exact optional properties, override checks and unused-code checks. It excludes
 ambient types and DOM globals; tooling explicitly adds Node types.
-All ten boundaries extend the base, use src as rootDir and emit JavaScript and
+The nine packages and runner extend the base, use src as rootDir and emit JavaScript and
 declarations to dist. They are private ESM packages whose exports reference built
 files; compile before importing them at runtime. Each provides build, typecheck
 and lint scripts. Root typecheck checks tooling then recursively checks every
@@ -44,5 +45,23 @@ GitHub Actions verifies pull requests and master pushes with pinned actions,
 read-only contents permissions, frozen installation and all root checks/build.
 Update action hashes intentionally after reviewing upstream releases.
 Branch policy and application module placement remain future decisions.
-M0.3 completes engineering scaffolding only. No product code or functioning
-runner exists, and apps/web remains uninitialized until M1.1.
+M0.3 completed engineering scaffolding. M1.1 implements a presentation-only web
+shell; no functioning runner or business workflow exists.
+
+## Web conventions
+
+Web extends the strict base with DOM libraries, JSX, bundler resolution and Next's
+type plugin. Do not weaken shared compiler settings to accommodate UI code.
+M1.1 upgrades TypeScript to 6.0.3 because Next 16.3.8's declarations require newer
+web platform types. The web project adds ESNext library declarations; shared
+targets/strictness and full library checking remain unchanged.
+Keep route metadata centralized, use server components for static page content
+and client components only for interactive controls. Do not put domain rules in pages.
+Web has no speculative dependencies on the TestPilot packages.
+Use semantic CSS tokens for colors and accessible text alongside status styling.
+shadcn/ui patterns are locally owned in components/ui, with Radix focus/keyboard
+primitives and class helpers. Keep adaptations intentional; components.json records
+aliases and the Tailwind v4 CSS entry point. No permanent shadcn CLI dependency exists.
+System fonts keep builds self-contained. Only the html theme-class hydration warning
+is suppressed, as required by next-themes; other hydration warnings must be addressed.
+Represent unimplemented product areas as empty states, never fabricated customer data.

@@ -6,7 +6,7 @@ export default defineConfig({
     include: [
       'tooling/**/*.test.ts',
       'tests/**/*.{test,spec}.ts',
-      'apps/*/{src,tests}/**/*.{test,spec}.ts',
+      'apps/*/{src,tests}/**/*.{test,spec}.{ts,tsx}',
       'workers/*/{src,tests}/**/*.{test,spec}.ts',
       'packages/*/{src,tests}/**/*.{test,spec}.ts',
     ],

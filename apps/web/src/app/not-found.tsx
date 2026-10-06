@@ -1,0 +1,17 @@
+import Link from 'next/link';
+import { Button } from '../components/ui/button';
+
+export default function NotFound() {
+  return (
+    <section className="py-16">
+      <p className="eyebrow">Page not found</p>
+      <h1 className="page-title">This page is not here.</h1>
+      <p className="mb-6 mt-4 text-sm text-muted-foreground">
+        Use the navigation to explore TestPilot's available areas.
+      </p>
+      <Button asChild variant="outline">
+        <Link href="/">Return to Overview</Link>
+      </Button>
+    </section>
+  );
+}

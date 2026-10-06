@@ -1,6 +1,7 @@
 # Intended user journey
 
-Status: planned; no screens or workflows exist.
+Status: planned workflows. M1.1 supplies navigation and empty-state screens only;
+none of the product workflows below is implemented.
 
 1. **Import:** Supply OpenAPI/Swagger and supporting documentation. Deterministic
    parsing retains versions; source content remains untrusted.

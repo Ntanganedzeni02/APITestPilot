@@ -4,10 +4,14 @@
 
 M0.3 completes the engineering foundation: tooling, nine package workspaces, the
 separate runner workspace and GitHub Actions CI exist. Workspaces compile empty
-exports; their product responsibilities below remain planned. No product runtime
-or deployment exists. `apps/web` remains an uninitialized placeholder until M1.1.
+exports; their product responsibilities below remain planned. M1.1 initializes
+apps/web as @testpilot/web with Next.js App Router, React, Tailwind and locally
+owned shadcn/ui Button/Sheet components. Responsive grouped navigation, theme
+selection and honest empty-state pages are implemented. No deployment, authentication,
+project creation, database, AI or execution capability exists.
 
-There are no inter-package or external runtime dependencies. Domain manifests
+The web app has framework/UI dependencies but no TestPilot workspace dependencies.
+The nine packages and runner still have no runtime dependencies. Domain manifests
 must remain dependency-free, and ESLint restricts domain imports to relative
 modules. Tooling tests check package discovery, uniqueness and dependency cycles.
 These controls do not constitute a complete enforcement of all future layer
@@ -57,7 +61,19 @@ backend candidate. Zod is the validation candidate. BullMQ/Redis are queue
 candidates; Vitest/Playwright testing intentions; Vercel a web hosting candidate;
 containers the worker deployment direction; Sentry an observability candidate.
 AI uses provider-independent abstractions. TypeScript and Vitest are configured
-as engineering tooling in M0.2; product technologies remain uninstalled.
+as engineering tooling in M0.2. M1.1 installs Next.js, React, Tailwind and the
+minimal shadcn/ui primitives. Other planned product technologies remain uninstalled.
+
+## Web presentation boundary
+
+apps/web/src/app owns App Router entry points. `/` is Overview; the twelve
+approved area paths are pre-rendered through `[area]/page.tsx` with unknown areas
+rejected. Navigation/purpose metadata lives in src/lib/navigation.ts; this contains
+no project or user records. src/components separates the application shell,
+navigation, empty-state presentation and UI primitives. Server components render
+pages; client components handle navigation, the modal sheet and theme selection.
+AppShell accepts future context/account control slots without invented selections.
+Semantic tokens live in globals.css. This is presentation, not domain logic.
 
 Choose the simplest architecture consistent with these boundaries. Further
 infrastructure requires a concrete need and ADR.
