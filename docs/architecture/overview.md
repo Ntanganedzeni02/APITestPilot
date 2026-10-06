@@ -1,5 +1,11 @@
 # Architecture overview
 
+M1.4 adds a pure deterministic Behaviour Graph builder, validated immutable
+PostgreSQL graph snapshots and structured API Map graph inspection. See
+[graph model/rules](../development/behaviour-graph.md) and
+[ADR 0007](../adr/0007-deterministic-behaviour-graph.md). Its new migration remains
+deployed to Development Supabase per supplied evidence. No AI or execution capability is added.
+
 ## Current reality
 
 M1.2 adds Supabase SSR authentication, protected product routes, workspaces,
@@ -49,7 +55,7 @@ Workspace names match directory names under `@testpilot/`, including
 Database contains the M1.2 Supabase tenant adapter; supabase/migrations owns schema
 and policies. api-spec validates/parses/normalizes bounded OpenAPI imports, with
 vendor schemas/types encapsulated and local-only reference resolution;
-behaviour-graph contains no graph operations; test-engine contains no execution;
+behaviour-graph builds/validates deterministic immutable graph facts and exposes traversal helpers; test-engine contains no execution;
 safety contains no policy engine; ai contains no SDK/provider/workflow; evidence
 contains no processing. Shared is for technical primitives, not domain concepts.
 

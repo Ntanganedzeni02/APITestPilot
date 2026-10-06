@@ -1,5 +1,12 @@
 # Security and multi-tenancy
 
+M1.4 graph tables independently enforce membership-based read RLS; normal writes
+are restricted to an atomic caller/membership/import-checked RPC. Tenant/import/
+snapshot composite foreign keys bind nodes and both edge endpoints. Graph inputs
+are bounded inert data. The builder performs no network calls, code execution or
+SQL generation; graph facts never authorize execution. See
+[graph limits and security](../development/behaviour-graph.md).
+
 M1.3 API imports are bounded untrusted JSON/YAML. External references, unsafe keys
 and unsupported reference scopes fail; no URLs are fetched. Examples/defaults/
 vendor extensions are omitted, and credential-bearing server URLs rejected.

@@ -2,12 +2,15 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
   createApiKnowledgeRepository,
+  createBehaviourGraphRepository,
   PersistenceError,
 } from '@testpilot/database';
 import { requireUser } from '../../../lib/auth/server';
 import { getTenantContext } from '../../../lib/tenancy/context';
 import { ImportForm } from '../../../components/api-map/import-form';
 import { KnowledgeView } from '../../../components/api-map/knowledge-view';
+import { GraphView } from '../../../components/behaviour-graph/graph-view';
+import { GraphBuildForm } from '../../../components/behaviour-graph/build-form';
 
 export const metadata = { title: 'API Map' };
 export default async function ApiMap({
@@ -58,6 +61,22 @@ export default async function ApiMap({
     ? imports.find((i) => i.id === selectedId)
     : imports[0];
   if (selectedId && !selected) notFound();
+  let snapshot;
+  let graphError: string | undefined;
+  if (selected) {
+    try {
+      snapshot = (
+        await createBehaviourGraphRepository(client).list(
+          workspace.id,
+          project.id,
+          selected.id,
+        )
+      )[0];
+    } catch {
+      graphError =
+        'Behaviour Graph is unavailable. Please try again or contact your workspace administrator.';
+    }
+  }
   return (
     <div className="min-w-0">
       <p className="eyebrow">Project knowledge</p>
@@ -120,6 +139,21 @@ export default async function ApiMap({
             Import {selected.id} · {selected.createdAt}
           </p>
           <KnowledgeView knowledge={selected.knowledge} />
+          {graphError ? (
+            <p role="alert" className="mt-6 text-sm">
+              {graphError}
+            </p>
+          ) : (
+            <>
+              {!snapshot && (
+                <p className="mt-8 text-sm">
+                  No Behaviour Graph built for this import.
+                </p>
+              )}
+              <GraphBuildForm importId={selected.id} rebuild={!!snapshot} />
+              {snapshot && <GraphView snapshot={snapshot} />}
+            </>
+          )}
         </>
       )}
     </div>

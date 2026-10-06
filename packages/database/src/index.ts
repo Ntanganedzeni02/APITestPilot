@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 export * from './api-knowledge.js';
+export * from './behaviour-graph.js';
 import {
   environmentTypes,
   workspaceRoles,

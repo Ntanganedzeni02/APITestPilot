@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Future API behaviour modeling and graph operations.",
+  "description": "Deterministic API behaviour graph construction and queries.",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -17,5 +17,8 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "@testpilot/domain": "workspace:*"
   }
 }

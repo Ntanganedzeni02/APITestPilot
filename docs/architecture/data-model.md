@@ -1,5 +1,11 @@
 # Conceptual data model
 
+M1.4 adds `behaviour_graphs` (import-linked snapshot/version/initiator/counts),
+`behaviour_graph_nodes` (typed logical identities/provenance), and
+`behaviour_graph_edges` (typed scoped endpoints/provenance). Composite foreign keys
+bind workspace/project/import/snapshot and both edge endpoints. See
+[graph contracts and schema](../development/behaviour-graph.md).
+
 Status: M1.2 implements identity/tenant tables; M1.3 adds API imports. Other concepts in
 the future-model table remain unimplemented.
 
