@@ -3,22 +3,23 @@
 Status: conceptual only. Names below are future concepts, not implemented tables,
 columns, migrations, constraints or a finalized schema.
 
-| Area | Concepts |
-| --- | --- |
-| Tenancy | users, workspaces, workspace_members, projects, environments, environment_secrets |
-| API knowledge | api_specs, api_spec_versions, api_resources, api_endpoints, api_parameters, api_schemas |
-| Behaviour | behaviour_nodes, behaviour_edges |
-| QA | requirements, requirement_sources, risks, test_suites, test_cases, test_steps, test_dependencies, test_assertions, test_sources |
-| Execution | test_runs, test_run_cases, test_results, http_exchanges |
-| Analysis | response_analysis, findings, finding_evidence |
-| Curiosity | investigation_sessions, hypotheses, suggested_tests |
-| Memory | project_memory |
-| Release | releases, release_changes, release_impacts, release_decisions |
-| Quality | quality_scores |
-| AI operations | ai_runs |
-| Audit | audit_logs |
+| Area          | Concepts                                                                                                                        |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Tenancy       | users, workspaces, workspace_members, projects, environments, environment_secrets                                               |
+| API knowledge | api_specs, api_spec_versions, api_resources, api_endpoints, api_parameters, api_schemas                                         |
+| Behaviour     | behaviour_nodes, behaviour_edges                                                                                                |
+| QA            | requirements, requirement_sources, risks, test_suites, test_cases, test_steps, test_dependencies, test_assertions, test_sources |
+| Execution     | test_runs, test_run_cases, test_results, http_exchanges                                                                         |
+| Analysis      | response_analysis, findings, finding_evidence                                                                                   |
+| Curiosity     | investigation_sessions, hypotheses, suggested_tests                                                                             |
+| Memory        | project_memory                                                                                                                  |
+| Release       | releases, release_changes, release_impacts, release_decisions                                                                   |
+| Quality       | quality_scores                                                                                                                  |
+| AI operations | ai_runs                                                                                                                         |
+| Audit         | audit_logs                                                                                                                      |
 
 ## Ownership and relationships
+
 Users join workspaces through membership; workspaces contain projects.
 Projects contain environments and restricted environment secrets.
 Specifications have versions; normalized resources, endpoints, parameters,
@@ -37,6 +38,7 @@ cross-tenant references. Browser-supplied workspace_id is never proof of access.
 Exact keys, constraints, retention and enforcement mechanisms need future design.
 
 ## Graph and evidence
+
 Nodes/edges model actors, resources/entities, endpoints/actions, states,
 workflows and dependencies. Inferred relationships carry provenance, confidence
 and approval/verification status. Sources include OPENAPI, DOCUMENTATION,

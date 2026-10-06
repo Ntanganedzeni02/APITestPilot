@@ -5,6 +5,7 @@ No product application, infrastructure, credentials or environment variables exi
 Read [AGENTS](../../AGENTS.md) and [architecture](../architecture/overview.md).
 
 ## Prerequisites
+
 Use Node 24 LTS; .nvmrc pins 24.21.0 and engines require the 24.x line.
 Install pnpm 12.9.1, pinned in packageManager:
 
@@ -23,9 +24,13 @@ Commit pnpm-lock.yaml; use pnpm install --frozen-lockfile for reproducible insta
 pnpm format writes formatting changes. There is no application start/build script.
 No .env.example is needed because no variables are defined.
 
-Workspace globs cover apps/*, workers/* and packages/*. These directories remain
+Workspace globs cover `apps/*`, `workers/*` and `packages/*`. These directories remain
 placeholders until a scoped milestone adds manifests and code. The private root
 owns engineering dependencies.
+
+pnpm's release-age policy uses version-specific exceptions for the selected
+typescript-eslint 8.71.1 release family. `minimumReleaseAgeStrict` requires an
+explicit decision for future exceptions instead of adding them automatically.
 
 Validation on this Windows host uses ignored .tools/ for a local Node/pnpm
 bootstrap because system Node is 22.16.0. This is machine-local, not a tracked

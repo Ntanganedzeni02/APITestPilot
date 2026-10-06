@@ -30,9 +30,11 @@ describe('engineering foundation', () => {
         : originalGetSourceFile(path, languageVersion, onError, shouldCreate);
     const program = ts.createProgram([filename], options, host);
     expect(
-      program.getSemanticDiagnostics().some(
-        (error) => error.file?.fileName === filename && error.code === 2322,
-      ),
+      program
+        .getSemanticDiagnostics()
+        .some(
+          (error) => error.file?.fileName === filename && error.code === 2322,
+        ),
     ).toBe(true);
   });
 

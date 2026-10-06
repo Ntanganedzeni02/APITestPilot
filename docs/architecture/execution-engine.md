@@ -12,6 +12,7 @@ The runner is separate from the web application;
 see [ADR 0003](../adr/0003-separate-api-runner.md).
 
 ## Intended capabilities
+
 Reusable authentication profiles, multiple actors/identities, dynamic variables,
 response extraction, dependency chaining, setup/cleanup and deterministic
 assertions support workflows. Retries, flakiness tracking, timeout classification,
@@ -20,6 +21,7 @@ safety policy enforcement, evidence capture and secret redaction support reliabl
 operations. Retry rules must consider mutation side effects.
 
 ## Safety and autonomy
+
 Development, Staging and Production require explicit environment policies.
 Deterministic outcomes are ALLOW, REQUIRES_APPROVAL and BLOCK; AI cannot override
 them. Production defaults to restrictive behavior.
@@ -31,6 +33,7 @@ Explicitly consider financial transactions, refunds, emails, SMS, notifications,
 webhooks, deletion, external integrations and account mutations.
 
 ## Evidence
+
 Sanitized HTTP evidence will include request method, URL, headers/body; response
 status, headers/body; duration, response size, timestamp, attempt and runner
 information. Redact secrets/sensitive values before normal logging, AI

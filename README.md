@@ -10,6 +10,7 @@ Documentation and architectural placeholders remain intact. No web application,
 database, AI integration, runner or product build tooling exists.
 
 ## Documentation map
+
 - [Engineering constitution](AGENTS.md)
 - Product: [vision](docs/product/vision.md), [principles](docs/product/principles.md),
   [user journey](docs/product/user-journey.md)

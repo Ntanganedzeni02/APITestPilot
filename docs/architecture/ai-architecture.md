@@ -7,6 +7,7 @@ adapters. Domain/application contracts determine accepted meaning.
 See [ADR 0004](../adr/0004-provider-independent-ai.md).
 
 ## Intended workflows
+
 Context Builder selects scoped sanitized knowledge. Behaviour Modeler proposes
 system relationships. Risk Analyzer assesses risks. Test Planner organizes
 coverage; Test Generator proposes structured cases. Response Analyzer interprets
@@ -16,6 +17,7 @@ Intelligence explains scores, changes and recommendations.
 These are responsibilities, not freely communicating autonomous agents.
 
 ## Acceptance and authority
+
 LLM -> structured output -> schema validation -> application/domain validation
 -> accepted domain object. Reject invalid outputs before trusted persistence.
 Retain sources, confidence and uncertainty; unsupported assumptions remain

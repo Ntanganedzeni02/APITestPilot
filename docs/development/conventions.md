@@ -1,6 +1,7 @@
 # Development conventions
 
 ## Configured tooling
+
 Use pnpm and preserve its lockfile. Root scripts are engineering entry points.
 ESLint flat config applies recommended JavaScript/TypeScript correctness rules
 with zero warnings permitted. Prettier owns formatting independently; no
@@ -17,6 +18,7 @@ bundler app may override those modes/add DOM libraries without weakening strictn
 Architectural import boundaries are documented but not automatically enforced yet.
 
 ## Documentation and scope
+
 Use concise Markdown, relative links and explicit planned/implemented labels.
 Keep binding rules in AGENTS.md; cross-reference related docs. Never invent
 implementation facts, benchmarks or setup commands. Number ADRs with Status,

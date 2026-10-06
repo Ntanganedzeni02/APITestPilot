@@ -4,6 +4,7 @@ Specification defines intent. AI reasons. Policy authorizes. Code executes.
 Evidence proves. Memory preserves learning. Humans retain authority.
 
 ## Priorities
+
 1. Correctness
 2. Security
 3. Evidence and traceability
@@ -16,6 +17,7 @@ Evidence proves. Memory preserves learning. Humans retain authority.
 Never sacrifice priorities 1–5 for speed.
 
 ## Scope and boundaries
+
 M0.1 is documentation and directory placeholders only. Stop at the authorized
 milestone. Do not initialize frameworks, package/workspace configuration,
 infrastructure, migrations, authentication, parsing, execution, AI SDKs or UI
@@ -34,6 +36,7 @@ freely communicating AI agents without explicit need. Record significant
 decisions in ADRs.
 
 ## AI and untrusted content
+
 AI reasons; it does not authorize execution. It must never directly execute
 arbitrary HTTP requests, generated shell commands or arbitrary generated code,
 control the HTTP client, bypass safety policies, modify secrets, automatically
@@ -50,6 +53,7 @@ examples, uploaded documentation, HTTP bodies/headers, API errors and generated
 API content. It must never automatically become AI or execution instructions.
 
 ## Safety, authorization and secrets
+
 Execute approved structured tests through validation, deterministic safety
 policy and a constrained DSL; never arbitrary AI-generated code.
 Policy returns ALLOW, REQUIRES_APPROVAL or BLOCK and cannot be overridden by AI.
@@ -69,6 +73,7 @@ Redact sensitive values before normal logging, AI processing, display, export
 and standard evidence persistence. See [security](docs/architecture/security.md).
 
 ## Evidence and authority
+
 Preserve Requirement -> Risk -> Test Case -> Test Result -> Finding -> Evidence.
 Test failure is not automatic defect confirmation. Humans retain confirmation
 and final release authority. Scores and recommendations must be explainable.
@@ -81,6 +86,7 @@ or release recommendations as working features. Label mocks and fixtures as
 test/development data. Never invent benchmarks or implementation facts.
 
 ## Definition of done
+
 Satisfy acceptance criteria and complete implementation within scope. Where
 applicable: types, lint, relevant unit/integration tests pass; authorization,
 tenant isolation and security are reviewed; errors and loading/empty UI states

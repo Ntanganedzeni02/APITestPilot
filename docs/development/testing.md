@@ -1,6 +1,7 @@
 # Testing strategy
 
 ## Current tooling
+
 M0.2 configures Vitest with a Node environment, explicit imports and mock cleanup.
 `pnpm test` runs once; `pnpm exec vitest` enables local watch mode.
 The root config discovers tests in future package source/tests directories,
@@ -13,8 +14,10 @@ No pass-with-no-tests option hides missing tests.
 There is no application build tool or build command.
 
 ## Intended tooling and coverage
+
 Vitest is installed for unit/integration testing. Playwright remains a future
 end-to-end candidate and is neither installed nor configured. Future checks cover:
+
 - Deterministic parsing, invariants, graph provenance and structured-output
   validation, including malformed/adversarial imported content.
 - Policy decisions, approvals, restrictive production defaults, side effects
