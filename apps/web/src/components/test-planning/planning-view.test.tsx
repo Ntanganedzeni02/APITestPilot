@@ -54,7 +54,9 @@ it('truthful empty planning summary without runtime results or fake scores', () 
     <PlanningView plan={plan} graph={graph} role="OWNER" />,
   );
   expect(html).toContain('unavailable / not configured');
-  expect(html).toContain('No API requests or runtime results exist');
+  expect(html).toContain(
+    'Planning records contain no runtime results; see Runs for observed execution',
+  );
   expect(html).toContain('0 scenarios');
   expect(html).not.toContain('93%');
 });

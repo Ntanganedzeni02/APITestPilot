@@ -1,6 +1,9 @@
 # Execution engine
 
-Status: planned; no runner, queue, HTTP client or DSL exists.
+Status: M1.7 implements a separate deterministic worker, PostgreSQL job claims,
+bounded HTTP capture and independent Safety policy. No arbitrary executable DSL,
+AI runtime authority, findings or Curiosity are implemented. See
+[safe execution policy](../development/safe-execution.md) and [ADR 0010](../adr/0010-safe-execution-foundation.md).
 
 Approved structured test -> validation -> safety policy -> execution plan ->
 job queue -> API runner -> real customer/test API -> response capture ->
@@ -11,7 +14,7 @@ AI-generated code. The LLM must not control the HTTP client.
 The runner is separate from the web application;
 see [ADR 0003](../adr/0003-separate-api-runner.md).
 
-## Intended capabilities
+## Future capabilities
 
 Reusable authentication profiles, multiple actors/identities, dynamic variables,
 response extraction, dependency chaining, setup/cleanup and deterministic

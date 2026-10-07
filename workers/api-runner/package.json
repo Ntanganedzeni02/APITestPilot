@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Future deterministic API test execution; boundary only, no runnable service.",
+  "description": "M1.7 deterministic safe execution foundation",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -16,6 +16,13 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint . --max-warnings 0",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "@testpilot/domain": "workspace:*",
+    "@testpilot/safety": "workspace:*",
+    "@testpilot/test-engine": "workspace:*",
+    "@testpilot/evidence": "workspace:*"
   }
 }

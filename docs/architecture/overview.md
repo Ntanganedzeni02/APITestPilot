@@ -22,7 +22,7 @@ Responsive navigation, theme selection and truthful future-feature empty states
 remain. M1.3 adds deterministic OpenAPI knowledge imports and API Map. M1.2–M1.4 migrations are deployed according to supplied evidence; no real AI provider or execution capability exists.
 
 The web app composes domain, api-spec, behaviour-graph, qa-intelligence and database. Database depends
-on domain and Supabase JS; qa-intelligence composes graph helpers and AI contracts. Remaining empty packages and runner stay dependency-free. Domain manifests
+on domain and Supabase JS; qa-intelligence composes graph helpers and AI contracts. Safety and evidence now own M1.7 policy/redaction; the separate runner composes domain, safety, test-engine and evidence. Domain manifests
 must remain dependency-free, and ESLint restricts domain imports to relative
 modules. Tooling tests check package discovery, uniqueness and dependency cycles.
 These controls do not constitute a complete enforcement of all future layer
@@ -55,13 +55,12 @@ React presentation does not issue Supabase queries. The focused qa-intelligence 
 | tooling                  | Implemented foundation verification; no product logic        |
 
 Workspace names match directory names under `@testpilot/`, including
-`@testpilot/api-runner`. The runner has no startup script or execution behavior.
+`@testpilot/api-runner`. M1.7 adds a separately started execution worker with narrow database authority.
 Database contains the M1.2 Supabase tenant adapter; supabase/migrations owns schema
 and policies. api-spec validates/parses/normalizes bounded OpenAPI imports, with
 vendor schemas/types encapsulated and local-only reference resolution;
-behaviour-graph builds/validates deterministic immutable graph facts and exposes traversal helpers; test-engine contains no execution;
-safety contains no policy engine; ai contains structured provider contracts/validation but no configured vendor adapter; evidence
-contains no processing. Shared is for technical primitives, not domain concepts.
+behaviour-graph builds/validates deterministic immutable graph facts and exposes traversal helpers; test-engine owns deterministic request construction/assertions;
+safety owns deterministic execution policy; ai contains structured provider contracts/validation but no configured vendor adapter; evidence owns safe capture redaction. Shared is for technical primitives, not domain concepts.
 
 Domain must not import React, Next.js, Supabase, Redis, BullMQ, Vercel, AI
 providers or UI frameworks. Keep business logic out of framework handlers.
@@ -102,4 +101,6 @@ infrastructure requires a concrete need and ADR.
 See [data](data-model.md), [AI](ai-architecture.md), [execution](execution-engine.md),
 [security](security.md) and [ADR 0001](../adr/0001-monorepo-architecture.md).
 
-M1.6 activates evidence-backed planning in test-engine, with domain-owned snapshots, database adapters and protected Test Studio UI. No execution is implemented. See [planning architecture](../development/test-planning.md).
+M1.6 activates evidence-backed planning in test-engine, with domain-owned snapshots, database adapters and protected Test Studio UI. Planning remains independent of execution authorization. See [planning architecture](../development/test-planning.md).
+
+M1.7 adds safe execution with a separate runner, deterministic Safety policy and protected Runs UI. Its single migration remains undeployed. See [execution foundation](../development/safe-execution.md).

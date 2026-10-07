@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Future evidence models, sanitization, redaction and traceability.",
+  "description": "M1.7 deterministic safe execution foundation",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -17,5 +17,6 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint . --max-warnings 0"
-  }
+  },
+  "dependencies": {}
 }

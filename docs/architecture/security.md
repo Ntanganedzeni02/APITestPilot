@@ -15,7 +15,7 @@ composite foreign keys and independent RLS. Direct mutations are revoked. See
 [import policy](../development/api-knowledge.md).
 
 Status: M1.2 implements authentication/tenant database controls described below.
-Remaining execution, secrets and AI requirements are future controls. Local SQL
+M1.7 adds concrete execution/SSRF/redaction controls; full target credentials and AI execution remain unsupported. Local SQL
 policy tests passed; live Supabase/Auth/PostgREST verification is still required.
 
 ## Untrusted content
@@ -90,7 +90,7 @@ Retention, key management and exceptional raw-evidence access require future des
 ## Future security design
 
 HTTP execution must authorize targets and address SSRF, unsafe redirects and
-internal/metadata-service access. Concrete protections are not configured.
+internal/metadata-service access. M1.7 implements concrete controls described in [safe execution](../development/safe-execution.md); further expansion remains subject to review.
 Audit approvals, authorization and human decisions without leaking secrets.
 Verification must cover tenant isolation, prompt injection, policy bypass and
 redaction. See [testing](../development/testing.md).

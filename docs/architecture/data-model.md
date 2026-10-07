@@ -109,3 +109,8 @@ deny direct writes. See [M1.5 design](../development/qa-intelligence.md).
 ## Implemented M1.6 planning
 
 Eight tenant-scoped planning/version/definition/link/review/audit tables preserve exact analysis, requirement reviews and graph/import bindings. Same-plan typed scenario parents and relational QA/graph FKs protect traceability; narrow transactional RPCs and membership read RLS govern persistence. See [planning model](../development/test-planning.md).
+
+M1.7 adds immutable environment execution configurations, pinned execution runs,
+immutable results and execution audit under independent RLS and narrow RPCs.
+A dedicated runner role claims/evaluates/completes jobs; browser users cannot mutate
+safety or results. See [execution persistence](../development/safe-execution.md).

@@ -11,7 +11,7 @@
   "scripts": {
     "build": "pnpm -r build",
     "lint": "eslint . --max-warnings 0",
-    "typecheck": "pnpm --filter @testpilot/test-engine... build && pnpm --filter @testpilot/qa-intelligence... build && pnpm --filter @testpilot/behaviour-graph... build && pnpm --filter @testpilot/api-spec... build && pnpm --filter @testpilot/database... build && tsc --noEmit && pnpm -r typecheck",
+    "typecheck": "pnpm --filter @testpilot/evidence... build && pnpm --filter @testpilot/safety... build && pnpm --filter @testpilot/test-engine... build && pnpm --filter @testpilot/qa-intelligence... build && pnpm --filter @testpilot/behaviour-graph... build && pnpm --filter @testpilot/api-spec... build && pnpm --filter @testpilot/database... build && tsc --noEmit && pnpm -r typecheck",
     "test": "vitest run",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

@@ -223,6 +223,9 @@ importers:
       '@testpilot/qa-intelligence':
         specifier: workspace:*
         version: link:../../packages/qa-intelligence
+      '@testpilot/safety':
+        specifier: workspace:*
+        version: link:../../packages/safety
       '@testpilot/test-engine':
         specifier: workspace:*
         version: link:../../packages/test-engine
@@ -319,7 +322,11 @@ importers:
         specifier: workspace:*
         version: link:../domain
 
-  packages/safety: {}
+  packages/safety:
+    dependencies:
+      '@testpilot/domain':
+        specifier: workspace:*
+        version: link:../domain
 
   packages/shared: {}
 
@@ -332,7 +339,20 @@ importers:
         specifier: workspace:*
         version: link:../domain
 
-  workers/api-runner: {}
+  workers/api-runner:
+    dependencies:
+      '@testpilot/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      '@testpilot/evidence':
+        specifier: workspace:*
+        version: link:../../packages/evidence
+      '@testpilot/safety':
+        specifier: workspace:*
+        version: link:../../packages/safety
+      '@testpilot/test-engine':
+        specifier: workspace:*
+        version: link:../../packages/test-engine
 
 packages:
 

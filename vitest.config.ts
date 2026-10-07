@@ -4,6 +4,15 @@ import { fileURLToPath } from 'node:url';
 export default defineConfig({
   resolve: {
     alias: {
+      '@testpilot/safety': fileURLToPath(
+        new URL('./packages/safety/src/index.ts', import.meta.url),
+      ),
+      '@testpilot/evidence': fileURLToPath(
+        new URL('./packages/evidence/src/index.ts', import.meta.url),
+      ),
+      '@testpilot/api-runner': fileURLToPath(
+        new URL('./workers/api-runner/src/index.ts', import.meta.url),
+      ),
       '@testpilot/test-engine': fileURLToPath(
         new URL('./packages/test-engine/src/index.ts', import.meta.url),
       ),

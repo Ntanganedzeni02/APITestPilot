@@ -50,8 +50,8 @@ export default async function TestStudio({
       <div className="min-w-0">
         <h1 className="page-title">Test Studio</h1>
         <p className="mt-3">
-          Evidence-backed planning and independent human review. No API
-          execution.
+          Evidence-backed planning and independent human review. Execution
+          requests require separate safety evaluation in Runs.
         </p>
         {selected ? (
           <>

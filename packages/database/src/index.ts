@@ -184,3 +184,5 @@ export function createTenantService(client: SupabaseClient): TenantRepository {
 }
 
 export * from './test-planning.js';
+
+export * from './execution.js';

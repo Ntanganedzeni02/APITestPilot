@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useState } from 'react';
 import {
   planningState,
@@ -71,8 +72,8 @@ export function PlanningView({
         blocked by setup.
       </p>
       <p>
-        Planning eligibility never authorizes execution. No API requests or
-        runtime results exist.
+        Planning eligibility never authorizes execution. Planning records
+        contain no runtime results; see Runs for observed execution.
       </p>
       <details className="rounded border p-3">
         <summary>Add a human-authored planning proposal</summary>
@@ -342,6 +343,14 @@ export function PlanningView({
                 </p>
                 <p>Symbolic input: {JSON.stringify(item.input)}</p>
                 <p>Eligibility: {executionEligibility(item, plan)}</p>
+                {item.kind === 'CASE' && (
+                  <Link
+                    className="underline"
+                    href={'/runs?plan=' + plan.id + '&case=' + item.id}
+                  >
+                    Run Test - review safety preview
+                  </Link>
+                )}
                 <details>
                   <summary>Provenance and traceability</summary>
                   <p className="break-all">

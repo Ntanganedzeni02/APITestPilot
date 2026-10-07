@@ -11,7 +11,8 @@ M1.2/M1.3/M1.4/M1.5 migrations are deployed to Development Supabase per supplied
 evidence. M1.6 migration deployment is confirmed by supplied evidence; hosted planning acceptance remains separate.
 Hosted authenticated acceptance remains deferred. AI proposals have a validated
 provider-independent contract; no real provider is configured. AI/LLM graph
-inference, speculative graph generation and API execution do not exist.
+inference and speculative graph generation do not exist. M1.7 introduces a local
+safe execution foundation; its migration is not deployed and hosted execution is deferred.
 
 TestPilot is a planned AI-powered API quality and testing SaaS platform.
 Give it your API to understand behavior, investigate risks and provide
@@ -59,3 +60,7 @@ Configure Supabase first using [setup](docs/development/setup.md). See
 live authentication/tenancy verification checklist.
 
 M1.6 adds immutable, traceable Test Studio plans/scenarios/cases and independent human review. Its migration passed security re-preflight and was deployed by the user; hosted authenticated planning remains deferred. See [test planning](docs/development/test-planning.md).
+
+M1.7 activates Runs, explicit environment targets and a separate deterministic
+worker. Planning approval does not authorize HTTP; Safety and exact approval govern
+execution. See [safe execution limits, worker setup and trust boundary](docs/development/safe-execution.md).
