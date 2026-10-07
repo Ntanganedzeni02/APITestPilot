@@ -71,7 +71,11 @@ export interface ApiImportSummary {
   knowledge: ApiKnowledge;
 }
 export interface ApiKnowledgeRepository {
-  list(workspaceId: string, projectId: string): Promise<ApiImportSummary[]>;
+  list(
+    workspaceId: string,
+    projectId: string,
+    importId?: string,
+  ): Promise<ApiImportSummary[]>;
   save(
     workspaceId: string,
     projectId: string,

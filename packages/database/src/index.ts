@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 export * from './api-knowledge.js';
 export * from './behaviour-graph.js';
+export * from './qa-intelligence.js';
 import {
   environmentTypes,
   workspaceRoles,
@@ -13,13 +14,17 @@ import {
 } from '@testpilot/domain';
 
 export class PersistenceError extends Error {
-  constructor(public readonly kind: 'AUTHENTICATION' | 'ACCESS' | 'DATABASE') {
+  constructor(
+    public readonly kind: 'AUTHENTICATION' | 'ACCESS' | 'DATABASE' | 'CONFLICT',
+  ) {
     super(
       kind === 'AUTHENTICATION'
         ? 'Please sign in again.'
         : kind === 'ACCESS'
           ? 'This resource is unavailable.'
-          : 'Unable to save or load your data. Please try again.',
+          : kind === 'CONFLICT'
+            ? 'This proposal changed. Reload before recording another review.'
+            : 'Unable to save or load your data. Please try again.',
     );
   }
 }

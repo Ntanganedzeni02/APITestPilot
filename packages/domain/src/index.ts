@@ -1,6 +1,7 @@
 // Core business concepts and rules; infrastructure-independent.
 export * from './api-knowledge.js';
 export * from './behaviour-graph.js';
+export * from './qa-intelligence.js';
 export const workspaceRoles = ['OWNER', 'ADMIN', 'MEMBER'] as const;
 export type WorkspaceRole = (typeof workspaceRoles)[number];
 export const environmentTypes = [

@@ -21,6 +21,7 @@ export function createBehaviourGraphRepository(
     const imports = await createApiKnowledgeRepository(client).list(
       workspaceId,
       projectId,
+      importId,
     );
     if (!imports.some((i) => i.id === importId))
       throw new PersistenceError('ACCESS');
@@ -58,9 +59,9 @@ export function createBehaviourGraphRepository(
         );
       return validateId(data);
     },
-    async list(workspaceId, projectId, importId) {
+    async list(workspaceId, projectId, importId, snapshotId) {
       await authorize(workspaceId, projectId, importId);
-      const { data, error } = await client
+      let query = client
         .from('behaviour_graphs')
         .select('*')
         .eq('workspace_id', workspaceId)
@@ -69,6 +70,8 @@ export function createBehaviourGraphRepository(
         .order('created_at', { ascending: false })
         .order('id', { ascending: false })
         .limit(1);
+      if (snapshotId) query = query.eq('id', validateId(snapshotId));
+      const { data, error } = await query;
       if (error || !Array.isArray(data)) throw new PersistenceError('DATABASE');
       const snapshots: GraphSnapshot[] = [];
       for (const row of data as Record<string, unknown>[]) {

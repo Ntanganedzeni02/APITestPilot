@@ -1,6 +1,8 @@
 # AI architecture
 
-Status: planned; no provider, SDK, model integration or workflow exists.
+Status: M1.5 implements provider-independent proposal contracts, structured
+validation and failure-isolated analysis. No real provider, vendor SDK or model
+integration is configured.
 
 TestPilot-owned interfaces separate reasoning responsibilities from provider
 adapters. Domain/application contracts determine accepted meaning.
@@ -33,3 +35,14 @@ defects without evidence/policy, or decide releases.
 Exclude secrets unless explicitly required by a future reviewed design.
 Follow-up proposals re-enter validation, review and deterministic policy.
 See [execution](execution-engine.md) and [security](security.md).
+
+## Implemented M1.5 proposal boundary
+
+QaIntelligenceProvider is vendor independent and currently unconfigured. The
+initial bounded context contains only graph types and opaque citation tokens,
+omitting free-text specifications, identifiers, URLs and credentials. Strict
+structured output validation maps tokens to the selected immutable source and
+rejects unknown fields, categories, ownership, evidence and approval attempts.
+Only concise public reasons/questions and validated provider/prompt metadata are
+retained. Timeout or invalid output leaves deterministic analysis available.
+See [M1.5 trust boundary](../development/qa-intelligence.md).

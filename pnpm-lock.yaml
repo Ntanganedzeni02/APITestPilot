@@ -220,6 +220,9 @@ importers:
       '@testpilot/domain':
         specifier: workspace:*
         version: link:../../packages/domain
+      '@testpilot/qa-intelligence':
+        specifier: workspace:*
+        version: link:../../packages/qa-intelligence
       class-variance-authority:
         specifier: 0.7.1
         version: 0.7.1
@@ -258,7 +261,11 @@ importers:
         specifier: 4.3.3
         version: 4.3.3
 
-  packages/ai: {}
+  packages/ai:
+    dependencies:
+      '@testpilot/domain':
+        specifier: workspace:*
+        version: link:../domain
 
   packages/api-spec:
     dependencies:
@@ -296,6 +303,18 @@ importers:
   packages/domain: {}
 
   packages/evidence: {}
+
+  packages/qa-intelligence:
+    dependencies:
+      '@testpilot/ai':
+        specifier: workspace:*
+        version: link:../ai
+      '@testpilot/behaviour-graph':
+        specifier: workspace:*
+        version: link:../behaviour-graph
+      '@testpilot/domain':
+        specifier: workspace:*
+        version: link:../domain
 
   packages/safety: {}
 

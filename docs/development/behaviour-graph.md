@@ -142,6 +142,6 @@ M1.2/M1.3/M1.4 deployment is known from supplied authenticated CLI evidence:
 local and remote versions match `20261006000100`, `20261006000200` and
 `20261006000300`. No migration commands were run during final verification.
 Hosted authenticated graph building is deferred due to the documented M1.2 Auth
-acceptance dependency. Before M1.5, complete
+acceptance dependency. This deferred check does not block deterministic/local M1.5 acceptance. Complete
 real authenticated build/rebuild/refresh, selected-import and tenant-isolation
-verification. Never weaken confirmation/RLS to complete that check.
+verification during the separately tracked hosted acceptance. Never weaken confirmation/RLS to complete that check.

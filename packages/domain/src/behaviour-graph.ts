@@ -84,6 +84,7 @@ export interface BehaviourGraphRepository {
     workspaceId: string,
     projectId: string,
     importId: string,
+    snapshotId?: string,
   ): Promise<GraphSnapshot[]>;
 }
 export const MAX_GRAPH_NODES = 12000;

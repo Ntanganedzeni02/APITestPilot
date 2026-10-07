@@ -1,23 +1,29 @@
 # TestPilot
 
-M1.3 adds real deterministic OpenAPI 3.0/3.1 knowledge imports and API Map.
-M1.4 adds deterministic Behaviour Graph builds and immutable snapshots. See
-[graph rules, limits and verification](docs/development/behaviour-graph.md).
-See [import lifecycle, security and deployment](docs/development/api-knowledge.md).
-All three migrations are deployed to Development Supabase per supplied migration-status evidence; hosted Auth acceptance
-remains partially deferred. Deterministic Behaviour Graph generation exists; AI/LLM graph inference, speculative graph generation and API execution do not.
+M1.3 imports deterministic OpenAPI 3.0/3.1 knowledge. M1.4 builds immutable
+deterministic Behaviour Graphs. M1.5 adds specification/graph-backed requirements
+and risk proposals, provenance and append-only human review. See
+[requirements/risk rules and security](docs/development/qa-intelligence.md),
+[graph rules](docs/development/behaviour-graph.md) and
+[API import](docs/development/api-knowledge.md).
+
+M1.2/M1.3/M1.4 migrations are deployed to Development Supabase per supplied
+evidence. The M1.5 migration is local and requires separate reviewed deployment.
+Hosted authenticated acceptance remains deferred. AI proposals have a validated
+provider-independent contract; no real provider is configured. AI/LLM graph
+inference, speculative graph generation and API execution do not exist.
 
 TestPilot is a planned AI-powered API quality and testing SaaS platform.
 Give it your API to understand behavior, investigate risks and provide
 evidence-backed release confidence.
 
-**M1.4: deterministic graph foundation implemented and migration deployed. Hosted authenticated verification remains deferred.**
+**M1.5: deterministic requirements/risk intelligence implemented locally; hosted deployment and authenticated verification remain separate.**
 pnpm workspaces, strict TypeScript, ESLint, Prettier, Vitest and GitHub Actions CI
 are configured. `apps/web` has Supabase SSR email/password authentication,
 protected routes, persisted workspace onboarding and project selection. Domain
 rules are provider independent; database operations use a dedicated adapter and
 version-controlled RLS migrations. Projects create DEVELOPMENT, STAGING and
-PRODUCTION environments atomically. M1.3 adds API import; no AI or functioning runner exists.
+PRODUCTION environments atomically. M1.3–M1.5 add API knowledge, graphs and reviewable QA intelligence; no functioning runner or real model integration exists.
 Without Supabase configuration, auth pages explain setup and product access is
 closed. No sample tenant data is displayed.
 
@@ -41,7 +47,7 @@ closed. No sample tenant data is displayed.
   [identity and context](docs/adr/0005-supabase-identity-and-tenant-context.md)
 
 Directories separate `apps/web`, `workers/api-runner` and focused packages.
-Domain, database, api-spec and behaviour-graph implement M1.2–M1.4; other package boundaries and runner remain empty.
+Domain, database, api-spec, behaviour-graph, qa-intelligence and ai implement M1.2–M1.5; test-engine, safety, evidence, shared and the runner retain their earlier foundation scope.
 The web app composes domain-owned persistence operations through the database adapter.
 Root `pnpm build` builds Next.js and verifies workspace compilation; other checks
 and setup are documented in [setup](docs/development/setup.md).

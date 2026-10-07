@@ -1,9 +1,9 @@
 {
-  "name": "@testpilot/ai",
+  "name": "@testpilot/qa-intelligence",
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Provider-independent AI proposal contracts and runtime validation.",
+  "description": "Deterministic requirements and risk intelligence.",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -19,6 +19,8 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "@testpilot/domain": "workspace:*"
+    "@testpilot/domain": "workspace:*",
+    "@testpilot/behaviour-graph": "workspace:*",
+    "@testpilot/ai": "workspace:*"
   }
 }

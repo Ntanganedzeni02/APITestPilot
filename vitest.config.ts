@@ -4,6 +4,12 @@ import { fileURLToPath } from 'node:url';
 export default defineConfig({
   resolve: {
     alias: {
+      '@testpilot/qa-intelligence': fileURLToPath(
+        new URL('./packages/qa-intelligence/src/index.ts', import.meta.url),
+      ),
+      '@testpilot/ai': fileURLToPath(
+        new URL('./packages/ai/src/index.ts', import.meta.url),
+      ),
       '@testpilot/behaviour-graph': fileURLToPath(
         new URL('./packages/behaviour-graph/src/index.ts', import.meta.url),
       ),

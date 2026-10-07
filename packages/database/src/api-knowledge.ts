@@ -40,21 +40,25 @@ export function createApiKnowledgeRepository(
         );
       return validateId(data);
     },
-    async list(workspaceId: string, projectId: string) {
+    async list(workspaceId: string, projectId: string, importId?: string) {
       const scope = await authorize(workspaceId, projectId);
-      const { data, error } = await client
+      let query = client
         .from('api_imports')
         .select('id,workspace_id,project_id,created_by,created_at,knowledge')
         .eq('workspace_id', scope.workspaceId)
         .eq('project_id', scope.projectId)
         .order('created_at', { ascending: false })
         .order('id', { ascending: false })
-        .limit(50);
+        .limit(importId ? 1 : 50);
+      if (importId) query = query.eq('id', validateId(importId));
+      const { data, error } = await query;
       if (error || !Array.isArray(data)) throw new PersistenceError('DATABASE');
       return data.map((value: unknown): ApiImportSummary => {
         if (!value || typeof value !== 'object')
           throw new PersistenceError('DATABASE');
         const row = value as Record<string, unknown>;
+        if (importId && row['id'] !== importId)
+          throw new PersistenceError('ACCESS');
         assertApiKnowledge(row['knowledge']);
         const ws = validateId(row['workspace_id']);
         const project = validateId(row['project_id']);

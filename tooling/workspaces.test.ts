@@ -20,6 +20,7 @@ const expected = [
   'database',
   'api-spec',
   'behaviour-graph',
+  'qa-intelligence',
   'test-engine',
   'safety',
   'ai',

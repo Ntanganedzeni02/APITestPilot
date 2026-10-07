@@ -1,5 +1,10 @@
 # Architecture overview
 
+M1.5 adds deterministic requirement/risk analysis, strict provider-independent AI
+proposal contracts and append-only human review. Its migration remains local.
+See [intelligence design](../development/qa-intelligence.md) and
+[ADR 0008](../adr/0008-requirements-risk-intelligence.md).
+
 M1.4 adds a pure deterministic Behaviour Graph builder, validated immutable
 PostgreSQL graph snapshots and structured API Map graph inspection. See
 [graph model/rules](../development/behaviour-graph.md) and
@@ -14,11 +19,10 @@ creation functions, membership-based RLS and minimal creation audit events live
 in version-controlled migrations. The implementation requires a configured
 Supabase instance; local PostgreSQL policy verification does not prove live Auth.
 Responsive navigation, theme selection and truthful future-feature empty states
-remain. M1.3 adds deterministic OpenAPI knowledge imports and API Map. No deployment,
-AI or execution capability exists.
+remain. M1.3 adds deterministic OpenAPI knowledge imports and API Map. M1.2–M1.4 migrations are deployed according to supplied evidence; no real AI provider or execution capability exists.
 
-The web app composes @testpilot/domain, @testpilot/api-spec and @testpilot/database. Database depends
-on domain and Supabase JS. Other empty packages and runner remain dependency-free. Domain manifests
+The web app composes domain, api-spec, behaviour-graph, qa-intelligence and database. Database depends
+on domain and Supabase JS; qa-intelligence composes graph helpers and AI contracts. Remaining empty packages and runner stay dependency-free. Domain manifests
 must remain dependency-free, and ESLint restricts domain imports to relative
 modules. Tooling tests check package discovery, uniqueness and dependency cycles.
 These controls do not constitute a complete enforcement of all future layer
@@ -30,25 +34,25 @@ Presentation -> Application -> Domain. Infrastructure implements interfaces
 owned by application/domain. Composition connects adapters; provider and
 framework details must not leak into domain logic.
 Application composition and server actions live in apps/web/src/lib/auth and
-lib/tenancy and lib/api-knowledge. Database implements domain-owned tenant and API knowledge repositories;
-React presentation does not issue Supabase queries. This avoids an additional
-application package before there is a concrete need.
+lib/tenancy, lib/api-knowledge, lib/behaviour-graph and lib/qa-intelligence. Database implements domain-owned tenant and API knowledge repositories;
+React presentation does not issue Supabase queries. The focused qa-intelligence package owns analysis rules/orchestration independently of web delivery.
 
-| Repository path          | Future product responsibility                               |
-| ------------------------ | ----------------------------------------------------------- |
-| apps/web                 | Presentation and web delivery calling application use cases |
-| workers/api-runner       | Separate constrained API execution process                  |
-| packages/domain          | Provider-independent entities, invariants and contracts     |
-| packages/database        | Persistence adapters                                        |
-| packages/api-spec        | Deterministic import and normalization                      |
-| packages/behaviour-graph | API system modeling and graph operations                    |
-| packages/test-engine     | Structured testing, assertions and orchestration            |
-| packages/safety          | Deterministic policies and budgets                          |
-| packages/ai              | Validated reasoning workflows and provider adapters         |
-| packages/evidence        | Sanitized capture and traceability                          |
-| packages/shared          | Small genuinely shared utilities                            |
-| tests                    | Future cross-boundary/system tests                          |
-| tooling                  | Implemented foundation verification; no product logic       |
+| Repository path          | Future product responsibility                                |
+| ------------------------ | ------------------------------------------------------------ |
+| apps/web                 | Presentation and web delivery calling application use cases  |
+| workers/api-runner       | Separate constrained API execution process                   |
+| packages/domain          | Provider-independent entities, invariants and contracts      |
+| packages/database        | Persistence adapters                                         |
+| packages/api-spec        | Deterministic import and normalization                       |
+| packages/behaviour-graph | API system modeling and graph operations                     |
+| packages/qa-intelligence | Deterministic requirements, risks and analysis orchestration |
+| packages/test-engine     | Structured testing, assertions and orchestration             |
+| packages/safety          | Deterministic policies and budgets                           |
+| packages/ai              | Validated reasoning workflows and provider adapters          |
+| packages/evidence        | Sanitized capture and traceability                           |
+| packages/shared          | Small genuinely shared utilities                             |
+| tests                    | Future cross-boundary/system tests                           |
+| tooling                  | Implemented foundation verification; no product logic        |
 
 Workspace names match directory names under `@testpilot/`, including
 `@testpilot/api-runner`. The runner has no startup script or execution behavior.
@@ -56,7 +60,7 @@ Database contains the M1.2 Supabase tenant adapter; supabase/migrations owns sch
 and policies. api-spec validates/parses/normalizes bounded OpenAPI imports, with
 vendor schemas/types encapsulated and local-only reference resolution;
 behaviour-graph builds/validates deterministic immutable graph facts and exposes traversal helpers; test-engine contains no execution;
-safety contains no policy engine; ai contains no SDK/provider/workflow; evidence
+safety contains no policy engine; ai contains structured provider contracts/validation but no configured vendor adapter; evidence
 contains no processing. Shared is for technical primitives, not domain concepts.
 
 Domain must not import React, Next.js, Supabase, Redis, BullMQ, Vercel, AI

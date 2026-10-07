@@ -6,8 +6,10 @@ M1.4 adds `behaviour_graphs` (import-linked snapshot/version/initiator/counts),
 bind workspace/project/import/snapshot and both edge endpoints. See
 [graph contracts and schema](../development/behaviour-graph.md).
 
-Status: M1.2 implements identity/tenant tables; M1.3 adds API imports. Other concepts in
-the future-model table remain unimplemented.
+Status: M1.2–M1.5 implement identity/tenancy, API imports, Behaviour Graphs and
+requirements/risk analyses with human review. Remaining execution/evidence/release
+concepts are future work. The future-model table describes conceptual names;
+implemented requirements/risks share the normalized qa_items model.
 
 ## Implemented identity model
 
@@ -93,3 +95,13 @@ Traceability follows Requirement -> Risk -> Test Case -> Test Result -> Finding
 PROBABLE_DEFECT, CONFIRMED_DEFECT, EXPECTED_BEHAVIOUR and FALSE_POSITIVE.
 These are conceptual classifications, not a finalized state machine.
 Humans retain confirmation authority. See [security](security.md).
+
+## Implemented M1.5 intelligence
+
+The additive qa_analyses/qa_items model pins an exact import and graph snapshot.
+Normalized node/edge/requirement junctions enforce scoped foreign keys. Immutable
+generated originals coexist with labelled human additions and append-only
+qa_reviews; effective approval derives from ordered review decisions. A dedicated
+qa_audit_events table preserves actors and events without changing M1.2 audit
+constraints. All seven tables independently enforce membership SELECT RLS and
+deny direct writes. See [M1.5 design](../development/qa-intelligence.md).
