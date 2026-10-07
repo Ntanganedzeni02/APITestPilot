@@ -223,6 +223,9 @@ importers:
       '@testpilot/qa-intelligence':
         specifier: workspace:*
         version: link:../../packages/qa-intelligence
+      '@testpilot/test-engine':
+        specifier: workspace:*
+        version: link:../../packages/test-engine
       class-variance-authority:
         specifier: 0.7.1
         version: 0.7.1
@@ -320,7 +323,14 @@ importers:
 
   packages/shared: {}
 
-  packages/test-engine: {}
+  packages/test-engine:
+    dependencies:
+      '@testpilot/ai':
+        specifier: workspace:*
+        version: link:../ai
+      '@testpilot/domain':
+        specifier: workspace:*
+        version: link:../domain
 
   workers/api-runner: {}
 

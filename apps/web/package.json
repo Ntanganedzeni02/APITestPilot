@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start --hostname 127.0.0.1",
     "lint": "eslint . --max-warnings 0",
-    "typecheck": "pnpm --filter @testpilot/qa-intelligence... build && pnpm --filter @testpilot/behaviour-graph... build && pnpm --filter @testpilot/api-spec... build && pnpm --filter @testpilot/database... build && next typegen && tsc --noEmit",
+    "typecheck": "pnpm --filter @testpilot/test-engine... build && pnpm --filter @testpilot/qa-intelligence... build && pnpm --filter @testpilot/behaviour-graph... build && pnpm --filter @testpilot/api-spec... build && pnpm --filter @testpilot/database... build && next typegen && tsc --noEmit",
     "test": "vitest run --root ../.. apps/web/src"
   },
   "dependencies": {
@@ -28,7 +28,8 @@
     "react-dom": "19.3.0",
     "tailwind-merge": "3.7.0",
     "@testpilot/behaviour-graph": "workspace:*",
-    "@testpilot/qa-intelligence": "workspace:*"
+    "@testpilot/qa-intelligence": "workspace:*",
+    "@testpilot/test-engine": "workspace:*"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.3",

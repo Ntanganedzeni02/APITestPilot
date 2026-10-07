@@ -105,3 +105,7 @@ qa_reviews; effective approval derives from ordered review decisions. A dedicate
 qa_audit_events table preserves actors and events without changing M1.2 audit
 constraints. All seven tables independently enforce membership SELECT RLS and
 deny direct writes. See [M1.5 design](../development/qa-intelligence.md).
+
+## Implemented M1.6 planning
+
+Eight tenant-scoped planning/version/definition/link/review/audit tables preserve exact analysis, requirement reviews and graph/import bindings. Same-plan typed scenario parents and relational QA/graph FKs protect traceability; narrow transactional RPCs and membership read RLS govern persistence. See [planning model](../development/test-planning.md).

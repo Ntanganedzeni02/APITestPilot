@@ -7,8 +7,8 @@ and risk proposals, provenance and append-only human review. See
 [graph rules](docs/development/behaviour-graph.md) and
 [API import](docs/development/api-knowledge.md).
 
-M1.2/M1.3/M1.4 migrations are deployed to Development Supabase per supplied
-evidence. The M1.5 migration is local and requires separate reviewed deployment.
+M1.2/M1.3/M1.4/M1.5 migrations are deployed to Development Supabase per supplied
+evidence. M1.6 migration deployment is confirmed by supplied evidence; hosted planning acceptance remains separate.
 Hosted authenticated acceptance remains deferred. AI proposals have a validated
 provider-independent contract; no real provider is configured. AI/LLM graph
 inference, speculative graph generation and API execution do not exist.
@@ -17,7 +17,7 @@ TestPilot is a planned AI-powered API quality and testing SaaS platform.
 Give it your API to understand behavior, investigate risks and provide
 evidence-backed release confidence.
 
-**M1.5: deterministic requirements/risk intelligence implemented locally; hosted deployment and authenticated verification remain separate.**
+**M1.6: deterministic test planning implemented and migration deployed; hosted planning acceptance remains separate.**
 pnpm workspaces, strict TypeScript, ESLint, Prettier, Vitest and GitHub Actions CI
 are configured. `apps/web` has Supabase SSR email/password authentication,
 protected routes, persisted workspace onboarding and project selection. Domain
@@ -47,7 +47,7 @@ closed. No sample tenant data is displayed.
   [identity and context](docs/adr/0005-supabase-identity-and-tenant-context.md)
 
 Directories separate `apps/web`, `workers/api-runner` and focused packages.
-Domain, database, api-spec, behaviour-graph, qa-intelligence and ai implement M1.2–M1.5; test-engine, safety, evidence, shared and the runner retain their earlier foundation scope.
+Domain, database, api-spec, behaviour-graph, qa-intelligence and ai implement M1.2–M1.5; test-engine implements M1.6 planning; safety, evidence, shared and the runner retain their earlier foundation scope.
 The web app composes domain-owned persistence operations through the database adapter.
 Root `pnpm build` builds Next.js and verifies workspace compilation; other checks
 and setup are documented in [setup](docs/development/setup.md).
@@ -57,3 +57,5 @@ Run `pnpm --filter @testpilot/web dev` and open http://127.0.0.1:3000.
 Configure Supabase first using [setup](docs/development/setup.md). See
 [testing](docs/development/testing.md) for real SQL policy tests and the remaining
 live authentication/tenancy verification checklist.
+
+M1.6 adds immutable, traceable Test Studio plans/scenarios/cases and independent human review. Its migration passed security re-preflight and was deployed by the user; hosted authenticated planning remains deferred. See [test planning](docs/development/test-planning.md).

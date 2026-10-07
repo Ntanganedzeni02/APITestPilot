@@ -62,7 +62,8 @@ export async function IntelligencePage({
         <h1 className="page-title">{title}</h1>
         <p className="mt-3 text-sm">
           Specification-backed proposals and review-worthy risk signals. Human
-          approval is required; no tests have been generated or executed.
+          approval is required; test planning is available in Test Studio; no
+          API tests are executed.
         </p>
         {!!imports.length && (
           <form method="get" className="mt-4">

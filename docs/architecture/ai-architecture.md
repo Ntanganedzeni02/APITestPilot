@@ -46,3 +46,5 @@ rejects unknown fields, categories, ownership, evidence and approval attempts.
 Only concise public reasons/questions and validated provider/prompt metadata are
 retained. Timeout or invalid output leaves deterministic analysis available.
 See [M1.5 trust boundary](../development/qa-intelligence.md).
+
+M1.6 extends the provider-independent abstraction with opaque approved-requirement/risk/graph catalogs and strict non-executable planning proposals. Deterministic planning survives provider failure. No provider is configured. See [planning trust boundary](../development/test-planning.md).

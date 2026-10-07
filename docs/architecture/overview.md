@@ -101,3 +101,5 @@ Choose the simplest architecture consistent with these boundaries. Further
 infrastructure requires a concrete need and ADR.
 See [data](data-model.md), [AI](ai-architecture.md), [execution](execution-engine.md),
 [security](security.md) and [ADR 0001](../adr/0001-monorepo-architecture.md).
+
+M1.6 activates evidence-backed planning in test-engine, with domain-owned snapshots, database adapters and protected Test Studio UI. No execution is implemented. See [planning architecture](../development/test-planning.md).

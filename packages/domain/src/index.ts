@@ -73,3 +73,5 @@ export interface TenantRepository {
     projectId: string,
   ): Promise<ProjectEnvironment[]>;
 }
+
+export * from './test-planning.js';
