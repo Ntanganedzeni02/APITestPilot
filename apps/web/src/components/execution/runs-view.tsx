@@ -1,12 +1,17 @@
+import Link from 'next/link';
+import type { Finding } from '@testpilot/domain';
+import { FindingActionForm } from '../findings/action-form';
 import { executionFailureMessage } from '@testpilot/domain';
 import type { ExecutionRun, WorkspaceRole } from '@testpilot/domain';
 import { ExecutionActionForm } from './action-form';
 export function RunsView({
   runs,
   role,
+  evidence = [],
 }: {
   runs: ExecutionRun[];
   role: WorkspaceRole;
+  evidence?: { runId: string; packageId: string; findings: Finding[] }[];
 }) {
   return (
     <div className="min-w-0 space-y-4">
@@ -18,6 +23,7 @@ export function RunsView({
       )}
       {runs.map((run) => (
         <details
+          id={'run-' + run.id}
           key={run.id}
           className="min-w-0 rounded border p-4 break-words"
         >
@@ -63,6 +69,36 @@ export function RunsView({
                 One case: {run.result.outcome}; sent: {String(run.result.sent)}.
                 Assertion failure is not a confirmed defect.
               </p>
+              <section>
+                <h3>Evidence and findings</h3>
+                {evidence.find((e) => e.runId === run.id) ? (
+                  <>
+                    <p>
+                      Evidence package:{' '}
+                      {evidence.find((e) => e.runId === run.id)?.packageId}
+                    </p>
+                    {evidence
+                      .find((e) => e.runId === run.id)
+                      ?.findings.map((f) => (
+                        <p key={f.id}>
+                          <Link href={'/findings/' + f.id}>{f.title}</Link> /{' '}
+                          {f.status}
+                        </p>
+                      ))}
+                    {!evidence.find((e) => e.runId === run.id)?.findings
+                      .length && (
+                      <p>
+                        No finding candidates were classified from this result.
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <FindingActionForm label="Derive evidence and finding candidates">
+                    <input type="hidden" name="mode" value="DERIVE" />
+                    <input type="hidden" name="runId" value={run.id} />
+                  </FindingActionForm>
+                )}
+              </section>
               {run.result.failure && (
                 <p>
                   Execution failure:{' '}

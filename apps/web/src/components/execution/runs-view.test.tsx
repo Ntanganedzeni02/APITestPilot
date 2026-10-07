@@ -7,6 +7,20 @@ import { it, expect, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { RunsView } from './runs-view';
 import type { ExecutionRun } from '@testpilot/domain';
+vi.mock('../findings/action-form', () => ({
+  FindingActionForm: ({
+    children,
+    label,
+  }: {
+    children: React.ReactNode;
+    label: string;
+  }) => (
+    <form>
+      {children}
+      <button>{label}</button>
+    </form>
+  ),
+}));
 vi.mock('./action-form', () => ({
   ExecutionActionForm: ({
     children,
@@ -197,4 +211,35 @@ it('known failure is presented as safe mapped text', () => {
   );
   expect(html).toContain('Execution timed out.');
   expect(html).not.toContain('TIMEOUT');
+});
+
+it('completed run links to real derived findings without changing execution authority', () => {
+  const finding = {
+    id: 'fixture-finding',
+    title: 'Fixture finding',
+  } as import('@testpilot/domain').Finding;
+  const html = renderToStaticMarkup(
+    <RunsView
+      runs={[
+        {
+          ...run,
+          status: 'COMPLETED',
+          result: {
+            outcome: 'FAILED',
+            sent: false,
+            response: null,
+            failure: null,
+            assertions: [],
+          },
+        },
+      ]}
+      role="MEMBER"
+      evidence={[
+        { runId: run.id, packageId: 'fixture-package', findings: [finding] },
+      ]}
+    />,
+  );
+  expect(html).toContain('/findings/fixture-finding');
+  expect(html).toContain('fixture-package');
+  expect(html).not.toContain('Approve this exact request');
 });

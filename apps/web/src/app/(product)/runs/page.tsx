@@ -1,5 +1,6 @@
 import {
   createExecutionRepository,
+  createFindingRepository,
   createTenantService,
   createTestPlanRepository,
   createApiKnowledgeRepository,
@@ -64,6 +65,19 @@ export default async function Runs({
             executionTarget(config, environment.type),
           )
         : null;
+    let evidence: Awaited<
+      ReturnType<ReturnType<typeof createFindingRepository>['runLinks']>
+    > = [];
+    let evidenceUnavailable = false;
+    try {
+      evidence = await createFindingRepository(client).runLinks(
+        workspace.id,
+        project.id,
+        runs.map((r) => r.id),
+      );
+    } catch {
+      evidenceUnavailable = true;
+    }
     return (
       <div className="min-w-0 space-y-6">
         <h1 className="page-title">Runs</h1>
@@ -200,7 +214,15 @@ export default async function Runs({
             </p>
           )}
         </section>
-        <RunsView runs={runs} role={workspace.role} />
+        <>
+          {evidenceUnavailable && (
+            <p role="alert">
+              Evidence data unavailable. Verify the M1.8 migration is deployed
+              before deriving evidence.
+            </p>
+          )}
+        </>
+        <RunsView runs={runs} role={workspace.role} evidence={evidence} />
       </div>
     );
   } catch {

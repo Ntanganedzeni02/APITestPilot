@@ -84,7 +84,7 @@ export const productRoutes = [
       'Review observations and potential defects with their supporting evidence.',
     emptyTitle: 'No findings.',
     emptyDescription:
-      'No API has been tested. This empty view does not mean an API is defect-free. Future findings will link to real evidence.',
+      'No evidence-backed findings have been derived yet. This empty view does not mean an API is defect-free.',
   },
   {
     href: '/releases',

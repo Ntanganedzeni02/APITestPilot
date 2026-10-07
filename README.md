@@ -12,7 +12,7 @@ evidence. M1.6 migration deployment is confirmed by supplied evidence; hosted pl
 Hosted authenticated acceptance remains deferred. AI proposals have a validated
 provider-independent contract; no real provider is configured. AI/LLM graph
 inference and speculative graph generation do not exist. M1.7 introduces a local
-safe execution foundation; its migration is not deployed and hosted execution is deferred.
+safe execution foundation; its migration is deployed per supplied evidence, while hosted execution acceptance remains separate.
 
 TestPilot is a planned AI-powered API quality and testing SaaS platform.
 Give it your API to understand behavior, investigate risks and provide
@@ -48,7 +48,7 @@ closed. No sample tenant data is displayed.
   [identity and context](docs/adr/0005-supabase-identity-and-tenant-context.md)
 
 Directories separate `apps/web`, `workers/api-runner` and focused packages.
-Domain, database, api-spec, behaviour-graph, qa-intelligence and ai implement M1.2–M1.5; test-engine implements M1.6 planning; safety, evidence, shared and the runner retain their earlier foundation scope.
+Domain, database, api-spec, behaviour-graph, qa-intelligence and ai implement M1.2–M1.5; test-engine implements deterministic planning/execution; safety, evidence and the separate runner implement M1.7. M1.8 derives findings outside runner authority; shared retains its foundation scope.
 The web app composes domain-owned persistence operations through the database adapter.
 Root `pnpm build` builds Next.js and verifies workspace compilation; other checks
 and setup are documented in [setup](docs/development/setup.md).
@@ -64,3 +64,18 @@ M1.6 adds immutable, traceable Test Studio plans/scenarios/cases and independent
 M1.7 activates Runs, explicit environment targets and a separate deterministic
 worker. Planning approval does not authorize HTTP; Safety and exact approval govern
 execution. See [safe execution limits, worker setup and trust boundary](docs/development/safe-execution.md).
+
+## M1.8 evidence and findings
+
+Completed persisted results can be explicitly derived into immutable evidence
+references and deterministic finding candidates from Runs. Findings supports
+paginated observation history, requirement/risk references and attributed human
+confirmation/dismissal. Repeated observations preserve prior review decisions.
+Timeout/transport observations do not automatically establish API defects.
+AI interpretation has a validated provider-neutral proposal contract only.
+See [evidence and finding boundaries](docs/development/evidence-findings.md).
+M1.8 Evidence + Findings is deployed: migration
+`20261007000700_evidence_findings.sql` is applied to hosted Supabase, and local
+and hosted migration histories are aligned through 00700. Final hosted M1.8
+verification passed. Actual AI provider interpretation remains intentionally
+deferred; M1.9 Curiosity Engine has not started.

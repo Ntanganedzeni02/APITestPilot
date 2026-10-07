@@ -114,3 +114,18 @@ M1.7 adds immutable environment execution configurations, pinned execution runs,
 immutable results and execution audit under independent RLS and narrow RPCs.
 A dedicated runner role claims/evaluates/completes jobs; browser users cannot mutate
 safety or results. See [execution persistence](../development/safe-execution.md).
+
+## Implemented M1.8 evidence and findings
+
+Evidence packages and typed items reference immutable M1.7 runs/results rather
+than copy request/response payloads. Logical findings have distinct per-execution
+occurrences and a closed CANDIDATE ? CONFIRMED/DISMISSED lifecycle. Append-only
+human reviews and scoped audit events preserve attribution. Canonical SHA-256
+manifests, idempotent derivation, composite tenant keys and independent SELECT RLS
+protect provenance; two authenticated transactional RPCs govern all mutations.
+The runner retains only its five M1.7 capabilities. AI interpretation remains a
+non-authoritative validated proposal boundary with no provider calls. See
+[evidence and findings](../development/evidence-findings.md). Migration
+`20261007000700_evidence_findings.sql` is deployed to hosted Supabase; local and
+hosted migration histories are aligned through 00700. Final hosted M1.8
+verification passed. M1.9 Curiosity Engine has not started.
