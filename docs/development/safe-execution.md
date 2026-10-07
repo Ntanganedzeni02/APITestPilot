@@ -2,8 +2,9 @@
 
 Approved deterministic case -> execution request -> independent Safety evaluation
 -> exact optional human approval -> atomic worker claim -> pinned HTTP connection
--> bounded observation -> deterministic assertions -> safe result. Findings,
-Curiosity, release decisions, AI execution and load testing are not implemented.
+-> bounded observation -> deterministic assertions -> safe result. M1.8 adds
+findings; M1.9 adds local bounded curiosity using this execution boundary. Release
+decisions, AI execution and load testing remain outside these milestones.
 
 ## Architecture and trust
 

@@ -1,3 +1,4 @@
+import { InvestigationActionForm } from '../investigations/action-form';
 import Link from 'next/link';
 import type { Finding } from '@testpilot/domain';
 import { FindingActionForm } from '../findings/action-form';
@@ -71,6 +72,10 @@ export function RunsView({
               </p>
               <section>
                 <h3>Evidence and findings</h3>
+                <InvestigationActionForm label="Investigate completed run">
+                  <input type="hidden" name="mode" value="DERIVE" />
+                  <input type="hidden" name="runId" value={run.id} />
+                </InvestigationActionForm>
                 {evidence.find((e) => e.runId === run.id) ? (
                   <>
                     <p>

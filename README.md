@@ -78,4 +78,16 @@ M1.8 Evidence + Findings is deployed: migration
 `20261007000700_evidence_findings.sql` is applied to hosted Supabase, and local
 and hosted migration histories are aligned through 00700. Final hosted M1.8
 verification passed. Actual AI provider interpretation remains intentionally
-deferred; M1.9 Curiosity Engine has not started.
+deferred.
+
+## M1.9 bounded curiosity
+
+Investigations connects persisted observations to grounded follow-up proposals,
+exact human review, bounded dependency/attempt budgets and existing M1.7 execution.
+M1.8 owns resulting evidence/findings. Eligible HTTP status observations support
+narrow numeric query bindings; redacted resource identifiers remain ineligible.
+Actual AI providers are intentionally deferred. Migration
+`20261007000800_curiosity_engine.sql` is deployed to hosted Supabase; local and hosted
+migrations are aligned through 00800. M1.9 post-deployment verification passed.
+M1.10 Memory + API Quality Intelligence and Release Intelligence have not started;
+00900 does not exist. See [curiosity boundaries](docs/development/curiosity-engine.md).

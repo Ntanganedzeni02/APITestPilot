@@ -43,6 +43,18 @@ export function synthetic(
   value: unknown,
 ): unknown {
   const type = schema['type'];
+  if (strategy === 'OBSERVED_STATUS') {
+    if (
+      !['integer', 'number'].includes(String(type)) ||
+      typeof value !== 'number' ||
+      !Number.isInteger(value) ||
+      value < 100 ||
+      value > 599 ||
+      (Array.isArray(schema['enum']) && !schema['enum'].includes(value))
+    )
+      throw Error('UNSUPPORTED_SYMBOLIC_INPUT');
+    return value;
+  }
   if (strategy === 'INCOMPATIBLE_TYPE')
     return type === 'string' ? 42 : 'synthetic-invalid';
   if (strategy === 'OMIT_REQUIRED') return undefined;

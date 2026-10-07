@@ -128,4 +128,17 @@ non-authoritative validated proposal boundary with no provider calls. See
 [evidence and findings](../development/evidence-findings.md). Migration
 `20261007000700_evidence_findings.sql` is deployed to hosted Supabase; local and
 hosted migration histories are aligned through 00700. Final hosted M1.8
-verification passed. M1.9 Curiosity Engine has not started.
+verification passed.
+
+## Implemented M1.9 curiosity
+
+Four RLS-protected investigation/proposal/citation/audit tables bind source packages,
+known planning/graph scope, reviewed proposal fingerprints and resulting M1.7 runs.
+Composite references bind evidence items to packages and execution cases/results to
+the same tenant. Narrow authenticated RPCs enforce budgets and serialize retries.
+Migration `20261007000800_curiosity_engine.sql` is deployed to hosted Supabase.
+Local and hosted migrations are aligned through 00800; M1.9 post-deployment
+verification passed. M1.10 Memory + API Quality Intelligence has not started;
+00900 does not exist. Actual AI-provider integration remains deferred, and
+resource-ID investigation workflows remain limited by identifier provenance.
+See [curiosity persistence](../development/curiosity-engine.md).

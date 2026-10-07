@@ -1,3 +1,4 @@
+import { InvestigationActionForm } from '../../../../components/investigations/action-form';
 import Link from 'next/link';
 import { createFindingRepository } from '@testpilot/database';
 import { requireUser } from '../../../../lib/auth/server';
@@ -25,6 +26,13 @@ export default async function Detail({
     return (
       <>
         <FindingDetailView detail={detail} />
+        {detail.runs[0] && (
+          <InvestigationActionForm label="Investigate finding">
+            <input type="hidden" name="mode" value="DERIVE" />
+            <input type="hidden" name="runId" value={detail.runs[0].id} />
+            <input type="hidden" name="findingId" value={detail.finding.id} />
+          </InvestigationActionForm>
+        )}
         {page > 0 && (
           <Link href={'/findings/' + findingId + '?page=' + (page - 1)}>
             Previous occurrences

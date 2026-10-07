@@ -21,6 +21,20 @@ vi.mock('../findings/action-form', () => ({
     </form>
   ),
 }));
+vi.mock('../investigations/action-form', () => ({
+  InvestigationActionForm: ({
+    children,
+    label,
+  }: {
+    children: React.ReactNode;
+    label: string;
+  }) => (
+    <form>
+      {children}
+      <button>{label}</button>
+    </form>
+  ),
+}));
 vi.mock('./action-form', () => ({
   ExecutionActionForm: ({
     children,
@@ -242,4 +256,28 @@ it('completed run links to real derived findings without changing execution auth
   expect(html).toContain('/findings/fixture-finding');
   expect(html).toContain('fixture-package');
   expect(html).not.toContain('Approve this exact request');
+});
+
+it('completed results offer an investigation through trusted run identity', () => {
+  const html = renderToStaticMarkup(
+    <RunsView
+      runs={[
+        {
+          ...run,
+          status: 'COMPLETED',
+          result: {
+            outcome: 'FAILED',
+            sent: false,
+            response: null,
+            failure: null,
+            assertions: [],
+          },
+        },
+      ]}
+      role="MEMBER"
+    />,
+  );
+  expect(html).toContain('Investigate completed run');
+  expect(html).toContain('name="runId"');
+  expect(html).not.toContain('name="responseBody"');
 });

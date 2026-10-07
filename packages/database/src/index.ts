@@ -188,3 +188,5 @@ export * from './test-planning.js';
 export * from './execution.js';
 
 export * from './findings.js';
+
+export * from './curiosity.js';

@@ -223,3 +223,5 @@ export function validateAiOutput(
 }
 
 export * from './test-planning.js';
+
+export * from './curiosity.js';

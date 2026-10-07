@@ -102,7 +102,8 @@ M1.8 Evidence + Findings is deployed to hosted Supabase via
 aligned through 00700, and final hosted M1.8 verification passed. Prior migrations
 00100 through 00600 remain unchanged. Legitimate authenticated browser acceptance
 remains a separate deferred check. Actual AI provider interpretation remains
-intentionally deferred; M1.9 Curiosity Engine has not started. Release scoring and
+intentionally deferred. M1.9 adds local bounded investigation integration; its
+migration is not deployed (see [Curiosity Engine](curiosity-engine.md)). Release scoring and
 long-term memory remain deferred.
 
 ### Maintained concurrency regression
