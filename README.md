@@ -89,5 +89,13 @@ narrow numeric query bindings; redacted resource identifiers remain ineligible.
 Actual AI providers are intentionally deferred. Migration
 `20261007000800_curiosity_engine.sql` is deployed to hosted Supabase; local and hosted
 migrations are aligned through 00800. M1.9 post-deployment verification passed.
-M1.10 Memory + API Quality Intelligence and Release Intelligence have not started;
-00900 does not exist. See [curiosity boundaries](docs/development/curiosity-engine.md).
+M1.10 Evidence Memory + API Quality Intelligence is implemented locally; 00900 is
+undeployed. M1.11 Release Intelligence has not started; 01000 does not exist. See [curiosity boundaries](docs/development/curiosity-engine.md).
+
+## M1.10 evidence memory and API quality
+
+Memory now derives bounded provenance-linked observations; Overview and Quality
+explain deterministic versioned scores, gaps, sufficiency and trends. Humans retain
+finding and release authority. Migration
+`20261007000900_memory_quality_intelligence.sql` is local and undeployed. See
+[exact formulas, security and verification](docs/development/memory-quality-intelligence.md).

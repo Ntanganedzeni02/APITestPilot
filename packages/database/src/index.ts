@@ -190,3 +190,5 @@ export * from './execution.js';
 export * from './findings.js';
 
 export * from './curiosity.js';
+
+export * from './memory-quality.js';

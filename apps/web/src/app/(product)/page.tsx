@@ -1,32 +1,47 @@
+import Link from 'next/link';
 import { Overview } from '../../components/empty-state/overview';
-import { getTenantContext } from '../../lib/tenancy/context';
+import { intelligenceContext } from '../../lib/memory-quality/context';
+import { QualityPanel } from '../../components/memory-quality/quality-panel';
+import { IntelligenceActionForm } from '../../components/memory-quality/action-form';
 export default async function Home() {
-  const { project, workspace, service } = await getTenantContext();
-  const environments =
-    project && workspace
-      ? await service.getProjectEnvironments(workspace.id, project.id)
-      : [];
-  return (
-    <>
-      <Overview projectName={project?.name} createHref="/projects/new" />
-      {project && (
-        <section className="mt-8 rounded-lg border border-border bg-surface p-5">
-          <h2 className="text-sm font-semibold">Project environments</h2>
-          <p className="mt-2 text-xs text-muted-foreground">
-            Logical environments only. No API URLs or credentials are stored.
-          </p>
-          <ul className="mt-4 flex flex-wrap gap-3">
-            {environments.map((entry) => (
-              <li
-                key={entry.id}
-                className="rounded-md border border-border px-3 py-2 text-xs"
-              >
-                {entry.type}
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-    </>
-  );
+  const c = await intelligenceContext();
+  if (!c) return <Overview createHref="/projects/new" />;
+  try {
+    const { current, previous } = await c.repo.current(
+        c.workspace.id,
+        c.project.id,
+        c.environment.id,
+      ),
+      source = await c.repo.latestSource(c.workspace.id, c.project.id);
+    return (
+      <main className="space-y-5">
+        <h1>Overview</h1>
+        <p>
+          {c.project.name} | {c.environment.type}
+        </p>
+        <IntelligenceActionForm environment={c.environment.id} mode="QUALITY" />
+        <QualityPanel
+          current={current}
+          previous={previous}
+          latestSource={source}
+        />
+        <p>
+          <Link href="/api-map">API Map</Link> ?{' '}
+          <Link href="/memory">Evidence Memory</Link> ?{' '}
+          <Link href="/quality">Quality details and environments</Link>
+        </p>
+        <p>
+          Release Intelligence has not started. Scores describe evidence and
+          never authorize a release.
+        </p>
+      </main>
+    );
+  } catch {
+    return (
+      <p role="alert">
+        Unable to load project intelligence. Check migration availability and
+        project access.
+      </p>
+    );
+  }
 }
