@@ -102,3 +102,7 @@ finding and release authority. Migration
 ## M1.11 release intelligence and reports
 
 Release Center now creates environment/source-scoped releases, derives deterministic immutable assessments, preserves explicit human decisions and generates immutable in-product/JSON reports. TestPilot assesses; humans decide. Migration `20261007001000_release_intelligence_reports.sql` is deployed; local/remote histories align through 01000 and hosted catalog/function verification passed with no blocking defects. Local concurrency tests passed; authenticated hosted browser acceptance and hosted concurrency behavior were not exercised. M1.12 has not started; 01100 is absent. No automatic release approval or deployment control is implemented. See [policy, authority, report snapshots and verification](docs/development/release-intelligence-reports.md).
+
+## M1.12.1 deployment foundations
+
+Deployment/configuration preparation is available in [the deployment runbook](docs/development/deployment.md). This is not a launch: runner recovery/health and production end-to-end acceptance remain outstanding. No migration 01100 or hosted change is included.

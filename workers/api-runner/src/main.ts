@@ -1,3 +1,4 @@
+import { readRunnerConfig } from './config.js';
 import { setTimeout as delay } from 'node:timers/promises';
 import { constructExecution, requestFingerprint } from '@testpilot/test-engine';
 import { evaluateSafety } from '@testpilot/safety';
@@ -149,21 +150,13 @@ export function restWorkerStore(
   publishableKey: string,
   runnerToken: string,
 ): WorkerStore {
-  let role: unknown;
-  try {
-    role = JSON.parse(
-      Buffer.from(runnerToken.split('.')[1] ?? '', 'base64url').toString(
-        'utf8',
-      ),
-    ).role;
-  } catch {
-    throw Error('Dedicated runner token required');
-  }
-  if (role !== 'testpilot_runner')
-    throw Error('Dedicated runner role required');
-  const base = new URL(url);
-  if (base.protocol !== 'https:' || base.username || base.password)
-    throw Error('Worker database requires HTTPS');
+  const config = readRunnerConfig({
+    ...process.env,
+    RUNNER_SUPABASE_URL: url,
+    RUNNER_SUPABASE_PUBLISHABLE_KEY: publishableKey,
+    RUNNER_DATABASE_TOKEN: runnerToken,
+  });
+  const base = new URL(config.url);
   return {
     async rpc(name, args) {
       if (
@@ -195,11 +188,7 @@ export function restWorkerStore(
 // No user API credentials are supported. This token is a server-only dedicated
 // database role credential, never a service-role token or browser configuration.
 if (process.argv[1]?.replaceAll('\\', '/').endsWith('/main.js')) {
-  const url = process.env['RUNNER_SUPABASE_URL'],
-    key = process.env['RUNNER_SUPABASE_PUBLISHABLE_KEY'],
-    token = process.env['RUNNER_DATABASE_TOKEN'];
-  if (!url || !key || !token)
-    throw Error('Runner database configuration required');
+  const { url, key, token } = readRunnerConfig(process.env);
   const store = restWorkerStore(url, key, token);
   let stopping = false;
   process.on('SIGINT', () => {

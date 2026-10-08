@@ -113,8 +113,7 @@ With local Supabase/mail capture or a hosted development instance:
 
 Live Auth, email, PostgREST and persisted UI journeys have not been run on this
 host because no configured Supabase instance is available. SQL tests and unit
-fixtures do not upgrade those criteria to PASS. CI currently runs unit checks and
-build only; it does not provision a database service.
+fixtures do not upgrade those criteria to PASS. CI includes unit checks/build and a disposable PostgreSQL 17 job invoking the maintained database/security, concurrency and parity suites. This does not constitute hosted browser acceptance.
 
 ## Future tooling and coverage
 

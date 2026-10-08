@@ -33,13 +33,16 @@ execFileSync(
 const apply = (sql) =>
   execFileSync(psql, args, { input: sql, encoding: 'utf8', timeout: 15000 });
 apply(readFileSync('supabase/tests/postgres-bootstrap.sql', 'utf8'));
+apply(
+  'create schema extensions; create extension pg_stat_statements with schema extensions;',
+);
 for (const file of readdirSync('supabase/migrations')
   .filter((f) => f.endsWith('.sql'))
   .sort())
   apply(readFileSync('supabase/migrations/' + file, 'utf8'));
-let seed = readFileSync('supabase/tests/safe-execution.sql', 'utf8').split(
-  'reset role;\ninsert into public.workspace_members',
-)[0];
+let seed = readFileSync('supabase/tests/safe-execution.sql', 'utf8')
+  .replaceAll('\r\n', '\n')
+  .split('reset role;\ninsert into public.workspace_members')[0];
 seed = seed.replace(
   '\\ir fixtures/execution-source.sql',
   '\\ir supabase/tests/fixtures/execution-source.sql',

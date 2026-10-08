@@ -14,7 +14,9 @@
     "typecheck": "pnpm --filter @testpilot/evidence... build && pnpm --filter @testpilot/safety... build && pnpm --filter @testpilot/test-engine... build && pnpm --filter @testpilot/qa-intelligence... build && pnpm --filter @testpilot/behaviour-graph... build && pnpm --filter @testpilot/api-spec... build && pnpm --filter @testpilot/database... build && tsc --noEmit && pnpm -r typecheck",
     "test": "vitest run",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "verify:database": "node tooling/verify-database.mjs",
+    "preflight": "node tooling/deployment-preflight.mjs"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "16.3.8",

@@ -25,6 +25,11 @@ export function readAuthConfig(env: Record<string, string | undefined>) {
       )
         throw new ConfigurationError();
     }
+    if (
+      env['NODE_ENV'] === 'production' &&
+      (endpoint.protocol !== 'https:' || app.protocol !== 'https:')
+    )
+      throw new ConfigurationError();
     if (endpoint.pathname !== '/' || app.pathname !== '/')
       throw new ConfigurationError();
     // Reject privileged keys even if accidentally assigned to the public variable.
