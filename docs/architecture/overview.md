@@ -104,3 +104,7 @@ See [data](data-model.md), [AI](ai-architecture.md), [execution](execution-engin
 M1.6 activates evidence-backed planning in test-engine, with domain-owned snapshots, database adapters and protected Test Studio UI. Planning remains independent of execution authorization. See [planning architecture](../development/test-planning.md).
 
 M1.7 adds safe execution with a separate runner, deterministic Safety policy and protected Runs UI. Its single migration remains undeployed. See [execution foundation](../development/safe-execution.md).
+
+## M1.11 release boundary
+
+Release Intelligence consumes M1.3 through M1.10 scoped persisted evidence through domain policy and database adapters. Server actions carry bounded human intent; MEMBER reads and OWNER/ADMIN writes are enforced again in SQL. Immutable assessments and reports separate TestPilot's descriptive policy from append-only human decisions. No runner or provider authority is added. See [M1.11 policy](../development/release-intelligence-reports.md) and [ADR 0013](../adr/0013-release-intelligence-reports.md). 01000 is deployed; local/remote histories align through 01000 and hosted catalog/function verification passed with no blocking defects. Local concurrency tests passed; authenticated hosted browser acceptance and hosted concurrency were not exercised. M1.12 has not started; 01100 is absent.

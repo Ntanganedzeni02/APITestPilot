@@ -3,7 +3,7 @@
 Status: Accepted and implemented for M1.9. Migration
 `20261007000800_curiosity_engine.sql` is deployed; local and hosted migrations
 are aligned through 00800. M1.9 post-deployment verification passed.
-M1.10 Evidence Memory + API Quality Intelligence is implemented locally; 00900 is undeployed. M1.11 has not started; 01000 does not exist.
+M1.10 Evidence Memory + API Quality Intelligence is deployed; histories align through 00900 and hosted verification passed. M1.11 is implemented and deployed; hosted catalog/function verification passed and local/remote migrations align through 01000.
 Actual AI-provider integration remains deferred.
 
 ## Decision

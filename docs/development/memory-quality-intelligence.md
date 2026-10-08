@@ -1,6 +1,6 @@
 # M1.10 Evidence Memory + API Quality Intelligence
 
-Implemented locally. Exactly one new migration, `20261007000900_memory_quality_intelligence.sql`, is **undeployed**. Hosted migrations remain aligned through 00800 from the supplied M1.9 evidence. Local PostgreSQL tests are not hosted/browser acceptance. M1.11 Release Intelligence has not started; 01000 does not exist. Actual AI interpretation, embeddings, conversational Ask and predictive models remain deferred.
+Implemented and deployed. Migration `20261007000900_memory_quality_intelligence.sql` is deployed; local/hosted histories align through 00900 and final hosted verification passed. Local PostgreSQL tests remain distinct from hosted/browser acceptance. M1.11 Release Intelligence + Reports is implemented and deployed; hosted catalog/function verification passed and local/remote migrations align through 01000. Actual AI interpretation, embeddings, conversational Ask and predictive models remain deferred.
 
 ## Authority and persistence
 
@@ -67,7 +67,7 @@ Use the repository-local Node 24/pnpm 12.9.1 setup documented in development set
 node tooling/verify-memory-quality-concurrency.mjs 'C:/Program Files/PostgreSQL/15/bin/psql.exe' <fresh_name_m110_concurrency>
 ```
 
-The concurrency harness creates a fresh local database, uses separate authenticated fixture sessions and proves actual PostgreSQL lock waits before verifying one observation/count and one snapshot/head. Existing M1.2-M1.9 SQL and M1.8/M1.9 concurrency remain required regressions. Migration00900 still needs separate security review, authorized deployment and honest hosted browser verification.
+The concurrency harness creates a fresh local database, uses separate authenticated fixture sessions and proves actual PostgreSQL lock waits before verifying one observation/count and one snapshot/head. Existing M1.2-M1.9 SQL and M1.8/M1.9 concurrency remain required regressions. Migration00900 is deployed; local/hosted histories align through 00900 and final read-only hosted catalog verification passed. Hosted mutation-based/browser behavior remains separate from local regressions.
 
 Memory operation identifiers use the existing recognizable credential formats at the SQL persistence boundary and domain read boundary. Unsafe identifiers are omitted; scoped execution/evidence/finding/investigation IDs retain provenance. Verified operation success is omitted when safe operation attribution is unavailable.
 

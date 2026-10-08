@@ -89,13 +89,16 @@ narrow numeric query bindings; redacted resource identifiers remain ineligible.
 Actual AI providers are intentionally deferred. Migration
 `20261007000800_curiosity_engine.sql` is deployed to hosted Supabase; local and hosted
 migrations are aligned through 00800. M1.9 post-deployment verification passed.
-M1.10 Evidence Memory + API Quality Intelligence is implemented locally; 00900 is
-undeployed. M1.11 Release Intelligence has not started; 01000 does not exist. See [curiosity boundaries](docs/development/curiosity-engine.md).
+M1.10 Evidence Memory + API Quality Intelligence is deployed; hosted verification passed and migration histories align through 00900. M1.11 Release Intelligence + Reports is implemented and deployed; hosted catalog/function verification passed and local/remote migrations align through 01000. See [curiosity boundaries](docs/development/curiosity-engine.md).
 
 ## M1.10 evidence memory and API quality
 
 Memory now derives bounded provenance-linked observations; Overview and Quality
 explain deterministic versioned scores, gaps, sufficiency and trends. Humans retain
 finding and release authority. Migration
-`20261007000900_memory_quality_intelligence.sql` is local and undeployed. See
+`20261007000900_memory_quality_intelligence.sql` is deployed and final hosted verification passed. See
 [exact formulas, security and verification](docs/development/memory-quality-intelligence.md).
+
+## M1.11 release intelligence and reports
+
+Release Center now creates environment/source-scoped releases, derives deterministic immutable assessments, preserves explicit human decisions and generates immutable in-product/JSON reports. TestPilot assesses; humans decide. Migration `20261007001000_release_intelligence_reports.sql` is deployed; local/remote histories align through 01000 and hosted catalog/function verification passed with no blocking defects. Local concurrency tests passed; authenticated hosted browser acceptance and hosted concurrency behavior were not exercised. M1.12 has not started; 01100 is absent. No automatic release approval or deployment control is implemented. See [policy, authority, report snapshots and verification](docs/development/release-intelligence-reports.md).

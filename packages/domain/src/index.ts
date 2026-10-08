@@ -85,3 +85,5 @@ export * from './credentials.js';
 export * from './curiosity.js';
 
 export * from './memory-quality.js';
+
+export * from './release-intelligence.js';

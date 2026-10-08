@@ -95,7 +95,7 @@ export const productRoutes = [
       'Make informed release decisions with traceable quality signals.',
     emptyTitle: 'No release has been created.',
     emptyDescription:
-      'Release comparisons and recommendations will appear when project and execution evidence is available. Humans make the final decision.',
+      'Create an evidence-scoped release, inspect deterministic assessments and record an explicit human decision.',
   },
   {
     href: '/reports',
@@ -105,7 +105,7 @@ export const productRoutes = [
     description: 'Share the evidence behind API quality and release decisions.',
     emptyTitle: 'No reports generated.',
     emptyDescription:
-      'Future reports will summarize verified results, coverage and findings without hiding uncertainty.',
+      'Generate an immutable report from a release assessment and its recorded human decision.',
   },
   {
     href: '/ask',

@@ -3,8 +3,8 @@
 M1.9 Curiosity Engine is implemented. Migration `20261007000800_curiosity_engine.sql`
 is deployed to hosted Supabase; local and hosted migrations are aligned through 00800.
 M1.9 post-deployment verification passed. Deployed 00100 through 00700 remain unchanged.
-No hosted M1.9 browser acceptance is claimed. M1.10 Evidence Memory + API Quality Intelligence is implemented locally; 00900 is
-undeployed. M1.11 Release Intelligence has not started; 01000 does not exist.
+No hosted M1.9 browser acceptance is claimed. M1.10 Evidence Memory + API Quality Intelligence is deployed; migration histories align through
+00900 and hosted verification passed. M1.11 Release Intelligence + Reports is implemented and deployed; hosted catalog/function verification passed and local/remote migrations align through 01000.
 
 ## Authority and architecture
 

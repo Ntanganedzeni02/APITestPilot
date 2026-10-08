@@ -138,17 +138,21 @@ Composite references bind evidence items to packages and execution cases/results
 the same tenant. Narrow authenticated RPCs enforce budgets and serialize retries.
 Migration `20261007000800_curiosity_engine.sql` is deployed to hosted Supabase.
 Local and hosted migrations are aligned through 00800; M1.9 post-deployment
-verification passed. M1.10 Evidence Memory + API Quality Intelligence is implemented locally; 00900 is
-undeployed. M1.11 has not started; 01000 does not exist. Actual AI-provider integration remains deferred, and
+verification passed. M1.10 Evidence Memory + API Quality Intelligence is deployed; histories align
+through 00900 and hosted verification passed. M1.11 is implemented and deployed; hosted catalog/function verification passed and local/remote migrations align through 01000. Actual AI-provider integration remains deferred, and
 resource-ID investigation workflows remain limited by identifier provenance.
 See [curiosity persistence](../development/curiosity-engine.md).
 
-## Implemented locally: M1.10
+## Implemented M1.10
 
 `memory_facts` groups verified logical claims, `memory_observations` retains
 supporting scoped provenance, `quality_assessments` preserves immutable versioned
 explanations, and `quality_heads` points to current/previous distinct assessments.
 Independent membership SELECT RLS, composite tenant/source/environment keys and
 two authenticated RPCs govern access; runner authority is unchanged. Migration
-`20261007000900_memory_quality_intelligence.sql` remains undeployed. See
+`20261007000900_memory_quality_intelligence.sql` is deployed and hosted verification passed. See
 [memory and quality persistence](../development/memory-quality-intelligence.md).
+
+## M1.11 release intelligence and reports
+
+`releases` bind existing workspace/project/environment/import identities and current assessment/decision pointers. `release_assessments` preserve policy-versioned inputs/signals and compatible immutable quality references. `release_decisions` preserve attributed human decisions and rationale in append-only revision history. `release_reports` freeze exact release/assessment/decision state under release-report-v1. `release_audit_events` use closed events with safe scope references. Composite FKs, membership RLS, controlled OWNER/ADMIN RPCs and unique assessment/report identities enforce authority and concurrency. Signals remain inside snapshots, not independently writable records. Assessment status never equals human approval. 01000 is deployed; local/remote histories align through 01000 and hosted catalog/function verification passed with no blocking defects. Local concurrency tests passed; authenticated hosted browser acceptance and hosted concurrency were not exercised. M1.12 has not started; 01100 is absent. Migrations 001 through 010 remain unchanged by this documentation correction. See [exact policy](../development/release-intelligence-reports.md).

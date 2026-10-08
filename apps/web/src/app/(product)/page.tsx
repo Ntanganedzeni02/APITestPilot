@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ReleaseOverview } from '../../components/releases/overview';
 import { Overview } from '../../components/empty-state/overview';
 import { intelligenceContext } from '../../lib/memory-quality/context';
 import { QualityPanel } from '../../components/memory-quality/quality-panel';
@@ -30,10 +31,7 @@ export default async function Home() {
           <Link href="/memory">Evidence Memory</Link> ?{' '}
           <Link href="/quality">Quality details and environments</Link>
         </p>
-        <p>
-          Release Intelligence has not started. Scores describe evidence and
-          never authorize a release.
-        </p>
+        <ReleaseOverview />
       </main>
     );
   } catch {
