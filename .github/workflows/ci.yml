@@ -73,5 +73,5 @@ jobs:
           run_install: false
       - run: pnpm install --frozen-lockfile
       - run: sudo apt-get update && sudo apt-get install -y postgresql-client
-      - run: pnpm --filter @testpilot/domain build
+      - run: pnpm --filter @testpilot/api-runner... build
       - run: pnpm verify:database

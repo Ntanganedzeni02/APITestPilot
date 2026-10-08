@@ -313,3 +313,15 @@ it('stale decision is historical, not current approval', () => {
     'DRAFT',
   );
 });
+
+it('unknown execution delivery prevents CLEAR without inventing a finding', () => {
+  const baseline = input();
+  expect(assessRelease(baseline).status).toBe('CLEAR');
+  const result = assessRelease({ ...baseline, indeterminateRunIds: [id] });
+  expect(result.status).toBe('INSUFFICIENT_EVIDENCE');
+  expect(result.unknowns).toContainEqual({
+    code: 'INDETERMINATE_EXECUTION',
+    ids: [id],
+  });
+  expect(result.blockers).toEqual([]);
+});

@@ -51,6 +51,14 @@ export function RunsView({
             {run.reason_codes.join(', ') || 'Pending worker evaluation'}
           </p>
           <p>Request fingerprint: {run.fingerprint ?? 'Pending'}</p>
+          {run.recovery_outcome === 'INDETERMINATE' && (
+            <p role="alert">
+              INDETERMINATE: delivery or completion is unknown. Human
+              reconciliation is required before another execution. This is not a
+              confirmed API defect. TestPilot will not automatically replay this
+              run.
+            </p>
+          )}
           {run.cancel_requested && (
             <p>
               Cancellation requested. A sent remote operation cannot be undone.

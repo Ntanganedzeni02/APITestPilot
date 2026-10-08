@@ -101,6 +101,7 @@ export interface ExecutionResult {
   sent: boolean;
 }
 export interface ExecutionRun {
+  recovery_outcome?: 'INDETERMINATE' | 'EXHAUSTED' | 'CANCELLED' | null;
   id: string;
   workspace_id: string;
   project_id: string;

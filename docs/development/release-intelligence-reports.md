@@ -1,6 +1,6 @@
 # M1.11 Release Intelligence + Reports
 
-TestPilot assesses. Evidence supports. Humans decide. M1.11 is implemented and deployed; migration `20261007001000_release_intelligence_reports.sql` is **deployed**. Local/remote migrations align through 01000. Hosted catalog/function verification passed with no blocking defects. M1.10 / 00900 is deployed and hosted verification passed. M1.12 has not started; 01100 is absent. No AI provider, API execution, deployment orchestration or release automation is added.
+TestPilot assesses. Evidence supports. Humans decide. M1.11 is implemented and deployed; migration `20261007001000_release_intelligence_reports.sql` is **deployed**. Local/remote migrations align through 01000. Hosted catalog/function verification passed with no blocking defects. M1.10 / 00900 is deployed and hosted verification passed. M1.12 hardening is in progress; 01100 is deployed and local/remote migrations align through 01100. No AI provider, API execution, deployment orchestration or release automation is added.
 
 ## Scope and lifecycle
 
@@ -78,4 +78,4 @@ node tooling/verify-release-concurrency.mjs 'C:/Program Files/PostgreSQL/15/bin/
 node tooling/verify-release-policy-parity.mjs 'C:/Program Files/PostgreSQL/15/bin/psql.exe' <local_m111_database>
 ```
 
-Local database regressions, concurrency tests, policy parity and repository quality gates passed. Hosted 01000 catalog/function verification passed on PostgreSQL 17.11: schema, definitions, RLS and grants matched the locally tested implementation, with only the expected owner-only PG17 MAINTAIN privilege difference. Local/remote migration histories align through 01000; no blocking defects were identified. Authenticated hosted browser acceptance was not performed, and hosted concurrency behavior was not exercised. Local PostgreSQL 15 cannot run PG17-specific injected MAINTAIN tests; local concurrency results remain distinct from hosted behavior. M1.12 has not started; 01100 is absent.
+Local database regressions, concurrency tests, policy parity and repository quality gates passed. Hosted 01000 catalog/function verification passed on PostgreSQL 17.11: schema, definitions, RLS and grants matched the locally tested implementation, with only the expected owner-only PG17 MAINTAIN privilege difference. Local/remote migration histories align through 01000; no blocking defects were identified. Authenticated hosted browser acceptance was not performed, and hosted concurrency behavior was not exercised. Local PostgreSQL 15 cannot run PG17-specific injected MAINTAIN tests; local concurrency results remain distinct from hosted behavior. M1.12 hardening is in progress; 01100 is deployed and local/remote migrations align through 01100.

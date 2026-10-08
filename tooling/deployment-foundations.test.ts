@@ -179,7 +179,9 @@ describe('deployment artifacts and CI boundaries', () => {
       { encoding: 'utf8' },
     );
     expect(output).toContain('Local migration inventory valid');
-    expect(existsSync('supabase/migrations/20261007001100.sql')).toBe(false);
+    expect(
+      existsSync('supabase/migrations/20261008001100_runner_recovery.sql'),
+    ).toBe(true);
   });
   it('runner secrets are absent from web configuration and deployment variables', () => {
     for (const path of [

@@ -281,3 +281,16 @@ it('completed results offer an investigation through trusted run identity', () =
   expect(html).toContain('name="runId"');
   expect(html).not.toContain('name="responseBody"');
 });
+
+it('indeterminate delivery requires reconciliation without invented evidence', () => {
+  const html = renderToStaticMarkup(
+    <RunsView
+      runs={[{ ...run, status: 'ERROR', recovery_outcome: 'INDETERMINATE' }]}
+      role="OWNER"
+    />,
+  );
+  expect(html).toContain('INDETERMINATE');
+  expect(html).toContain('Human reconciliation');
+  expect(html).toContain('not a confirmed API');
+  expect(html).not.toContain('Derive evidence');
+});

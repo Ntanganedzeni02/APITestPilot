@@ -71,6 +71,7 @@ export interface ReleaseMemory {
   packageId: string;
 }
 export interface ReleaseInputs {
+  indeterminateRunIds?: string[];
   sourceCurrent: boolean;
   quality: QualityAssessment | null;
   findings: ReleaseFinding[];
@@ -342,6 +343,10 @@ export function assessRelease(input: ReleaseInputs): ReleaseResult {
         q.result.dimensions[key].score! < 80
       )
         add(warnings, 'QUALITY_' + key.toUpperCase() + '_BELOW_80', [q.id]);
+  }
+  for (const id of input.indeterminateRunIds ?? []) {
+    validateId(id);
+    add(unknowns, 'INDETERMINATE_EXECUTION', [id]);
   }
   const status: ReleaseStatus = blockers.length
     ? 'BLOCKED'

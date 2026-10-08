@@ -148,7 +148,7 @@ end;$$;
 set local role testpilot_runner;
 
 select public.finish_test_execution(current_setting('exec.approval_run')::uuid,(current_setting('exec.execution_job')::jsonb->'run'->>'claim_token')::uuid,'{"outcome":"ERROR","sent":false,"response":null,"assertions":[],"failure":"TRANSPORT_FAILURE"}');
-select pg_temp.expect_error('select public.finish_test_execution(current_setting(''exec.approval_run'')::uuid,(current_setting(''exec.execution_job'')::jsonb->''run''->>''claim_token'')::uuid,''{"outcome":"ERROR","sent":false,"response":null,"assertions":[],"failure":"TRANSPORT_FAILURE"}'')','23514','result immutable and duplicate completion denied');
+select pg_temp.expect_error('select public.finish_test_execution(current_setting(''exec.approval_run'')::uuid,(current_setting(''exec.execution_job'')::jsonb->''run''->>''claim_token'')::uuid,''{"outcome":"ERROR","sent":false,"response":null,"assertions":[],"failure":"TIMEOUT"}'')','23514','result immutable and changed duplicate completion denied');
 set local role authenticated;
 select set_config('exec.stale',public.request_test_execution(current_setting('exec.case')::uuid,current_setting('exec.environment')::uuid)::text,true);
 set local role testpilot_runner;

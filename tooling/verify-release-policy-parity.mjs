@@ -48,6 +48,9 @@ const base = {
 };
 const vectors = [
   base,
+  { ...base, indeterminateRunIds: [] },
+  { ...base, indeterminateRunIds: [id] },
+  { ...base, quality: null, indeterminateRunIds: [id] },
   { ...base, quality: null },
   { ...base, sourceCurrent: false },
 ];

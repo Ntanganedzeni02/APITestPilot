@@ -1,6 +1,6 @@
 # ADR 0013: Evidence-scoped release assessments and human decisions
 
-Status: accepted and implemented for M1.11. Migration `20261007001000_release_intelligence_reports.sql` is deployed; local/remote histories align through 01000 and hosted catalog/function verification passed with no blocking defects. Local concurrency tests passed; authenticated hosted browser acceptance and hosted concurrency were not exercised. M1.12 has not started; 01100 is absent.
+Status: accepted and implemented for M1.11. Migration `20261007001000_release_intelligence_reports.sql` is deployed; local/remote histories align through 01000 and hosted catalog/function verification passed with no blocking defects. Local concurrency tests passed; authenticated hosted browser acceptance and hosted concurrency were not exercised. M1.12 hardening is in progress; 01100 is deployed and local/remote migrations align through 01100.
 
 ## Decision
 

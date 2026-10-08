@@ -12,4 +12,5 @@ WORKDIR /runner
 COPY --from=build --chown=node:node /runner/ ./
 USER node
 STOPSIGNAL SIGTERM
+HEALTHCHECK --interval=10s --timeout=3s --start-period=20s --retries=3 CMD node -e "fetch('http://127.0.0.1:9090/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 CMD ["node", "dist/main.js"]

@@ -1,6 +1,6 @@
 # Deployment and configuration foundations (M1.12.1)
 
-This prepares deployment; it does not launch TestPilot. Migrations 00100 through 01000 are immutable and deployed to Development. No 01100 is introduced. Claim recovery, health/heartbeat and monitoring implementation belong to M1.12.2. Until those gates and end-to-end acceptance pass, do not invite external users or enable production API execution.
+This prepares deployment; it does not launch TestPilot. Migrations 00100 through 01100 are deployed to Development and local/remote histories are aligned through 01100. M1.12.2 adds [leased recovery/operational probes](runner-operations.md); hosted PostgreSQL 17.11 catalog/function verification passed and the runner retains five authorized RPCs. Hosted worker runtime and HTTP execution remain untested; Docker runtime and PostgreSQL 17 CI execution remain pending. Production launch has not occurred. Until hosted operational verification and end-to-end acceptance pass, do not invite external users or enable production API execution.
 
 ## Runtime and builds
 
@@ -27,12 +27,12 @@ From the repository root:
 
 ```sh
 docker build -f workers/api-runner/Dockerfile -t testpilot-runner:<commit> .
-docker run --init --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges --memory 256m --cpus 1 --stop-timeout 30 --env-file <protected-runner-env-file> testpilot-runner:<commit>
+docker run --init --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges --memory 256m --cpus 1 --stop-timeout 40 --env-file <protected-runner-env-file> testpilot-runner:<commit>
 ```
 
 The multi-stage Node 24.21.0 image installs pinned pnpm, builds only the runner dependency closure and deploys production workspace dependencies. The deploy-only allowUnusedPatches option permits omission of the web-only Supabase patch, which is not in the runner dependency graph; the full frozen installation still applies the patch strictly. Runtime uses the non-root node user and `node dist/main.js`. No web server or credentials are embedded. Treat resource values as initial bounds to validate under load, not proven capacity. Prefer platform-managed secret injection over an env file. Apply egress restrictions and keep the service isolated from private networks/metadata services; database HTTPS access and approved synthetic/API targets require deliberate rules.
 
-SIGTERM stops new claims; the current request can finish within its existing timeout. This is compatibility, not a complete drain/recovery implementation. There is intentionally no fake Docker health check: process liveness is not proof of queue progress. M1.12.2 must implement operational health and stranded-claim recovery before launch. No automatic network retries are introduced.
+SIGTERM stops new claims and drains within a 30-second deadline. The image probes per-worker database/lease readiness on loopback. M1.12.2 leased recovery preserves ambiguous sends without replay; see the operational runbook. Hosted operational verification is still required before launch. No automatic HTTP retries are introduced.
 
 ## Environment matrix
 
@@ -60,7 +60,7 @@ pnpm verify:database <psql-executable>
 
 Set the component's deployment variables before its configuration preflight. In development only, component preflight may load root `.env.local`; production never does. Configuration checks do not contact Supabase. Build preflight verifies exact toolchain and frozen install, then builds both components. Migration preflight checks only local inventory, not remote state.
 
-Database verification is destructive only to newly created disposable fixture databases at 127.0.0.1:55433, never hosted targets. It bootstraps Supabase-compatible roles, installs pg_stat_statements, applies all migrations and runs the maintained SQL assertions, five concurrency harnesses and both parity harnesses. It requires PostgreSQL 17 by default. `--allow-pg15` explicitly permits local compatibility checks but leaves PG17 grant assertions deferred; CI never supplies that flag. Build domain first for parity scripts. Fixture databases are retained for local diagnosis; the CI service is disposable. Failures exit nonzero.
+Database verification is destructive only to newly created disposable fixture databases at 127.0.0.1:55433, never hosted targets. It bootstraps Supabase-compatible roles, installs pg_stat_statements, applies all migrations and runs the maintained SQL assertions, five concurrency harnesses and both parity harnesses. It requires PostgreSQL 17 by default. `--allow-pg15` explicitly permits local compatibility checks but leaves PG17 grant assertions deferred; CI never supplies that flag. Build the runner dependency closure first for the recovery and parity harnesses. Fixture databases are retained for local diagnosis; the CI service is disposable. Failures exit nonzero.
 
 ## PostgreSQL CI
 
@@ -73,7 +73,7 @@ The existing quality job remains. A separate PostgreSQL 17 service job builds do
 3. Set Site URL to the exact HTTPS APP_ORIGIN; allow `/auth/callback`, `/auth/callback?next=/reset-password` and `/auth/confirm` at that origin. Avoid broad wildcards.
 4. Enable email/password, confirmation and 12-character passwords; disable anonymous signup. Configure custom SMTP, sender DNS and appropriate Auth rate limits/CAPTCHA. Test confirmation/recovery in the real browser. Local templates do not update hosted templates: copy confirmation/recovery templates into their matching Dashboard slots.
 5. Verify the dedicated runner role still has exactly five RPCs and no table access. Have the authorized platform administrator issue a signed, short-lived runner token through a reviewed issuer process. Signature algorithm/key compatibility must be verified against the selected Supabase project; do not invent an unverified signing command. Store only the resulting role token in the worker secret store, never the signing secret.
-6. Scope deployment credentials and secret access by component/environment. Rotate runner tokens before expiry via platform secrets and a controlled worker restart. Token renewal and safe drain remain M1.12.2 work.
+6. Scope deployment credentials and secret access by component/environment. Rotate runner tokens before expiry via platform secrets and a controlled worker restart. Use the documented bounded drain and platform-managed token replacement; automatic credential renewal is not implemented.
 7. For exposure: disable execution admission, stop affected workers, revoke/rotate through the platform's supported credential mechanism, verify old tokens fail, redeploy clean artifacts and inspect audit evidence. Changing a deployment secret does not itself revoke an already issued JWT; project-level revocation/signing-key changes require an assessed blast radius. Do not expand runner privileges as a workaround.
 
 ## Deployment and rollback sequence

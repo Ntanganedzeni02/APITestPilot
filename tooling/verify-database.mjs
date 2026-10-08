@@ -65,6 +65,8 @@ for (const suite of [
   'release-intelligence',
   'release-intelligence-signals',
   'release-intelligence-clock',
+  'runner-recovery',
+  'runner-recovery-downstream',
 ]) {
   const output = invoke(psql, [
     '-X',
@@ -104,6 +106,13 @@ for (const harness of ['memory-quality', 'release'])
       database,
     ]),
   );
+process.stdout.write(
+  invoke(process.execPath, [
+    'tooling/verify-runner-recovery.mjs',
+    psql,
+    prefix + '_m1122_recovery',
+  ]),
+);
 process.stdout.write(
   'Database verification complete. Disposable fixture databases retained locally; CI service is ephemeral.\n',
 );
