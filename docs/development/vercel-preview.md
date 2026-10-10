@@ -40,6 +40,19 @@ web execution requests and approvals, including forged form submissions.
 It does not disable an independently running worker or replace database policy;
 inspect existing queues before any future worker startup.
 
+### Runs troubleshooting
+
+Keep `EXECUTION_RUNNER_READY=false` until operational acceptance passes. A missing
+value also disables requests and approvals; this server gate ignores browser form
+values. Cancellation and existing history remain available. Check the exact
+deployment commit and environment scope when UI and server behavior disagree.
+
+Execution RPC failures now report safe categories: permission, planning eligibility,
+target configuration, missing database functions/schema cache, concurrent state
+changes or database failure. `EXECUTION_ACTION_REJECTED` logs only the category,
+never database messages, credentials or request contents. A saved action does not
+prove HTTP execution. Use persisted observed results to establish execution.
+
 ## Hosted verification (administrator, read-only)
 
 Run in the selected development project's SQL Editor:

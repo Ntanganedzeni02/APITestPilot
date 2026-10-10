@@ -11,7 +11,8 @@ vi.mock('../auth/server', () => ({
 }));
 vi.mock('../tenancy/context', () => ({ getTenantContext: m.tenant }));
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
-vi.mock('@testpilot/database', () => ({
+vi.mock('@testpilot/database', async (original) => ({
+  ...(await original<typeof import('@testpilot/database')>()),
   createExecutionRepository: () => ({
     request: m.request,
     approve: m.approve,
@@ -21,6 +22,7 @@ vi.mock('@testpilot/database', () => ({
   createTenantService: vi.fn(),
 }));
 import { executionAction } from './actions';
+import { ExecutionPersistenceError } from '@testpilot/database';
 import {
   executionAvailable,
   executionUnavailableMessage,
@@ -41,6 +43,7 @@ function form(mode: string) {
 }
 beforeEach(() => {
   vi.clearAllMocks();
+  m.request.mockReset();
   vi.stubEnv('EXECUTION_RUNNER_READY', 'false');
   m.tenant.mockResolvedValue({ workspace: { id }, project: { id } });
   m.list.mockResolvedValue([{ id }]);
@@ -56,9 +59,28 @@ it.each(['REQUEST', 'APPROVE'])(
   async (mode) => {
     expect(await executionAction({}, form(mode))).toEqual({
       error: executionUnavailableMessage,
+      errorCode: 'EXECUTION_UNAVAILABLE',
     });
     expect(m.request).not.toHaveBeenCalled();
     expect(m.approve).not.toHaveBeenCalled();
+  },
+);
+it.each([
+  'ACCESS',
+  'ELIGIBILITY',
+  'CONFIGURATION',
+  'SCHEMA',
+  'CONFLICT',
+  'DATABASE',
+] as const)(
+  'distinguishes safe %s feedback without exposing database details',
+  async (reason) => {
+    vi.stubEnv('EXECUTION_RUNNER_READY', 'true');
+    m.request.mockRejectedValue(new ExecutionPersistenceError(reason));
+    const result = await executionAction({}, form('REQUEST'));
+    expect(result.errorCode).toBe(reason);
+    expect(result.saved).toBeUndefined();
+    expect(result.error).not.toContain('Unable to save execution request.');
   },
 );
 it('preserves normal request admission when explicitly enabled', async () => {

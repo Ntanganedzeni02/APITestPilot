@@ -7,12 +7,37 @@ import {
   type EnvironmentType,
 } from '@testpilot/domain';
 import { PersistenceError } from './index.js';
+export class ExecutionPersistenceError extends Error {
+  constructor(
+    readonly reason:
+      | 'ACCESS'
+      | 'ELIGIBILITY'
+      | 'CONFIGURATION'
+      | 'SCHEMA'
+      | 'CONFLICT'
+      | 'DATABASE',
+  ) {
+    super('Execution persistence rejected: ' + reason);
+  }
+}
 export function createExecutionRepository(client: SupabaseClient) {
   async function rpc(name: string, args: Record<string, unknown>) {
     const { data, error } = await client.rpc(name, args);
     if (error)
-      throw new PersistenceError(
-        error.code === '42501' ? 'ACCESS' : 'DATABASE',
+      throw new ExecutionPersistenceError(
+        error.code === '42501'
+          ? 'ACCESS'
+          : error.code === '23514'
+            ? name === 'configure_execution_environment' ||
+              error.message === 'Configure an enabled target first' ||
+              error.message === 'Environment unavailable'
+              ? 'CONFIGURATION'
+              : 'ELIGIBILITY'
+            : error.code === '23505' || error.code === '40001'
+              ? 'CONFLICT'
+              : error.code === 'PGRST202' || error.code === '42883'
+                ? 'SCHEMA'
+                : 'DATABASE',
       );
     return data;
   }

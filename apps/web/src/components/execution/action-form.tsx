@@ -28,7 +28,10 @@ export function ExecutionActionForm({
       </button>
       {state.error && <p role="alert">{state.error}</p>}
       {state.saved && (
-        <p role="status">Saved. Refresh to see worker progress.</p>
+        <p role="status">
+          Action saved. This does not confirm HTTP execution; check run history
+          for observed results.
+        </p>
       )}
     </form>
   );
