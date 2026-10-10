@@ -1,4 +1,5 @@
 'use client';
+import { LocalTime } from '../ui/local-time';
 import { useState } from 'react';
 import {
   reviewState,
@@ -42,7 +43,7 @@ export function IntelligenceView({
     <section className="mt-6 min-w-0 space-y-5">
       <h2 className="text-xl font-semibold">Analysis summary</h2>
       <p className="break-all text-xs">
-        Analysis {analysis.id} · {analysis.createdAt}
+        Analysis {analysis.id} · <LocalTime value={analysis.createdAt} />
         <br />
         Import {analysis.importId}
         <br />
@@ -287,8 +288,8 @@ function ItemDetail({
             <ul>
               {item.reviews.map((r) => (
                 <li key={r.id} className="mt-2 break-words">
-                  {r.decision} · reviewer {r.actorId} · {r.createdAt} ·{' '}
-                  {r.rationale}
+                  {r.decision} · reviewer {r.actorId} ·{' '}
+                  <LocalTime value={r.createdAt} /> · {r.rationale}
                   {r.statement && (
                     <p>
                       {r.title}: {r.statement}

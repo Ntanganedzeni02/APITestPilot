@@ -10,7 +10,7 @@ Domain owns TestPlanInput/TestPlan, PlanningItem/TestItem, RequirementVersion,
 TestReview, eligibility, coverage and RTM contracts. Existing test-engine now owns
 pure deterministic planning; ai owns the optional provider-independent planning
 contract. Database implements scoped persistence and the web app composes actions.
-No external dependencies or AI SDK were added; only existing workspace links.
+The original planning milestone added only workspace links. M1.12.3 adds the official server-only OpenAI SDK behind the existing provider contract.
 
 A plan pins exact workspace/project/import/graph/analysis UUIDs plus every
 requirement's review UUID, effective title/statement and review status. SQL also
@@ -105,7 +105,7 @@ rejected/cross-analysis refs, unsupported types, oversized output and duplicate
 logical keys. Accepted proposals are AI_PROPOSED and non-executable. Timeout,
 rate-limit/unavailable/malformed output records FAILED separately while preserving
 deterministic results; no provider records NOT_CONFIGURED. No real provider call
-or provider SDK is needed. Opaque context deliberately limits business reasoning;
+is needed for deterministic generation. M1.12.3 provides a real opt-in SDK adapter with bounded structural context. Opaque context deliberately limits business reasoning;
 validation proves shape/scope, not truth of model prose.
 
 ## Persistence and traceability
@@ -156,3 +156,12 @@ Auth claims and cannot substitute for hosted Auth/PostgREST acceptance. No M1.7
 or execution engine may begin without authorization.
 
 See [M1.6 verification evidence](m16-verification.md) for exact checks and deferred hosted acceptance.
+
+## M1.12.3 integration update
+
+Opt-in server-only OpenAI reasoning is now implemented for planning and bounded
+investigation hypotheses; earlier no-provider statements describe the original
+milestone. Actual finding interpretation remains deferred. Migration
+`20261008001200_ai_reasoning.sql` adds the RLS-protected usage ledger and two
+authenticated admission/completion RPCs; it is not deployed. Hosted alignment
+remains through 01100. See [configuration and authority limits](../development/openai-reasoning.md).

@@ -168,6 +168,7 @@ export function deriveTestPlan(context: PlanningContext): TestPlanInput {
       rule = 'TEST_REVIEW_OBJECTIVE',
       executable = true,
       preconditions: PlanningItem['preconditions'] = [],
+      pointer = schemaPointer ?? req.sourcePointers[0] ?? null,
     ) => {
       const logicalKey = graphLogicalId(
         'CASE',
@@ -182,13 +183,20 @@ export function deriveTestPlan(context: PlanningContext): TestPlanInput {
           logicalKey,
           kind: 'CASE',
           scenarioKey: key,
-          title: (type + ' - ' + version.title).slice(0, 160),
+          title: (
+            (type === 'DECLARED_ERROR_RESPONSE'
+              ? 'Declared HTTP ' + value + ' response'
+              : type) +
+            ' - ' +
+            version.title
+          ).slice(0, 160),
           caseType: type,
           ruleId: rule,
+          objective: expected,
           expectedBehavior: expected,
           input: {
             strategy,
-            pointer: schemaPointer ?? req.sourcePointers[0] ?? null,
+            pointer,
             value,
           },
           executable:
@@ -335,12 +343,17 @@ export function deriveTestPlan(context: PlanningContext): TestPlanInput {
       scenario.ruleId = 'TEST_DECLARED_RESPONSE';
       add(
         'VALID',
-        'Response conforms to the linked declared schema; generating a request is a separate setup requirement.',
+        'Check explicitly declared response status codes where available. Response-schema conformance remains unverified by this execution.',
         'DECLARED_RESPONSE_SCHEMA',
         null,
         'TEST_DECLARED_RESPONSE',
         true,
-        [{ kind: 'APPROVED_TEST_DATA', reference: null }],
+        op?.method === 'GET' &&
+          op.parameters.length === 0 &&
+          !op.requestBody &&
+          (!Array.isArray(op.security) || op.security.length === 0)
+          ? []
+          : [{ kind: 'APPROVED_TEST_DATA', reference: null }],
       );
     } else
       add(
@@ -467,19 +480,23 @@ export function deriveTestPlan(context: PlanningContext): TestPlanInput {
         }
       }
     }
-    if (op)
-      for (const response of op.responses.filter((r) =>
-        /^4[0-9]{2}$/.test(r.status),
+    if (op && req.ruleId === 'REQ_RESPONSE_SCHEMA')
+      for (const response of op.responses.filter(
+        (r) =>
+          /^4[0-9]{2}$/.test(r.status) &&
+          req.sourcePointers.includes(r.sourcePointer),
       ))
         add(
           'DECLARED_ERROR_RESPONSE',
           'Investigate the declared HTTP ' +
             response.status +
-            ' response contract; triggering conditions must be reviewed.',
+            ' response contract; triggering conditions require clarification before execution.',
           'DECLARED_STATUS',
           Number(response.status),
           'TEST_DECLARED_RESPONSE',
           false,
+          [],
+          response.sourcePointer,
         );
     for (const risk of linked.filter(
       (r) =>

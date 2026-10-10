@@ -13,7 +13,7 @@ safe binding contracts. AI supplies a provider-neutral strict structured proposa
 boundary. Database loads trusted context and persists through narrow authenticated
 RPCs. Presentation provides real Investigations list/detail and Finding/Run entry
 points. M1.7 remains the only transport authority; M1.8 owns evidence/findings.
-No configured AI provider or simulated production AI response exists. Humans can
+M1.12.3 adds optional bounded OpenAI hypotheses without simulated production responses. Humans can
 explicitly select a grounded case and give a concise rationale without a provider.
 
 A finding must actually occur in the selected persisted source package. Completed
@@ -147,3 +147,12 @@ approve vs reject, duplicate materialization, scenario-review identity locking a
 competition for the final execution-budget slot; M1.8 derivation/review remain covered.
 Hosted migration deployment and post-deployment verification passed. Legitimate
 authenticated browser acceptance remains a separate check. This milestone makes no external API-under-test requests.
+
+## M1.12.3 integration update
+
+Opt-in server-only OpenAI reasoning is now implemented for planning and bounded
+investigation hypotheses; earlier no-provider statements describe the original
+milestone. Actual finding interpretation remains deferred. Migration
+`20261008001200_ai_reasoning.sql` adds the RLS-protected usage ledger and two
+authenticated admission/completion RPCs; it is not deployed. Hosted alignment
+remains through 01100. See [configuration and authority limits](../development/openai-reasoning.md).

@@ -1,3 +1,4 @@
+import { PageHeader } from '../../../components/ui/product';
 import Link from 'next/link';
 import { createFindingRepository } from '@testpilot/database';
 import { findingStatuses } from '@testpilot/domain';
@@ -14,7 +15,10 @@ export default async function Findings({
   if (!workspace || !project)
     return (
       <section>
-        <h1 className="page-title">Findings</h1>
+        <PageHeader
+          title="Findings"
+          description="Review potential defects against evidence. Humans confirm or dismiss them."
+        />
         <p>Select a project first.</p>
       </section>
     );
@@ -33,15 +37,24 @@ export default async function Findings({
     );
     return (
       <section className="space-y-4">
-        <h1 className="page-title">Findings</h1>
+        <PageHeader
+          title="Findings"
+          description="Review potential defects against evidence. Humans confirm or dismiss them."
+        />
         <p>Evidence supports candidates. Humans confirm or dismiss them.</p>
-        <form>
-          <label>
+        <form className="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-surface p-3">
+          <label className="form-label">
             Status
-            <select name="status" defaultValue={status ?? ''}>
+            <select
+              className="form-input"
+              name="status"
+              defaultValue={status ?? ''}
+            >
               <option value="">All</option>
               {findingStatuses.map((s) => (
-                <option key={s}>{s}</option>
+                <option key={s} value={s}>
+                  {s.replaceAll('_', ' ').toLowerCase()}
+                </option>
               ))}
             </select>
           </label>
@@ -67,7 +80,10 @@ export default async function Findings({
   } catch {
     return (
       <section>
-        <h1 className="page-title">Findings</h1>
+        <PageHeader
+          title="Findings"
+          description="Review potential defects against evidence. Humans confirm or dismiss them."
+        />
         <p role="alert">
           Unable to load findings. Check permissions and migration availability,
           then try again.

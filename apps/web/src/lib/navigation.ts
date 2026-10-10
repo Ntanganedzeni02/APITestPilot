@@ -9,7 +9,7 @@ export const productRoutes = [
       'An evidence-backed view of API quality and release readiness.',
     emptyTitle: 'Start with your first project.',
     emptyDescription:
-      'A project brings your API specification, test plans and evidence into one place. Project setup is coming soon.',
+      'A project brings your API specification, test plans and evidence into one place. Create a project to begin.',
   },
   {
     href: '/api-map',
@@ -20,7 +20,7 @@ export const productRoutes = [
       'Understand your API as a system of resources, actors and workflows.',
     emptyTitle: 'No API model yet.',
     emptyDescription:
-      'When API import is available, your specification will form the starting point for a connected behaviour map.',
+      'Import a specification to create a connected, deterministic behaviour map.',
   },
   {
     href: '/requirements',
@@ -51,7 +51,7 @@ export const productRoutes = [
     description: 'Shape a structured test plan before anything is executed.',
     emptyTitle: 'No tests have been generated.',
     emptyDescription:
-      'Future test plans will connect requirements and risks to reviewable, structured test cases.',
+      'Create a plan from an analysis to connect requirements and risks to reviewable test cases.',
   },
   {
     href: '/runs',
@@ -62,7 +62,7 @@ export const productRoutes = [
       'Inspect execution results alongside the evidence they produced.',
     emptyTitle: 'No test runs yet.',
     emptyDescription:
-      'Approved tests will run within explicit environment policies. API execution is not available yet.',
+      'Approved tests will run within explicit environment policies. Execution requires an approved case, an explicit target and an independent safety decision.',
   },
   {
     href: '/investigations',
@@ -133,10 +133,10 @@ export const productRoutes = [
     group: null,
     icon: 'settings',
     description:
-      'A home for future workspace, project and environment controls.',
+      'Workspace context, appearance and links to existing execution controls.',
     emptyTitle: 'Settings are not configured.',
     emptyDescription:
-      'Account access, workspaces and environment configuration will arrive in future setup flows. There is no saved configuration yet.',
+      'Workspace and project selection, appearance and execution controls are available. Provider credential management is not exposed here.',
   },
 ] as const;
 
@@ -152,7 +152,12 @@ export const navigationGroups = [
 export function findProductRoute(pathname: string) {
   const normalized =
     pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
-  return productRoutes.find((route) => route.href === normalized);
+  return (
+    productRoutes.find((route) => route.href === normalized) ??
+    productRoutes.find(
+      (route) => route.href !== '/' && normalized.startsWith(route.href + '/'),
+    )
+  );
 }
 
 export function isRouteActive(pathname: string, href: string) {

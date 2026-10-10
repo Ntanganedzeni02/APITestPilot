@@ -51,9 +51,14 @@ if (phase === 'build') {
     '20261007000900_memory_quality_intelligence.sql',
     '20261007001000_release_intelligence_reports.sql',
     '20261008001100_runner_recovery.sql',
+    '20261008001200_ai_reasoning.sql',
+    '20261008001300_ai_retry.sql',
+    '20261009001400_bulk_review.sql',
   ];
   if (JSON.stringify(migrations) !== JSON.stringify(expected))
-    throw Error('Expected reviewed migrations 00100 through 01100');
+    throw Error(
+      'Expected local migrations 00100 through 01400; 01400 requires separate review/deployment',
+    );
   process.stdout.write(
     'Local migration inventory valid. Hosted alignment must be verified separately with authenticated CLI.\n',
   );

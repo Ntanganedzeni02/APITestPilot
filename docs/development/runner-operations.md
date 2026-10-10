@@ -73,3 +73,6 @@ pnpm verify:database <psql-executable>
 ```
 
 PostgreSQL 15 compatibility must be explicit with `--allow-pg15`; its passes do not prove PG17-specific grants. Hosted deployment and PostgreSQL 17.11 catalog/function verification passed. Those checks do not establish hosted worker runtime, HTTP execution or production acceptance; Docker runtime and PostgreSQL 17 CI execution remain pending.
+
+See [credential provisioning and first GET readiness](runner-credential-provisioning.md)
+for issuer limitations, protected local configuration and read-only queue checks.

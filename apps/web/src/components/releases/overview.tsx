@@ -1,3 +1,4 @@
+import { LocalTime } from '../ui/local-time';
 import Link from 'next/link';
 import { releaseContext } from '../../lib/releases/context';
 export async function ReleaseOverview() {
@@ -31,7 +32,11 @@ export async function ReleaseOverview() {
           Recorded assessment: {d?.current?.result.status ?? 'Unknown'} |{' '}
           {d?.current?.result.blockers.length ?? 0} blockers |{' '}
           {d?.current?.result.warnings.length ?? 0} warnings | as of{' '}
-          {d?.current?.assessed_at ?? 'Not assessed'}
+          {d?.current ? (
+            <LocalTime value={d.current.assessed_at} />
+          ) : (
+            'Not assessed'
+          )}
         </p>
         <p>
           Human decision:{' '}

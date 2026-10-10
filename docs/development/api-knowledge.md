@@ -6,9 +6,26 @@ Paste JSON/YAML or upload `.json`, `.yaml`, `.yml` UTF-8 files. OpenAPI 3.0.x an
 3.1.x are supported. Swagger 2.0 and other versions return explicit errors.
 Syntax, structural OpenAPI, reference and semantic validation precede normalization
 and one atomic persistence call. Select a project, open API Map, choose paste/file
-mode and validate/import. Imported endpoints group by first tag; expand them to
-inspect parameters, media types, responses, effective servers/security and source
-pointers. Every re-import creates a distinct UUID; history is never overwritten.
+mode in the Imports tab and validate/import. API Map separates Endpoints,
+Behaviour Graph, Schemas & Security and Imports. Import selection applies
+immediately and retains its ID and active tab in the URL. History lists the latest
+50 authorized imports; an unavailable selected import never falls back silently.
+Endpoint search covers method, path, summary and tags, with method filters and
+declared-tag or stored inferred-resource grouping. Structured details preserve
+parameter requirements, media types, responses and security OR/AND alternatives.
+Dates use the browser timezone with UTC originals retained for audit.
+
+The graph uses persisted facts, with directional edges, declared/inferred styling,
+filters, highlighted connections, keyboard navigation, zoom, pan and an accessible
+paginated list. The default view focuses on the first operation and its immediate
+stored relationships; Full graph restores the bounded overview. The inspection
+panel stays alongside the map, with full relationship provenance available. The visual
+preview is capped at 120 nodes and 400 edges; the list retains all matching nodes.
+Focus on a selected node to inspect its neighborhood. Graph schema nodes and
+imported component schemas remain separate counts. Raw JSON, source pointers,
+UUIDs and provenance remain in collapsed technical details, loaded on expansion.
+Browsing never executes APIs, calls AI or rebuilds graphs automatically. Every re-import creates a distinct UUID; history is never
+overwritten.
 
 Limits: 2 MiB UTF-8 input, 50,000 structural nodes, nesting depth 64 and 2,000
 operations. Client feedback supplements authoritative server checks. Server Action

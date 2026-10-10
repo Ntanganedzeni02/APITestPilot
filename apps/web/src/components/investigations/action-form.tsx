@@ -20,7 +20,11 @@ export function InvestigationActionForm({
     <form action={action} className="space-y-2">
       {children}
       <button disabled={pending} className="rounded border p-2">
-        {pending ? 'Saving?' : label}
+        {pending
+          ? label.includes('AI')
+            ? 'Generating AI suggestions...'
+            : 'Saving...'
+          : label}
       </button>
       {state.error && <p role="alert">{state.error}</p>}
       {state.saved && (

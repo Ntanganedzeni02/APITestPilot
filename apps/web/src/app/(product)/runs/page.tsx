@@ -1,3 +1,4 @@
+import { PageHeader } from '../../../components/ui/product';
 import {
   createExecutionRepository,
   createFindingRepository,
@@ -12,6 +13,10 @@ import { requireUser } from '../../../lib/auth/server';
 import { getTenantContext } from '../../../lib/tenancy/context';
 import { ExecutionActionForm } from '../../../components/execution/action-form';
 import { RunsView } from '../../../components/execution/runs-view';
+import {
+  executionAvailable,
+  executionUnavailableMessage,
+} from '../../../lib/execution/availability';
 export default async function Runs({
   searchParams,
 }: {
@@ -19,10 +24,14 @@ export default async function Runs({
 }) {
   const { client } = await requireUser();
   const { workspace, project } = await getTenantContext();
+  const runnerReady = executionAvailable();
   if (!workspace || !project)
     return (
       <section>
-        <h1 className="page-title">Runs</h1>
+        <PageHeader
+          title="Runs"
+          description="Approved tests, explicit safety decisions and real execution evidence."
+        />
         <p>Select a project first.</p>
       </section>
     );
@@ -80,15 +89,21 @@ export default async function Runs({
     }
     return (
       <div className="min-w-0 space-y-6">
-        <h1 className="page-title">Runs</h1>
+        <PageHeader
+          title="Runs"
+          description="Approved tests, explicit safety decisions and real execution evidence."
+        />
         <p>
           Planning readiness is separate from network authorization. The runner
           evaluates safety and DNS before execution. No automatic retries or
           redirects.
         </p>
+        {!runnerReady && <p role="status">{executionUnavailableMessage}</p>}
         {['OWNER', 'ADMIN'].includes(workspace.role) && (
           <details>
-            <summary>Configure an explicit environment target</summary>
+            <summary className="cursor-pointer font-medium">
+              Environment targets and safety configuration
+            </summary>
             <ExecutionActionForm label="Save target configuration">
               <input type="hidden" name="mode" value="CONFIGURE" />
               <label className="form-label">
@@ -123,97 +138,103 @@ export default async function Runs({
             </ExecutionActionForm>
           </details>
         )}
-        <section>
-          <h2>Run an approved test case</h2>
-          <form method="get">
-            <label className="form-label">
-              Case
-              <select
-                name="case"
-                className="form-input"
-                defaultValue={item?.id}
-              >
-                {plan?.records
-                  .filter((i) => i.kind === 'CASE')
-                  .map((i) => (
-                    <option key={i.id} value={i.id}>
-                      {i.title}
+        <details className="product-disclosure">
+          <summary>Run an approved test case</summary>
+          <section className="mt-4 space-y-4">
+            <form method="get">
+              <label className="form-label">
+                Case
+                <select
+                  name="case"
+                  className="form-input"
+                  defaultValue={item?.id}
+                >
+                  {plan?.records
+                    .filter((i) => i.kind === 'CASE')
+                    .map((i) => (
+                      <option key={i.id} value={i.id}>
+                        {i.title}
+                      </option>
+                    ))}
+                </select>
+              </label>
+              <input type="hidden" name="plan" value={plan?.id ?? ''} />
+              <label className="form-label">
+                Environment
+                <select
+                  name="environment"
+                  className="form-input"
+                  defaultValue={environment?.id}
+                >
+                  {environments.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.type}
                     </option>
                   ))}
-              </select>
-            </label>
-            <input type="hidden" name="plan" value={plan?.id ?? ''} />
-            <label className="form-label">
-              Environment
-              <select
-                name="environment"
-                className="form-input"
-                defaultValue={environment?.id}
-              >
-                {environments.map((e) => (
-                  <option key={e.id} value={e.id}>
-                    {e.type}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <button className="rounded border p-2">Preview selection</button>
-          </form>
-          {item && plan ? (
-            <>
-              <p>Objective: {item.objective}</p>
-              <p>Planning: {executionEligibility(item, plan)}</p>
+                </select>
+              </label>
+              <button className="rounded border p-2">Preview selection</button>
+            </form>
+            {item && plan ? (
+              <>
+                <p>Objective: {item.objective}</p>
+                <p>Planning: {executionEligibility(item, plan)}</p>
+                <p>
+                  Method: {preview?.request?.method ?? 'Not runnable'}; safe
+                  target:{' '}
+                  {preview?.request?.url ??
+                    config?.base_url ??
+                    'Not configured'}
+                </p>
+                <p>
+                  Preliminary classification:{' '}
+                  {preview?.failure ??
+                    (environment?.type === 'PRODUCTION' ||
+                    preview?.sideEffects ||
+                    (preview?.request &&
+                      !['GET', 'HEAD', 'OPTIONS'].includes(
+                        preview.request.method,
+                      ))
+                      ? 'REQUIRES_APPROVAL'
+                      : 'READ_POLICY_PENDING_DNS')}
+                </p>
+                <p>
+                  Credentials:{' '}
+                  {preview?.credentialsRequired
+                    ? 'CREDENTIAL_CONFIGURATION_REQUIRED'
+                    : 'No credential injection supported'}
+                  ; dependency:{' '}
+                  {preview?.dependencyRequired
+                    ? 'BLOCKED_BY_DEPENDENCY'
+                    : 'No unresolved identifier dependency'}
+                </p>
+                <p>
+                  DNS and all safety facts are evaluated by the worker; this
+                  preview authorizes no request.
+                </p>
+                <ExecutionActionForm
+                  label="Request Run Test"
+                  disabled={
+                    !runnerReady || !config?.enabled || !preview?.planningReady
+                  }
+                >
+                  <input type="hidden" name="mode" value="REQUEST" />
+                  <input type="hidden" name="caseId" value={item.id} />
+                  <input
+                    type="hidden"
+                    name="environmentId"
+                    value={environment?.id ?? ''}
+                  />
+                </ExecutionActionForm>
+              </>
+            ) : (
               <p>
-                Method: {preview?.request?.method ?? 'Not runnable'}; safe
-                target:{' '}
-                {preview?.request?.url ?? config?.base_url ?? 'Not configured'}
+                No test cases available. Create and independently review a test
+                plan first.
               </p>
-              <p>
-                Preliminary classification:{' '}
-                {preview?.failure ??
-                  (environment?.type === 'PRODUCTION' ||
-                  preview?.sideEffects ||
-                  (preview?.request &&
-                    !['GET', 'HEAD', 'OPTIONS'].includes(
-                      preview.request.method,
-                    ))
-                    ? 'REQUIRES_APPROVAL'
-                    : 'READ_POLICY_PENDING_DNS')}
-              </p>
-              <p>
-                Credentials:{' '}
-                {preview?.credentialsRequired
-                  ? 'CREDENTIAL_CONFIGURATION_REQUIRED'
-                  : 'No credential injection supported'}
-                ; dependency:{' '}
-                {preview?.dependencyRequired
-                  ? 'BLOCKED_BY_DEPENDENCY'
-                  : 'No unresolved identifier dependency'}
-              </p>
-              <p>
-                DNS and all safety facts are evaluated by the worker; this
-                preview authorizes no request.
-              </p>
-              <ExecutionActionForm
-                label="Request Run Test"
-                disabled={!config?.enabled || !preview?.planningReady}
-              >
-                <input type="hidden" name="mode" value="REQUEST" />
-                <input type="hidden" name="caseId" value={item.id} />
-                <input
-                  type="hidden"
-                  name="environmentId"
-                  value={environment?.id ?? ''}
-                />
-              </ExecutionActionForm>
-            </>
-          ) : (
-            <p>
-              No test cases available. Create and independently review a test
-              plan first.
-            </p>
-          )}
-        </section>
+            )}
+          </section>
+        </details>
         <>
           {evidenceUnavailable && (
             <p role="alert">
@@ -222,13 +243,21 @@ export default async function Runs({
             </p>
           )}
         </>
-        <RunsView runs={runs} role={workspace.role} evidence={evidence} />
+        <RunsView
+          runs={runs}
+          role={workspace.role}
+          evidence={evidence}
+          executionAvailable={runnerReady}
+        />
       </div>
     );
   } catch {
     return (
       <section>
-        <h1 className="page-title">Runs</h1>
+        <PageHeader
+          title="Runs"
+          description="Approved tests, explicit safety decisions and real execution evidence."
+        />
         <p role="alert">
           Unable to load execution data. Verify the M1.7 migration is available
           and try again.

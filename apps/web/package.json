@@ -30,7 +30,8 @@
     "@testpilot/behaviour-graph": "workspace:*",
     "@testpilot/qa-intelligence": "workspace:*",
     "@testpilot/test-engine": "workspace:*",
-    "@testpilot/safety": "workspace:*"
+    "@testpilot/safety": "workspace:*",
+    "@testpilot/ai": "workspace:*"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.3",

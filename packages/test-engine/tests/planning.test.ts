@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { parseApiSpec } from '@testpilot/api-spec';
 import { buildBehaviourGraph } from '@testpilot/behaviour-graph';
 import { deriveQa } from '@testpilot/qa-intelligence';
@@ -22,7 +22,7 @@ import {
 } from '@testpilot/domain';
 const uuid = (n: number) =>
   '16000000-0000-0000-0000-' + String(n).padStart(12, '0');
-function context(): PlanningContext {
+function context(spec?: string): PlanningContext {
   const source = {
     id: uuid(1),
     workspaceId: uuid(2),
@@ -30,7 +30,8 @@ function context(): PlanningContext {
     createdAt: '2026-10-07T00:00:00Z',
     createdBy: uuid(4),
     knowledge: parseApiSpec(
-      readFileSync('packages/qa-intelligence/tests/fixtures/qa.json', 'utf8'),
+      spec ??
+        readFileSync('packages/qa-intelligence/tests/fixtures/qa.json', 'utf8'),
       'json',
     ).knowledge,
   };
@@ -566,4 +567,105 @@ it('identifier references must be non-null and included in item evidence', () =>
   Object.assign(item, original);
   item.edgeRefs = [];
   expect(() => assertTestPlan(p)).toThrow();
+});
+
+function securityResponseContext() {
+  return context(
+    '{"openapi": "3.0.3", "info": {"title": "Catalog regression fixture", "version": "1.0.0"}, "paths": {"/items/{id}": {"get": {"parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}], "security": [{"bearer": []}], "responses": {"404": {"description": "Not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Problem"}}}}}}}}, "components": {"securitySchemes": {"bearer": {"type": "http", "scheme": "bearer"}}, "schemas": {"Problem": {"type": "object"}}}}',
+  );
+}
+it('TS-001 security and 404 contracts have separate requirements, objectives, inputs and risks', () => {
+  const c = approve(securityResponseContext()),
+    input = deriveTestPlan(c);
+  const security = c.analysis.records.find((r) => r.ruleId === 'REQ_SECURITY')!;
+  const response = c.analysis.records.find(
+    (r) => r.ruleId === 'REQ_RESPONSE_SCHEMA',
+  )!;
+  const securityCases = input.items.filter(
+    (i) => i.kind === 'CASE' && i.requirementRefs.includes(security.id),
+  );
+  const errorCases = input.items.filter(
+    (i) => i.caseType === 'DECLARED_ERROR_RESPONSE',
+  );
+  expect(securityCases.length).toBeGreaterThan(0);
+  expect(errorCases).toHaveLength(1);
+  expect(
+    securityCases.some((i) => i.caseType === 'DECLARED_ERROR_RESPONSE'),
+  ).toBe(false);
+  const error = errorCases[0]!;
+  expect(error.requirementRefs).toEqual([response.id]);
+  expect(error.objective).toContain('HTTP 404');
+  expect(error.expectedBehavior).toBe(error.objective);
+  expect(error.expectedBehavior).toContain('clarification');
+  expect(error.input.value).toBe(404);
+  expect(error.input.pointer).toContain('/responses/404');
+  expect(error.title).toContain('HTTP 404');
+  expect(error.executable).toBe(false);
+  expect(
+    error.riskRefs.every((id) =>
+      c.analysis.records
+        .find((r) => r.id === id)!
+        .requirementRefs.includes(response.logicalKey),
+    ),
+  ).toBe(true);
+  expect(
+    securityCases.every(
+      (i) => i.ruleId === 'TEST_SECURITY' && i.objective === i.expectedBehavior,
+    ),
+  ).toBe(true);
+});
+it('TS-002 two approved versions produce a new complete snapshot, links and coverage without changing historical plans', () => {
+  const c = securityResponseContext(),
+    historical = plan(c),
+    frozen = JSON.stringify(historical);
+  const selected = c.analysis.records.filter(
+    (r) => r.ruleId === 'REQ_SECURITY' || r.ruleId === 'REQ_RESPONSE_SCHEMA',
+  );
+  approve(c);
+  for (const r of c.analysis.records) if (!selected.includes(r)) r.reviews = [];
+  const fresh = plan(c),
+    coverage = planningCoverage(fresh);
+  expect(coverage.approvedRequirements).toBe(2);
+  expect(coverage.coveredRequirements).toBe(2);
+  expect(
+    traceabilityRows(fresh)
+      .filter((row) => row.requirement.status === 'APPROVED')
+      .every((row) => row.scenarios.length > 0 && row.cases.length > 0),
+  ).toBe(true);
+  expect(
+    fresh.requirements
+      .filter((r) => r.status === 'APPROVED')
+      .map((r) => r.reviewId),
+  ).not.toContain(null);
+  expect(planningCoverage(historical).approvedRequirements).toBe(0);
+  expect(JSON.stringify(historical)).toBe(frozen);
+  const requirement = selected[0]!;
+  requirement.reviews.push({
+    ...requirement.reviews[0]!,
+    id: uuid(9998),
+    decision: 'EDIT',
+    title: 'Revised',
+    statement: 'Needs re-review',
+  });
+  expect(planningCoverage(plan(c)).approvedRequirements).toBe(1);
+  requirement.reviews.push({
+    ...requirement.reviews[0]!,
+    id: uuid(9999),
+    decision: 'REJECT',
+  });
+  expect(planningCoverage(plan(c)).approvedRequirements).toBe(1);
+});
+
+it('Standard planning performs no network requests and grants no execution authorization', async () => {
+  const network = vi
+    .spyOn(globalThis, 'fetch')
+    .mockRejectedValue(new Error('Network forbidden during planning'));
+  try {
+    const input = await generateTestPlan(approve(securityResponseContext()));
+    expect(network).not.toHaveBeenCalled();
+    expect(input.aiStatus).toBe('NOT_CONFIGURED');
+    expect(input.status).toBe('DRAFT');
+  } finally {
+    network.mockRestore();
+  }
 });

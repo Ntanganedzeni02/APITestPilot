@@ -1,3 +1,9 @@
+import { TechnicalDetails } from '../../../components/api-map/spec-details';
+import {
+  PageHeader,
+  StatusBadge,
+  EmptyState,
+} from '../../../components/ui/product';
 import Link from 'next/link';
 import { canManageReleases } from '@testpilot/domain';
 import { releaseContext } from '../../../lib/releases/context';
@@ -16,7 +22,10 @@ export default async function Releases({
       source = await c.repo.latestSource(c.workspace.id, c.project.id);
     return (
       <main className="space-y-5">
-        <h1>Release Center</h1>
+        <PageHeader
+          title="Release Center"
+          description="Understand readiness. Review evidence. Record a human decision."
+        />
         <p>TestPilot assesses. Evidence supports. Humans decide.</p>
         <nav aria-label="Release environment">
           {c.environments.map((e) => (
@@ -27,7 +36,7 @@ export default async function Releases({
         </nav>
         <p>
           New release scope: {c.environment.type} | current API import{' '}
-          {source ?? 'None'}
+          {source ? 'Available; exact scope retained below' : 'None'}
         </p>
         {source && canManageReleases(c.workspace.role) ? (
           <ReleaseActionForm environment={c.environment.id} mode="CREATE" />
@@ -38,17 +47,40 @@ export default async function Releases({
               : 'Import an API before creating a release.'}
           </p>
         )}
+        <TechnicalDetails
+          value={{ sourceId: source, environmentId: c.environment.id }}
+          label="Technical details: new release scope"
+        />
         {!releases.length ? (
-          <p>No releases created. No release has been approved.</p>
+          <EmptyState
+            title="No releases on this page"
+            description="Create a release for an imported API, then assess the evidence before recording a human decision."
+            href="/api-map"
+            action="Inspect your API source"
+          />
         ) : (
-          <ul>
+          <ul className="grid gap-3 md:grid-cols-2">
             {releases.map((r) => (
-              <li key={r.id}>
-                <Link href={'/releases/' + r.id}>{r.name}</Link> | environment{' '}
-                {c.environments.find((e) => e.id === r.environment_id)?.type ??
-                  r.environment_id}{' '}
-                | source {r.api_import_id} |{' '}
-                {r.assessment_id ? 'Assessment available' : 'DRAFT'}
+              <li key={r.id} className="product-card">
+                <Link href={'/releases/' + r.id} className="block">
+                  <span className="font-semibold">{r.name}</span>
+                  <span className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                    <span>
+                      {c.environments.find((e) => e.id === r.environment_id)
+                        ?.type ?? 'Historical environment'}
+                    </span>
+                    <StatusBadge
+                      value={r.assessment_id ? 'ASSESSMENT_AVAILABLE' : 'DRAFT'}
+                    />
+                  </span>
+                </Link>
+                <TechnicalDetails
+                  value={{
+                    importId: r.api_import_id,
+                    environmentId: r.environment_id,
+                  }}
+                  label="Technical details: immutable release scope"
+                />
               </li>
             ))}
           </ul>

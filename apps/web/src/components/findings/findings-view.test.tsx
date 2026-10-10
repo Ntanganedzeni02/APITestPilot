@@ -93,9 +93,9 @@ it('empty findings never claim an API is defect-free', () => {
 it('renders operation, confidence, severity, count and navigation', () => {
   const html = renderToStaticMarkup(<FindingsList findings={[f]} />);
   for (const value of [
-    'GET #/paths/~1fixture/get',
-    'MEDIUM severity',
-    'HIGH confidence',
+    'GET /fixture',
+    'Medium',
+    'High confidence',
     'Human decision required',
     '/findings/fixture-finding',
     '1 evidence-backed',
@@ -108,7 +108,7 @@ it('detail exposes exact source references and assertion item', () => {
     'ASSERTION_RESULT #0',
     '/runs#run-fixture-run',
     'fixture-config',
-    'fixture-requirement',
+    'Technical details: exact association',
     'c'.repeat(64),
   ])
     expect(html).toContain(value);

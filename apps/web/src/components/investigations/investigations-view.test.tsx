@@ -36,7 +36,7 @@ it('detail shows source budgets and provider limitation', () => {
   const html = renderToStaticMarkup(
     <InvestigationDetail context={c} canApprove />,
   );
-  expect(html).toContain('No AI provider is configured');
+  expect(html).toContain('Generate AI hypotheses');
   expect(html).toContain('Proposals 0/8');
   expect(html).toContain('Persisted source evidence');
 });

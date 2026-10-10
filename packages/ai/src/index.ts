@@ -225,3 +225,7 @@ export function validateAiOutput(
 export * from './test-planning.js';
 
 export * from './curiosity.js';
+
+export * from './grounding.js';
+
+export { AiValidationError, type ValidationDiagnostic } from './diagnostics.js';

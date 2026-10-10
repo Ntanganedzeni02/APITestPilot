@@ -1,3 +1,12 @@
+import { QueryFilters } from '../../../components/ui/query-filters';
+import { TechnicalDetails } from '../../../components/api-map/spec-details';
+import { readableStatus, entityName } from '../../../lib/display';
+import {
+  PageHeader,
+  StatusBadge,
+  EmptyState,
+} from '../../../components/ui/product';
+import { LocalTime } from '../../../components/ui/local-time';
 import Link from 'next/link';
 import { memoryKinds, memoryCurrentness } from '@testpilot/domain';
 import { intelligenceContext } from '../../../lib/memory-quality/context';
@@ -38,74 +47,82 @@ export default async function Memory({
       }).toString();
     return (
       <main className="space-y-6">
-        <h1>Evidence Memory</h1>
+        <PageHeader
+          title="Evidence Memory"
+          description="Persistent observations and human decisions, with full provenance."
+        />
         <p>
           Verified observations and human decisions, with retained historical
           provenance. Not AI notes or a defect confirmation engine.
         </p>
-        <form className="flex flex-wrap gap-3">
-          <label>
-            Environment{' '}
-            <select name="environment" defaultValue={c.environment.id}>
-              {c.environments.map((e) => (
-                <option key={e.id} value={e.id}>
-                  {e.type}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Type{' '}
-            <select name="kind" defaultValue={query['kind'] ?? ''}>
-              <option value="">All</option>
-              {memoryKinds.map((k) => (
-                <option key={k}>{k}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Currentness{' '}
-            <select
-              name="currentness"
-              defaultValue={query['currentness'] ?? ''}
-            >
-              <option value="">All</option>
-              {memoryCurrentness.map((k) => (
-                <option key={k}>{k}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Operation identity{' '}
-            <input
-              name="operation"
-              defaultValue={query['operation'] ?? ''}
-              maxLength={2000}
-            />
-          </label>
-          <button>Filter</button>
-        </form>
+        <QueryFilters
+          key={JSON.stringify(query)}
+          query={query}
+          environment={{
+            id: c.environment.id,
+            options: c.environments.map((e) => ({
+              value: e.id,
+              label: readableStatus(e.type),
+            })),
+          }}
+          fields={[
+            {
+              name: 'kind',
+              label: 'Type',
+              value: query['kind'] ?? '',
+              options: memoryKinds.map((value) => ({
+                value,
+                label: readableStatus(value),
+              })),
+            },
+            {
+              name: 'currentness',
+              label: 'Currentness',
+              value: query['currentness'] ?? '',
+              options: memoryCurrentness.map((value) => ({
+                value,
+                label: readableStatus(value),
+              })),
+            },
+            {
+              name: 'operation',
+              label: 'Operation identity',
+              value: query['operation'] ?? '',
+            },
+          ]}
+        />
         <IntelligenceActionForm environment={c.environment.id} mode="MEMORY" />
         {!facts.length && (
-          <p>
-            No matching observations. Refresh after eligible executions or human
-            reviews; blocked and cancelled runs do not prove behavior.
-          </p>
+          <EmptyState
+            title="No matching observations"
+            description="Refresh after eligible executions or human reviews. Blocked and cancelled runs do not prove behavior."
+            href="/runs"
+            action="Inspect execution evidence"
+          />
         )}
-        <ul>
+        <ul className="grid gap-3 md:grid-cols-2">
           {facts.map((f) => (
-            <li key={f.id} className="my-4 rounded border p-4">
-              <Link href={'/memory/' + f.id}>{f.kind}</Link>
+            <li key={f.id} className="product-card">
+              <Link href={'/memory/' + f.id}>{readableStatus(f.kind)}</Link>
               <p>
-                {f.operation_id ?? 'Operation unavailable'} | {f.currentness} |{' '}
-                {f.observation_count} observations
+                {f.operation_id
+                  ? entityName('API', 'Operation', f.operation_id)
+                  : 'Operation unavailable'}{' '}
+                | <StatusBadge value={f.currentness} /> | {f.observation_count}{' '}
+                observations
               </p>
               <p>
-                First {f.first_observed_at} | Last {f.last_observed_at}
+                First <LocalTime value={f.first_observed_at} /> | Last{' '}
+                <LocalTime value={f.last_observed_at} />
               </p>
-              <p>
-                Source {f.api_import_id} | Environment {c.environment.type}
-              </p>
+              <p>Environment {readableStatus(c.environment.type)}</p>
+              <TechnicalDetails
+                value={{
+                  importId: f.api_import_id,
+                  operationId: f.operation_id,
+                }}
+                label="Technical details: memory identity"
+              />
             </li>
           ))}
         </ul>

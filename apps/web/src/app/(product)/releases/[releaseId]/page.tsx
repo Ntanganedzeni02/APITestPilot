@@ -1,3 +1,7 @@
+import { PageHeader, Disclosure } from '../../../../components/ui/product';
+import { TechnicalDetails } from '../../../../components/api-map/spec-details';
+import { readableStatus } from '../../../../lib/display';
+import { LocalTime } from '../../../../components/ui/local-time';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { canManageReleases, releaseLifecycle } from '@testpilot/domain';
@@ -29,13 +33,24 @@ export default async function ReleaseDetail({
   const manages = canManageReleases(c.workspace.role);
   return (
     <main className="space-y-5">
-      <h1>{release.name}</h1>
+      <PageHeader
+        title={release.name}
+        eyebrow="Release"
+        description="Assess the evidence, then record an explicit human decision."
+      />
       <p>
         {releaseLifecycle(release, decision)} | environment{' '}
         {c.environments.find((e) => e.id === release.environment_id)?.type ??
           release.environment_id}{' '}
-        | API source {release.api_import_id}
+        | API source pinned in this release
       </p>
+      <TechnicalDetails
+        value={{
+          sourceId: release.api_import_id,
+          environmentId: release.environment_id,
+        }}
+        label="Technical details: release scope"
+      />
       {source !== release.api_import_id && (
         <p>
           Source changed. This release scope and its snapshots are historical;
@@ -59,10 +74,14 @@ export default async function ReleaseDetail({
         {decision ? (
           <>
             <p>
-              {decision.decision} by {decision.actor_id} at{' '}
-              {decision.decided_at}
+              {readableStatus(decision.decision)} at{' '}
+              <LocalTime value={decision.decided_at} />
               {decision.is_override ? ' | explicit risk override' : ''}
             </p>
+            <TechnicalDetails
+              value={decision}
+              label="Technical details: recorded human decision"
+            />
             <p>
               {decision.rationale ||
                 'No rationale supplied for CLEAR approval.'}
@@ -99,7 +118,8 @@ export default async function ReleaseDetail({
       {data.assessments.map((a) => (
         <details key={a.id}>
           <summary>
-            {a.assessed_at} | {a.result.status} | {a.id}
+            <LocalTime value={a.assessed_at} /> |{' '}
+            {readableStatus(a.result.status)}
           </summary>
           <ReleaseAssessmentPanel assessment={a} />
           {manages && (
@@ -112,21 +132,25 @@ export default async function ReleaseDetail({
           )}
         </details>
       ))}
-      <h2>Append-only decision history</h2>
-      <ul>
-        {data.decisions.map((d) => (
-          <li key={d.id}>
-            Revision {d.revision}: {d.decision} | actor {d.actor_id} |{' '}
-            {d.decided_at} | assessment {d.assessment_id} | {d.rationale}
-          </li>
-        ))}
-      </ul>
+      <Disclosure title="Append-only decision history">
+        <h2>Recorded decisions</h2>
+        <ul>
+          {data.decisions.map((d) => (
+            <li key={d.id}>
+              Revision {d.revision}: {d.decision} | actor {d.actor_id} |{' '}
+              <LocalTime value={d.decided_at} /> | assessment {d.assessment_id}{' '}
+              | {d.rationale}
+            </li>
+          ))}
+        </ul>
+      </Disclosure>
       <h2>Immutable reports</h2>
       <ul>
         {data.reports.map((r) => (
           <li key={r.id}>
             <Link href={'/reports/' + r.id}>
-              {r.generated_at} | {r.snapshot.assessment.result.status} |{' '}
+              <LocalTime value={r.generated_at} /> |{' '}
+              {r.snapshot.assessment.result.status} |{' '}
               {r.snapshot.decision?.decision ?? 'No decision'}
             </Link>
           </li>

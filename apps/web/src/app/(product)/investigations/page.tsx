@@ -1,3 +1,4 @@
+import { PageHeader } from '../../../components/ui/product';
 import Link from 'next/link';
 import { createInvestigationRepository } from '@testpilot/database';
 import { investigationStatuses } from '@testpilot/domain';
@@ -27,19 +28,28 @@ export default async function Investigations({
     );
     return (
       <section className="space-y-4">
-        <h1 className="page-title">Investigations</h1>
+        <PageHeader
+          title="Investigations"
+          description="Follow evidence with bounded hypotheses and deliberate human review."
+        />
         <p>Evidence-grounded follow-ups. Proposals do not authorize HTTP.</p>
-        <form>
-          <label>
+        <form className="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-surface p-3">
+          <label className="form-label">
             Status
-            <select name="status" defaultValue={status ?? ''}>
+            <select
+              className="form-input"
+              name="status"
+              defaultValue={status ?? ''}
+            >
               <option value="">All</option>
               {investigationStatuses.map((s) => (
-                <option key={s}>{s}</option>
+                <option key={s} value={s}>
+                  {s.replaceAll('_', ' ').toLowerCase()}
+                </option>
               ))}
             </select>
           </label>
-          <button>Filter</button>
+          <button className="button-link">Apply status</button>
         </form>
         <InvestigationsList investigations={items} />
         {page > 0 && (

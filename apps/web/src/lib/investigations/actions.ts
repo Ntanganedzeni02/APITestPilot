@@ -1,4 +1,10 @@
 'use server';
+import { AiReasoningError } from '@testpilot/ai/server';
+import {
+  curiosityProviderInput,
+  reasonAboutInvestigation,
+} from '@testpilot/ai';
+import { runAiReasoning } from '../ai/reasoning';
 import { revalidatePath } from 'next/cache';
 import {
   createInvestigationRepository,
@@ -41,7 +47,49 @@ export async function investigationAction(
     } else {
       id = validateId(form.get('investigationId'));
       const context = await repo.context(id, workspace.id, project.id);
-      if (mode === 'PROPOSE') {
+      if (mode === 'GENERATE_AI') {
+        const { data: run, error } = await client
+          .from('execution_runs')
+          .select('api_import_id')
+          .eq(
+            'id',
+            (
+              await client
+                .from('evidence_packages')
+                .select('run_id')
+                .eq('id', context.investigation.source_package_id)
+                .eq('workspace_id', workspace.id)
+                .eq('project_id', project.id)
+                .single()
+            ).data?.run_id ?? '',
+          )
+          .eq('workspace_id', workspace.id)
+          .eq('project_id', project.id)
+          .single();
+        if (error || !run) throw new AiReasoningError('ADMISSION');
+        const input = curiosityProviderInput(context);
+        if (
+          !context.cases.some((c) => c.executable) ||
+          input.context.remaining < 1
+        )
+          throw new AiReasoningError('VALIDATION');
+        await runAiReasoning(
+          client,
+          {
+            projectId: project.id,
+            sourceId: validateId(run.api_import_id),
+            workflow: 'INVESTIGATION',
+            anchorId: id,
+          },
+          input.context,
+          (provider, cancellation) =>
+            reasonAboutInvestigation(
+              provider,
+              context,
+              AbortSignal.any([cancellation, AbortSignal.timeout(30000)]),
+            ),
+        );
+      } else if (mode === 'PROPOSE') {
         const rationale = form.get('rationale'),
           caseId = form.get('caseId'),
           evidence = form.getAll('evidenceItemId'),
@@ -108,9 +156,11 @@ export async function investigationAction(
   } catch (error) {
     return {
       error:
-        error instanceof PersistenceError && error.kind === 'CONFLICT'
-          ? 'Proposal changed. Reload and review again.'
-          : 'Unable to save. Check permissions, evidence, approval and budget. Never include credentials.',
+        error instanceof AiReasoningError
+          ? error.message
+          : error instanceof PersistenceError && error.kind === 'CONFLICT'
+            ? 'Proposal changed. Reload and review again.'
+            : 'Unable to save. Check permissions, evidence, approval and budget. Never include credentials.',
     };
   }
 }

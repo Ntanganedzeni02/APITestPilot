@@ -67,6 +67,9 @@ for (const suite of [
   'release-intelligence-clock',
   'runner-recovery',
   'runner-recovery-downstream',
+  'ai-reasoning',
+  'ai-retry',
+  'bulk-review',
 ]) {
   const output = invoke(psql, [
     '-X',
@@ -88,6 +91,8 @@ for (const [harness, suffix] of [
   ['curiosity', 'm19'],
   ['memory-quality', 'm110'],
   ['release', 'm111'],
+  ['ai', 'm1123'],
+  ['bulk-review', 'bulk_review'],
 ])
   process.stdout.write(
     invoke(process.execPath, [

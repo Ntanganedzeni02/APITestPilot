@@ -31,7 +31,9 @@ it('renders inspectable resources, operations and escaped provenance without run
     />,
   );
   expect(html).toContain('User (/users)');
-  expect(html).toContain('Operation relationships');
+  expect(html).toContain('Accessible node explorer');
+  expect(html).toContain('<svg');
+  expect(html).toContain('marker-end');
   const reason = renderToStaticMarkup(<FactReason fact={graph.nodes[0]!} />);
   expect(reason).toContain('Why this relationship exists');
   expect(html).toContain('runtime behaviour has not been verified');

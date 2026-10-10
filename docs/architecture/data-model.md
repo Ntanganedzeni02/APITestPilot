@@ -160,3 +160,12 @@ two authenticated RPCs govern access; runner authority is unchanged. Migration
 ## M1.12.2 operational claims (deployed)
 
 Migration `20261008001100_runner_recovery.sql` adds lease/claim-generation/recovery fields to execution runs and tenant-scoped append-only `execution_recovery_events`. Existing result/evidence tables and migrations 00100?01000 remain unchanged. Durable send intent prevents automatic replay; unresolved delivery uses ERROR with explicit INDETERMINATE recovery outcome and no invented result. The five runner RPC signatures remain unchanged and private core functions preserve M1.7 policy/result validation. Local/remote migrations are aligned through 01100. The runner retains five authorized RPCs. Hosted worker runtime and HTTP execution remain untested; Docker runtime and PostgreSQL 17 CI execution remain pending. Production launch has not occurred. See [runner operations](../development/runner-operations.md).
+
+## M1.12.3 integration update
+
+Opt-in server-only OpenAI reasoning is now implemented for planning and bounded
+investigation hypotheses; earlier no-provider statements describe the original
+milestone. Actual finding interpretation remains deferred. Migration
+`20261008001200_ai_reasoning.sql` adds the RLS-protected usage ledger and two
+authenticated admission/completion RPCs; it is not deployed. Hosted alignment
+remains through 01100. See [configuration and authority limits](../development/openai-reasoning.md).

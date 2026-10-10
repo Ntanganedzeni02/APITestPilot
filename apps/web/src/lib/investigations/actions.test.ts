@@ -1,5 +1,6 @@
 import { beforeEach, expect, it, vi } from 'vitest';
 const m = vi.hoisted(() => ({
+  reasoning: vi.fn(),
   user: vi.fn(),
   tenant: vi.fn(),
   context: vi.fn(),
@@ -10,6 +11,7 @@ const m = vi.hoisted(() => ({
   refresh: vi.fn(),
   revalidate: vi.fn(),
 }));
+vi.mock('../ai/reasoning', () => ({ runAiReasoning: m.reasoning }));
 vi.mock('../auth/server', () => ({ requireUser: m.user }));
 vi.mock('../tenancy/context', () => ({ getTenantContext: m.tenant }));
 vi.mock('next/cache', () => ({ revalidatePath: m.revalidate }));
@@ -119,4 +121,49 @@ it('raw persistence detail never escapes', async () => {
   const state = await investigationAction({}, form('MATERIALIZE'));
   expect(state.error).not.toContain('sensitive fixture');
   expect(state.saved).toBeUndefined();
+});
+
+it('AI generation cannot run without tenant context', async () => {
+  m.tenant.mockResolvedValue({});
+  expect(await investigationAction({}, form('GENERATE_AI'))).toHaveProperty(
+    'error',
+  );
+  expect(m.reasoning).not.toHaveBeenCalled();
+});
+it('AI generation cannot run with a cross-project investigation', async () => {
+  m.context.mockRejectedValue(new PersistenceError('ACCESS'));
+  expect(await investigationAction({}, form('GENERATE_AI'))).toHaveProperty(
+    'error',
+  );
+  expect(m.reasoning).not.toHaveBeenCalled();
+});
+it('AI workflow uses scoped evidence and leaves authorization separate', async () => {
+  const query = {
+    select: vi.fn(),
+    eq: vi.fn(),
+    single: vi.fn().mockResolvedValue({
+      data: { run_id: id, api_import_id: id },
+      error: null,
+    }),
+  };
+  query.select.mockReturnValue(query);
+  query.eq.mockReturnValue(query);
+  m.user.mockResolvedValue({
+    client: { from: vi.fn().mockReturnValue(query) },
+  });
+  m.reasoning.mockResolvedValue(id);
+  expect(await investigationAction({}, form('GENERATE_AI'))).toHaveProperty(
+    'saved',
+    true,
+  );
+  expect(m.reasoning).toHaveBeenCalledWith(
+    expect.anything(),
+    { projectId: id, sourceId: id, workflow: 'INVESTIGATION', anchorId: id },
+    expect.anything(),
+    expect.any(Function),
+  );
+  expect(query.eq).toHaveBeenCalledWith('workspace_id', id);
+  expect(query.eq).toHaveBeenCalledWith('project_id', id);
+  expect(m.materialize).not.toHaveBeenCalled();
+  expect(m.decide).not.toHaveBeenCalled();
 });

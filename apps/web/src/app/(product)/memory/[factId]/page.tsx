@@ -1,3 +1,7 @@
+import { PageHeader, Disclosure } from '../../../../components/ui/product';
+import { TechnicalDetails } from '../../../../components/api-map/spec-details';
+import { entityName, readableStatus } from '../../../../lib/display';
+import { LocalTime } from '../../../../components/ui/local-time';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { intelligenceContext } from '../../../../lib/memory-quality/context';
@@ -22,19 +26,29 @@ export default async function MemoryDetail({
   const { fact, observations } = data;
   return (
     <main className="space-y-4">
-      <h1>{fact.kind}</h1>
+      <PageHeader
+        title={readableStatus(fact.kind)}
+        description="Evidence-backed learning with preserved observation history."
+      />
       <p>
-        {fact.currentness} | {fact.operation_id ?? 'Operation unavailable'}
+        {readableStatus(fact.currentness)} |{' '}
+        {fact.operation_id
+          ? entityName('API', 'Operation', fact.operation_id)
+          : 'Operation unavailable'}
       </p>
+      <Disclosure title="Source and environment provenance">
+        {' '}
+        <p>
+          Environment:{' '}
+          {c.environments.find((e) => e.id === fact.environment_id)?.type ??
+            fact.environment_id}{' '}
+          | Source: {fact.api_import_id} | Graph: {fact.graph_id} | Test case:{' '}
+          {fact.case_id}
+        </p>
+      </Disclosure>
       <p>
-        Environment:{' '}
-        {c.environments.find((e) => e.id === fact.environment_id)?.type ??
-          fact.environment_id}{' '}
-        ? Source: {fact.api_import_id} | Graph: {fact.graph_id} | Test case:{' '}
-        {fact.case_id}
-      </p>
-      <p>
-        First: {fact.first_observed_at} | Last: {fact.last_observed_at} | Count:{' '}
+        First: <LocalTime value={fact.first_observed_at} /> | Last:{' '}
+        <LocalTime value={fact.last_observed_at} /> | Count:{' '}
         {fact.observation_count}
       </p>
       <h2>Supporting observations</h2>
@@ -42,28 +56,37 @@ export default async function MemoryDetail({
         {observations.map((o) => (
           <li key={o.id} className="my-4 rounded border p-4">
             <p>
-              {o.claim} | {o.observed_at}
+              {o.claim} | <LocalTime value={o.observed_at} />
             </p>
-            <Link href={'/runs#run-' + o.run_id}>Execution {o.run_id}</Link>
+            <Link href={'/runs#run-' + o.run_id}>
+              {entityName('Execution', 'Run', o.run_id)}
+            </Link>
             <p>
               <Link href={'/memory/evidence/' + o.id}>
-                Evidence package {o.package_id}
+                Inspect evidence package
               </Link>{' '}
-              ? Item {o.evidence_item_id ?? 'Package-level provenance'}
+              | Typed references retained in technical details.
             </p>
             {o.finding_id && (
               <p>
                 <Link href={'/findings/' + o.finding_id}>
-                  Finding {o.finding_id}
+                  {entityName('Evidence', 'Finding', o.finding_id)}
                 </Link>{' '}
-                ? Human review {o.review_id ?? 'None'}
+                |{' '}
+                {o.review_id
+                  ? 'Human review available in provenance.'
+                  : 'No human review linked.'}
               </p>
             )}
             {o.investigation_id && (
               <Link href={'/investigations/' + o.investigation_id}>
-                Investigation {o.investigation_id}
+                {entityName('Evidence', 'Investigation', o.investigation_id)}
               </Link>
             )}
+            <TechnicalDetails
+              value={o}
+              label="Technical details: observation provenance"
+            />
           </li>
         ))}
       </ul>

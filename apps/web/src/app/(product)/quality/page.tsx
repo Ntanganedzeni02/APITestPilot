@@ -1,3 +1,8 @@
+import { Disclosure } from '../../../components/ui/product';
+import { TechnicalDetails } from '../../../components/api-map/spec-details';
+import { entityName } from '../../../lib/display';
+import { PageHeader } from '../../../components/ui/product';
+import { LocalTime } from '../../../components/ui/local-time';
 import Link from 'next/link';
 import { intelligenceContext } from '../../../lib/memory-quality/context';
 import { QualityPanel } from '../../../components/memory-quality/quality-panel';
@@ -26,7 +31,10 @@ export default async function Quality({
       source = await c.repo.latestSource(c.workspace.id, c.project.id);
     return (
       <main className="space-y-5">
-        <h1>API Quality Intelligence</h1>
+        <PageHeader
+          title="API Quality Intelligence"
+          description="Explainable quality, uncertainty and evidence gaps by environment."
+        />
         <form>
           <label>
             Environment{' '}
@@ -48,48 +56,69 @@ export default async function Quality({
         />
         {current && (
           <>
-            <h2>Unverified contributors</h2>
-            <p>
-              Requirement gaps: {current.result.inputs.gaps.requirements.length}
-              . Risk gaps: {current.result.inputs.gaps.risks.length}. Operation
-              gaps: {current.result.inputs.gaps.operations.length}.
-            </p>
-            <ul>
-              {current.result.inputs.gaps.requirements.map((id) => (
-                <li key={id}>
-                  <Link href="/requirements">Requirement {id}</Link>
-                </li>
-              ))}
-              {current.result.inputs.gaps.risks.map((id) => (
-                <li key={id}>
-                  <Link href="/risks">Risk {id}</Link>
-                </li>
-              ))}
-              {current.result.inputs.gaps.operations.map((id) => (
-                <li key={id}>Unverified/stale operation fingerprint {id}</li>
-              ))}
-            </ul>
-            <h2>Authoritative assessment provenance</h2>
-            <ul>
-              {current.result.inputs.provenance.runIds.map((id) => (
-                <li key={id}>
-                  <Link href={'/runs#run-' + id}>Execution {id}</Link>
-                </li>
-              ))}
-              {current.result.inputs.provenance.findingIds.map((id) => (
-                <li key={id}>
-                  <Link href={'/findings/' + id}>Finding {id}</Link>
-                </li>
-              ))}
-            </ul>
-            <p>
-              Evidence packages:{' '}
-              {current.result.inputs.provenance.packageIds.join(', ') || 'None'}
-            </p>
-            <p>
-              Requirement/risk reviews:{' '}
-              {current.result.inputs.provenance.reviewIds.join(', ') || 'None'}
-            </p>
+            <Disclosure title="Unverified contributors">
+              <h2>Unverified contributors</h2>
+              <p>
+                Requirement gaps:{' '}
+                {current.result.inputs.gaps.requirements.length}. Risk gaps:{' '}
+                {current.result.inputs.gaps.risks.length}. Operation gaps:{' '}
+                {current.result.inputs.gaps.operations.length}.
+              </p>
+              <ul>
+                {current.result.inputs.gaps.requirements.map((id) => (
+                  <li key={id}>
+                    <Link href="/requirements">
+                      {entityName('Requirement', 'Reference', id)}
+                    </Link>
+                  </li>
+                ))}
+                {current.result.inputs.gaps.risks.map((id) => (
+                  <li key={id}>
+                    <Link href="/risks">
+                      {entityName('Risk', 'Reference', id)}
+                    </Link>
+                  </li>
+                ))}
+                {current.result.inputs.gaps.operations.map((id) => (
+                  <li key={id}>
+                    Unverified/stale operation
+                    <TechnicalDetails
+                      value={{ operationFingerprint: id }}
+                      label="Exact operation fingerprint"
+                    />
+                  </li>
+                ))}
+              </ul>
+            </Disclosure>
+            <Disclosure title="Authoritative assessment provenance">
+              <h2>Authoritative assessment provenance</h2>
+              <ul>
+                {current.result.inputs.provenance.runIds.map((id) => (
+                  <li key={id}>
+                    <Link href={'/runs#run-' + id}>
+                      {entityName('Execution', 'Run', id)}
+                    </Link>
+                  </li>
+                ))}
+                {current.result.inputs.provenance.findingIds.map((id) => (
+                  <li key={id}>
+                    <Link href={'/findings/' + id}>
+                      {entityName('Evidence', 'Finding', id)}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <p>
+                Evidence packages:{' '}
+                {current.result.inputs.provenance.packageIds.join(', ') ||
+                  'None'}
+              </p>
+              <p>
+                Requirement/risk reviews:{' '}
+                {current.result.inputs.provenance.reviewIds.join(', ') ||
+                  'None'}
+              </p>
+            </Disclosure>
           </>
         )}
         <h2>Immutable assessment history</h2>
@@ -97,12 +126,12 @@ export default async function Quality({
           {history.map((a) => (
             <li key={a.id}>
               <p>
-                {a.assessed_at} | {a.result.overall ?? 'Unknown'} |{' '}
-                {a.result.confidence} confidence | Source{' '}
-                {a.api_import_id ?? 'None'}
+                <LocalTime value={a.assessed_at} /> |{' '}
+                {a.result.overall ?? 'Unknown'} | {a.result.confidence}{' '}
+                confidence. Source identity is retained in snapshot details.
               </p>
               <details>
-                <summary>Snapshot explanation {a.id}</summary>
+                <summary>Snapshot explanation</summary>
                 <QualityPanel
                   current={a}
                   previous={null}

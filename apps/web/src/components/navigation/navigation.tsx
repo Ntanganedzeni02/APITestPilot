@@ -29,6 +29,11 @@ export function Navigation({
       >
         <RouteIcon name={route.icon} />
         <span>{route.title}</span>
+        {route.href === '/ask' && (
+          <span className="ml-auto text-[10px] text-muted-foreground">
+            Preview
+          </span>
+        )}
       </Link>
     );
   }
@@ -38,14 +43,18 @@ export function Navigation({
       aria-label="Main navigation"
       className="flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pb-3"
     >
-      {productRoutes.filter((route) => route.href === '/').map(item)}
+      {productRoutes
+        .filter((route) => route.href === '/' || route.href === '/ask')
+        .map(item)}
       {navigationGroups.map((group) => (
-        <section key={group} aria-label={group} className="mt-5">
+        <section key={group} aria-label={group} className="mt-4">
           <h2 className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {group}
           </h2>
           <div className="space-y-0.5">
-            {productRoutes.filter((route) => route.group === group).map(item)}
+            {productRoutes
+              .filter((route) => route.group === group && route.href !== '/ask')
+              .map(item)}
           </div>
         </section>
       ))}

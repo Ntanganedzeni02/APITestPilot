@@ -1,3 +1,7 @@
+import { PageHeader, Disclosure } from '../../../../../components/ui/product';
+import { TechnicalDetails } from '../../../../../components/api-map/spec-details';
+import { readableStatus } from '../../../../../lib/display';
+import { LocalTime } from '../../../../../components/ui/local-time';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { intelligenceContext } from '../../../../../lib/memory-quality/context';
@@ -21,16 +25,24 @@ export default async function Evidence({
   if (!data) notFound();
   return (
     <main className="space-y-4">
-      <h1>Supporting evidence</h1>
+      <PageHeader
+        title="Supporting evidence"
+        description="Recorded execution facts and assertion evaluations. No inference is treated as a confirmed defect."
+      />
+      <Disclosure title="Integrity and source provenance">
+        {' '}
+        <p>
+          Package {data.package.id} | Integrity fingerprint{' '}
+          {data.package.fingerprint}
+        </p>
+        <p>
+          Environment {data.package.environment_id} | Case{' '}
+          {data.package.case_id}
+        </p>
+      </Disclosure>
       <p>
-        Package {data.package.id} | Integrity fingerprint{' '}
-        {data.package.fingerprint}
-      </p>
-      <p>
-        Environment {data.package.environment_id} | Case {data.package.case_id}
-      </p>
-      <p>
-        Observation {data.observation.claim} at {data.observation.observed_at}
+        Observation {data.observation.claim} at{' '}
+        <LocalTime value={data.observation.observed_at} />
       </p>
       <p>
         Persisted execution: {data.result.outcome} | Sent:{' '}
@@ -42,8 +54,12 @@ export default async function Evidence({
       <ul>
         {data.items.map((item) => (
           <li key={item.id}>
-            {item.kind} | {item.id} | Assertion index{' '}
+            {readableStatus(item.kind)} | Assertion index{' '}
             {item.assertion_index ?? 'Not applicable'}
+            <TechnicalDetails
+              value={item}
+              label="Technical details: typed evidence reference"
+            />
           </li>
         ))}
       </ul>
@@ -51,7 +67,7 @@ export default async function Evidence({
       <ul>
         {data.result.assertions.map((a, i) => (
           <li key={i}>
-            {a.kind}: {a.status}
+            {readableStatus(a.kind)}: {readableStatus(a.status)}
           </li>
         ))}
       </ul>

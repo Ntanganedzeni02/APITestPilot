@@ -7,13 +7,27 @@ import {
   createBehaviourGraphRepository,
   PersistenceError,
 } from '@testpilot/database';
+import { AiReasoningError } from '@testpilot/ai/server';
+import {
+  AiValidationError,
+  groundedPlanningCatalog,
+  validateGroundedPlanning,
+} from '@testpilot/ai';
+import { runAiReasoning } from '../ai/reasoning';
 import { generateTestPlan } from '@testpilot/test-engine';
-import { validateId, canReview, ValidationError } from '@testpilot/domain';
+import {
+  validateId,
+  canReview,
+  reviewState,
+  ValidationError,
+} from '@testpilot/domain';
 import { requireUser } from '../auth/server';
 import { getTenantContext } from '../tenancy/context';
 export interface PlanningActionState {
   error?: string;
   saved?: boolean;
+  planId?: string;
+  analysisId?: string;
 }
 export async function planningAction(
   _previous: PlanningActionState,
@@ -30,7 +44,7 @@ export async function planningAction(
   };
   try {
     const repository = createTestPlanRepository(client);
-    if (form.get('mode') === 'GENERATE') {
+    if (form.get('mode') === 'GENERATE' || form.get('mode') === 'GENERATE_AI') {
       const analysisId = validateId(form.get('analysisId'));
       const analysis = (
         await createQaRepository(client).list(workspace.id, project.id)
@@ -54,9 +68,73 @@ export async function planningAction(
       )[0];
       if (!source || !snapshot)
         throw new ValidationError('Pinned source unavailable.');
-      await repository.save(
-        await generateTestPlan({ analysis, source, snapshot }),
-      );
+      const context = { analysis, source, snapshot };
+      if (form.get('mode') === 'GENERATE_AI') {
+        if (
+          !analysis.records.some(
+            (r) =>
+              r.kind === 'REQUIREMENT' && reviewState(r).status === 'APPROVED',
+          )
+        )
+          throw new ValidationError(
+            'AI generation unavailable: approve requirements for this analysis in Requirements, or select an approved analysis.',
+          );
+        const catalog = groundedPlanningCatalog(context);
+        const planId = await runAiReasoning(
+          client,
+          {
+            projectId: project.id,
+            sourceId: source.id,
+            workflow: 'PLANNING',
+            anchorId: analysis.id,
+          },
+          catalog.request.data,
+          async (provider, cancellation) => {
+            let failure: unknown;
+            const plan = await generateTestPlan(
+              context,
+              {
+                providerId: provider.providerId,
+                modelId: provider.modelId,
+                async plan(_request, signal) {
+                  try {
+                    const raw = await provider.plan(
+                      catalog.request,
+                      AbortSignal.any([signal, cancellation]),
+                    );
+                    validateGroundedPlanning(raw, catalog);
+                    return raw;
+                  } catch (error) {
+                    failure = error;
+                    throw error;
+                  }
+                },
+              },
+              30000,
+            );
+            if (
+              plan.aiStatus !== 'SUCCEEDED' ||
+              !plan.items.some((i) => i.origin === 'AI_PROPOSED')
+            )
+              throw failure instanceof AiReasoningError
+                ? failure
+                : new AiReasoningError(
+                    'VALIDATION',
+                    failure instanceof AiValidationError
+                      ? failure.diagnostic
+                      : new AiValidationError('PLAN', 'PLAN_RESULT_REJECTED')
+                          .diagnostic,
+                  );
+            return plan;
+          },
+        );
+        revalidatePath('/tests');
+        return { saved: true, planId, analysisId: analysis.id };
+      } else {
+        const planId = await repository.save(await generateTestPlan(context));
+        revalidatePath('/tests');
+        return { saved: true, planId, analysisId: analysis.id };
+      }
     } else if (form.get('mode') === 'ADD') {
       const plans = await repository.list(workspace.id, project.id);
       const plan = plans.find((p) => p.id === validateId(form.get('planId')));
@@ -127,11 +205,13 @@ export async function planningAction(
   } catch (error) {
     return {
       error:
-        error instanceof PersistenceError
+        error instanceof AiReasoningError
           ? error.message
-          : error instanceof ValidationError
+          : error instanceof PersistenceError
             ? error.message
-            : 'Test planning is unavailable. Please try again.',
+            : error instanceof ValidationError
+              ? error.message
+              : 'Test planning is unavailable. Please try again.',
     };
   }
 }

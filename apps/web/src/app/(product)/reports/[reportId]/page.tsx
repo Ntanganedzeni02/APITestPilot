@@ -1,3 +1,7 @@
+import { PageHeader, Disclosure } from '../../../../components/ui/product';
+import { TechnicalDetails } from '../../../../components/api-map/spec-details';
+import { readableStatus } from '../../../../lib/display';
+import { LocalTime } from '../../../../components/ui/local-time';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { releaseContext } from '../../../../lib/releases/context';
@@ -23,31 +27,44 @@ export default async function ReportDetail({
   const s = report.snapshot;
   return (
     <main className="space-y-5">
-      <h1>Release report: {s.release.name}</h1>
-      <p>
-        {report.report_version} | generated {report.generated_at} by{' '}
-        {report.generated_by}
-      </p>
-      <p>
-        {s.environmentType} | project {s.release.project_id} | source{' '}
-        {s.release.api_import_id}
-      </p>
+      <PageHeader
+        title={s.release.name}
+        eyebrow="Release report"
+        description="An immutable snapshot of the assessment and human decision at generation time."
+      />
+      <Disclosure title="Report identity and recorded scope">
+        {' '}
+        <p>
+          {report.report_version} | generated{' '}
+          <LocalTime value={report.generated_at} /> by {report.generated_by}
+        </p>
+        <p>
+          {s.environmentType} | project {s.release.project_id} | source{' '}
+          {s.release.api_import_id}
+        </p>
+      </Disclosure>
       <p>
         This report preserves its original assessment and decision. It is not
         recalculated from current state.
       </p>
       <Link href={'/releases/' + report.release_id}>Release</Link>{' '}
-      <Link href={'/reports/' + report.id + '/export'}>Download JSON</Link>
+      <Link className="button-link" href={'/reports/' + report.id + '/export'}>
+        Download JSON
+      </Link>
       <ReleaseAssessmentPanel assessment={s.assessment} />
       <h2>Human decision at report generation</h2>
       {s.decision ? (
         <>
           <p>
-            {s.decision.decision} | {s.decision.actor_id} |{' '}
-            {s.decision.decided_at} |{' '}
+            {readableStatus(s.decision.decision)} |{' '}
+            <LocalTime value={s.decision.decided_at} /> |{' '}
             {s.decision.is_override ? 'Explicit override' : 'No override'}
           </p>
           <p>{s.decision.rationale}</p>
+          <TechnicalDetails
+            value={s.decision}
+            label="Technical details: human decision audit"
+          />
         </>
       ) : (
         <p>No human decision recorded in this snapshot.</p>

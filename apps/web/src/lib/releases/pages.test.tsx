@@ -55,7 +55,8 @@ it('empty release list never invents approval', async () => {
   const html = renderToStaticMarkup(
     await Releases({ searchParams: Promise.resolve({}) }),
   );
-  expect(html).toContain('No release has been approved');
+  expect(html).toContain('No releases on this page');
+  expect(html).not.toContain('Release fixture');
 });
 it('missing import prevents create UI', async () => {
   m.source.mockResolvedValue(null);
@@ -80,7 +81,9 @@ it('detail separates CLEAR assessment from absent human decision', async () => {
       searchParams: Promise.resolve({}),
     }),
   );
-  expect(html).toContain('TestPilot assessment: CLEAR');
+  expect(html).toContain('Release assessment');
+  expect(html).toContain('>Clear</span>');
+  expect(html).toContain('authorizes no');
   expect(html).toContain('No human decision recorded');
   expect(html).toContain('Humans decide');
 });
@@ -119,7 +122,7 @@ it('unknown quality remains unknown', async () => {
 it('empty reports contain no fake cards', async () =>
   expect(
     renderToStaticMarkup(await Reports({ searchParams: Promise.resolve({}) })),
-  ).toContain('No reports generated'));
+  ).toContain('No reports on this page'));
 it('report renders its snapshot without fetching today state', async () => {
   const html = renderToStaticMarkup(
     await Report({ params: Promise.resolve({ reportId: id }) }),

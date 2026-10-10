@@ -10,9 +10,9 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       </header>
       <main
         id="main-content"
-        className="mx-auto max-w-md px-6 pb-16 pt-10 sm:pt-16"
+        className="product-content mx-auto max-w-md px-6 pb-16 pt-10 sm:pt-16"
       >
-        <div className="rounded-xl border border-border bg-surface p-7 shadow-sm sm:p-9">
+        <div className="rounded-2xl border border-border bg-surface p-7 shadow-sm sm:p-9">
           {children}
         </div>
         <p className="mt-7 text-center text-xs text-muted-foreground">

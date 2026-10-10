@@ -1,3 +1,4 @@
+import { LocalDateOption } from '../ui/local-time';
 import Link from 'next/link';
 import {
   createApiKnowledgeRepository,
@@ -122,9 +123,12 @@ export async function IntelligencePage({
                   className="form-input"
                 >
                   {analyses.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {a.createdAt} · {a.id.slice(0, 8)}
-                    </option>
+                    <LocalDateOption
+                      key={a.id}
+                      value={a.id}
+                      timestamp={a.createdAt}
+                      suffix={a.id.slice(0, 8)}
+                    />
                   ))}
                 </select>
               </label>

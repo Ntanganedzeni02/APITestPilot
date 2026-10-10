@@ -8,6 +8,10 @@ import { validateId, ValidationError } from '@testpilot/domain';
 import { validateTarget, publicAddress } from '@testpilot/safety';
 import { requireUser } from '../auth/server';
 import { getTenantContext } from '../tenancy/context';
+import {
+  executionAvailable,
+  executionUnavailableMessage,
+} from './availability';
 export interface ExecutionActionState {
   error?: string;
   saved?: boolean;
@@ -23,6 +27,8 @@ export async function executionAction(
     const repo = createExecutionRepository(client);
     const id = (key: string) => validateId(form.get(key));
     const mode = form.get('mode');
+    if ((mode === 'REQUEST' || mode === 'APPROVE') && !executionAvailable())
+      return { error: executionUnavailableMessage };
     if (mode === 'CONFIGURE') {
       const environment = id('environmentId');
       const environments = await createTenantService(

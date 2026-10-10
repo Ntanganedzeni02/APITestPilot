@@ -1,3 +1,4 @@
+import { LoadingState } from '../../../components/ui/product';
 export default function Loading() {
-  return <p role="status">Loading evidence intelligence?</p>;
+  return <LoadingState />;
 }

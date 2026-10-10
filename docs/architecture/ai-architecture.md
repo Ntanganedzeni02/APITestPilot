@@ -1,8 +1,9 @@
 # AI architecture
 
-Status: M1.5 implements provider-independent proposal contracts, structured
-validation and failure-isolated analysis. No real provider, vendor SDK or model
-integration is configured.
+Status: provider-independent proposal contracts retain structured validation and
+failure isolation. M1.12.3 adds an opt-in server-only official OpenAI adapter for
+planning and bounded investigation proposals. Live provider acceptance remains
+unverified; all other intended AI responsibilities below remain unimplemented.
 
 TestPilot-owned interfaces separate reasoning responsibilities from provider
 adapters. Domain/application contracts determine accepted meaning.
@@ -48,3 +49,12 @@ retained. Timeout or invalid output leaves deterministic analysis available.
 See [M1.5 trust boundary](../development/qa-intelligence.md).
 
 M1.6 extends the provider-independent abstraction with opaque approved-requirement/risk/graph catalogs and strict non-executable planning proposals. Deterministic planning survives provider failure. No provider is configured. See [planning trust boundary](../development/test-planning.md).
+
+## M1.12.3 integration update
+
+Opt-in server-only OpenAI reasoning is now implemented for planning and bounded
+investigation hypotheses; earlier no-provider statements describe the original
+milestone. Actual finding interpretation remains deferred. Migration
+`20261008001200_ai_reasoning.sql` adds the RLS-protected usage ledger and two
+authenticated admission/completion RPCs; it is not deployed. Hosted alignment
+remains through 01100. See [configuration and authority limits](../development/openai-reasoning.md).

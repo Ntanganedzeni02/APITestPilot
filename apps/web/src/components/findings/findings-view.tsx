@@ -1,3 +1,12 @@
+import { SearchableList } from '../ui/searchable-list';
+import { StatusBadge, Disclosure, EmptyState } from '../ui/product';
+import { TechnicalDetails } from '../api-map/spec-details';
+import {
+  entityName,
+  readableStatus,
+  operationDisplay,
+} from '../../lib/display';
+import { LocalTime } from '../ui/local-time';
 import Link from 'next/link';
 import { findingSeverities, type Finding } from '@testpilot/domain';
 import type { FindingDetail } from '@testpilot/database';
@@ -7,37 +16,63 @@ export function FindingsList({ findings }: { findings: Finding[] }) {
   return (
     <div className="space-y-4">
       {!findings.length && (
-        <p>
-          No findings yet. Derive evidence from completed runs. An empty list
-          does not establish that an API is defect-free.
-        </p>
+        <EmptyState
+          title="No findings yet."
+          description="Derive evidence from completed runs. An empty list does not establish that an API is defect-free."
+          href="/runs"
+          action="Inspect execution evidence"
+        />
       )}
-      {findings.map((f) => (
-        <article key={f.id} className="rounded border p-4">
-          <h2>
-            <Link href={'/findings/' + f.id}>{f.title}</Link>
-          </h2>
-          <p>
-            {f.status} / {f.severity} severity / {f.confidence} confidence
-          </p>
-          <p>{f.summary}</p>
-          <p>
-            Operation:{' '}
-            {f.operation
-              ? f.operation.method + ' ' + f.operation.pointer
-              : 'Unavailable'}
-          </p>
-          <p>
-            {f.occurrence_count} evidence-backed occurrence(s); latest:{' '}
-            {f.last_observed_at}
-          </p>
-          <p>
-            Review:{' '}
-            {f.status === 'CANDIDATE' ? 'Human decision required' : f.status};
-            test case: {f.case_id}
-          </p>
-        </article>
-      ))}
+      <SearchableList
+        label="Search findings"
+        rows={findings.map((f) => ({
+          id: f.id,
+          searchText: [
+            f.title,
+            f.summary,
+            f.status,
+            f.severity,
+            f.operation?.method ?? '',
+            f.operation?.pointer ?? '',
+          ].join(' '),
+          content: (
+            <article key={f.id} className="product-card">
+              <h2>
+                <Link href={'/findings/' + f.id}>{f.title}</Link>
+              </h2>
+              <p>
+                <StatusBadge value={f.status} />{' '}
+                <StatusBadge value={f.severity} />{' '}
+                <span className="text-xs text-muted-foreground">
+                  {readableStatus(f.confidence)} confidence
+                </span>
+              </p>
+              <p>{f.summary}</p>
+              <p>
+                Operation:{' '}
+                {f.operation
+                  ? operationDisplay(f.operation.method, f.operation.pointer)
+                  : 'Unavailable'}
+              </p>
+              <p>
+                {f.occurrence_count} evidence-backed occurrence(s); latest:{' '}
+                <LocalTime value={f.last_observed_at} />
+              </p>
+              <p>
+                Review:{' '}
+                {f.status === 'CANDIDATE'
+                  ? 'Human decision required'
+                  : f.status}
+                ; test case details are retained below.
+              </p>
+              <TechnicalDetails
+                value={{ caseId: f.case_id, rule: f.rule, source: f.source }}
+                label="Technical details: finding source"
+              />
+            </article>
+          ),
+        }))}
+      />
     </div>
   );
 }
@@ -48,46 +83,70 @@ export function FindingDetailView({ detail }: { detail: FindingDetail }) {
       <Link href="/findings">Back to findings</Link>
       <h1 className="page-title">{f.title}</h1>
       <p>
-        {f.status} / {f.severity} severity / {f.confidence} confidence
+        <StatusBadge value={f.status} /> <StatusBadge value={f.severity} />{' '}
+        <span className="text-xs text-muted-foreground">
+          {readableStatus(f.confidence)} confidence
+        </span>
       </p>
       <p>{f.summary}</p>
+      <Disclosure title="Classification details">
+        {' '}
+        <p>
+          Deterministic classification: {f.rule}; source: {f.source}
+        </p>
+      </Disclosure>
       <p>
-        Deterministic classification: {f.rule}; source: {f.source}
+        First observed: <LocalTime value={f.first_observed_at} />; latest:{' '}
+        <LocalTime value={f.last_observed_at} />; occurrences:{' '}
+        {f.occurrence_count}
       </p>
-      <p>
-        First observed: {f.first_observed_at}; latest: {f.last_observed_at};
-        occurrences: {f.occurrence_count}
-      </p>
-      <p>
-        Environment: {f.environment_id}; case: {f.case_id}
-      </p>
-      <section>
-        <h2>Requirement and risk traceability</h2>
-        {detail.traceability.length ? (
-          detail.traceability.map((t) => (
-            <p key={t.qa_item_id}>
-              {t.qa_kind}: {t.qa_item_id}; plan: {t.plan_id}
-            </p>
-          ))
-        ) : (
-          <p>No requirement or risk reference is available for this case.</p>
-        )}
-      </section>
+      <Disclosure title="Requirement and risk traceability">
+        {' '}
+        <p>
+          Environment: {f.environment_id}; case: {f.case_id}
+        </p>
+        <section>
+          <h2>Requirement and risk traceability</h2>
+          {detail.traceability.length ? (
+            detail.traceability.map((t) => (
+              <p key={t.qa_item_id}>
+                {entityName(
+                  readableStatus(t.qa_kind),
+                  'Reference',
+                  t.qa_item_id,
+                )}
+                ;{' '}
+                <span className="text-xs text-muted-foreground">
+                  {entityName('Test', 'Plan', t.plan_id)}
+                </span>
+                <TechnicalDetails
+                  value={t}
+                  label="Technical details: exact association"
+                />
+              </p>
+            ))
+          ) : (
+            <p>No requirement or risk reference is available for this case.</p>
+          )}
+        </section>
+      </Disclosure>
       {detail.occurrences.map((o) => {
         const p = detail.packages.find((p) => p.id === o.package_id),
           r = detail.runs.find((r) => r.id === p?.run_id);
         return (
           <section key={o.id} className="min-w-0 rounded border p-4">
             <h2>Evidence occurrence</h2>
-            <p>
-              Observed: {o.observed_at}; package: {p?.id}; integrity
-              fingerprint: {p?.fingerprint}
-            </p>
-            <p>
-              Run: <Link href={'/runs#run-' + p?.run_id}>{p?.run_id}</Link>;
-              configuration: {p?.config_id}; plan: {p?.plan_id}; scenario:{' '}
-              {p?.scenario_id}
-            </p>
+            <Disclosure title="Recorded evidence provenance">
+              <p>
+                Observed: <LocalTime value={o.observed_at} />; package: {p?.id};
+                integrity fingerprint: {p?.fingerprint}
+              </p>
+              <p>
+                Run: <Link href={'/runs#run-' + p?.run_id}>{p?.run_id}</Link>;
+                configuration: {p?.config_id}; plan: {p?.plan_id}; scenario:{' '}
+                {p?.scenario_id}
+              </p>
+            </Disclosure>
             <p>
               Operation: {r?.request?.method ?? 'Unavailable'}{' '}
               {r?.request?.operationPointer ?? 'Unknown'}
@@ -188,11 +247,15 @@ export function FindingDetailView({ detail }: { detail: FindingDetail }) {
         {detail.reviews.map((r) => (
           <article key={r.id}>
             <p>
-              {r.decision} by {r.actor_id} at {r.created_at};{' '}
-              {r.previous_status} / {r.new_status}; severity{' '}
+              {readableStatus(r.decision)} at <LocalTime value={r.created_at} />
+              ; {r.previous_status} / {r.new_status}; severity{' '}
               {r.previous_severity} / {r.new_severity}
             </p>
             <p>{r.note}</p>
+            <TechnicalDetails
+              value={r}
+              label="Technical details: human review audit"
+            />
           </article>
         ))}
       </section>

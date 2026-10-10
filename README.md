@@ -10,7 +10,7 @@ and risk proposals, provenance and append-only human review. See
 M1.2/M1.3/M1.4/M1.5 migrations are deployed to Development Supabase per supplied
 evidence. M1.6 migration deployment is confirmed by supplied evidence; hosted planning acceptance remains separate.
 Hosted authenticated acceptance remains deferred. AI proposals have a validated
-provider-independent contract; no real provider is configured. AI/LLM graph
+provider-independent contract; M1.12.3 adds an opt-in server-only OpenAI adapter. AI/LLM graph
 inference and speculative graph generation do not exist. M1.7 introduces a local
 safe execution foundation; its migration is deployed per supplied evidence, while hosted execution acceptance remains separate.
 
@@ -24,7 +24,7 @@ are configured. `apps/web` has Supabase SSR email/password authentication,
 protected routes, persisted workspace onboarding and project selection. Domain
 rules are provider independent; database operations use a dedicated adapter and
 version-controlled RLS migrations. Projects create DEVELOPMENT, STAGING and
-PRODUCTION environments atomically. M1.3–M1.5 add API knowledge, graphs and reviewable QA intelligence; no functioning runner or real model integration exists.
+PRODUCTION environments atomically. M1.3–M1.5 add API knowledge, graphs and reviewable QA intelligence; the separate runner and opt-in real model adapter are implemented; hosted runtime acceptance remains separate.
 Without Supabase configuration, auth pages explain setup and product access is
 closed. No sample tenant data is displayed.
 
@@ -86,7 +86,7 @@ Investigations connects persisted observations to grounded follow-up proposals,
 exact human review, bounded dependency/attempt budgets and existing M1.7 execution.
 M1.8 owns resulting evidence/findings. Eligible HTTP status observations support
 narrow numeric query bindings; redacted resource identifiers remain ineligible.
-Actual AI providers are intentionally deferred. Migration
+Bounded OpenAI hypotheses are opt-in in M1.12.3; live provider acceptance remains deferred. Migration
 `20261007000800_curiosity_engine.sql` is deployed to hosted Supabase; local and hosted
 migrations are aligned through 00800. M1.9 post-deployment verification passed.
 M1.10 Evidence Memory + API Quality Intelligence is deployed; hosted verification passed and migration histories align through 00900. M1.11 Release Intelligence + Reports is implemented and deployed; hosted catalog/function verification passed and local/remote migrations align through 01000. See [curiosity boundaries](docs/development/curiosity-engine.md).
@@ -106,3 +106,12 @@ Release Center now creates environment/source-scoped releases, derives determini
 ## M1.12.1 deployment foundations
 
 Deployment/configuration preparation is available in [the deployment runbook](docs/development/deployment.md). This is not a launch: M1.12.2 adds [leased runner recovery and operational health](docs/development/runner-operations.md), with additive migration 01100 deployed successfully. Hosted catalog/function verification passed on PostgreSQL 17.11; local/remote migrations align through 01100 and the runner retains five authorized RPCs. Hosted worker runtime and HTTP execution remain untested; Docker runtime and PostgreSQL 17 CI execution remain pending. Production launch has not occurred.
+
+## M1.12.3 bounded OpenAI reasoning
+
+Test Studio and Investigations support opt-in, server-only OpenAI Responses with
+strict Structured Outputs. Suggestions remain unverified and require human review;
+AI cannot authorize execution. Migration `20261008001200_ai_reasoning.sql` is local
+and **not deployed**. Hosted histories remain aligned through 01100. No paid
+provider requests or production launch occurred. See [configuration, budgets and
+limitations](docs/development/openai-reasoning.md).

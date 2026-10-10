@@ -4,7 +4,7 @@ import { clearContextAction } from '../lib/tenancy/actions';
 
 export default function NotFound() {
   return (
-    <section className="py-16">
+    <section className="product-card my-8">
       <p className="eyebrow">Page not found</p>
       <h1 className="page-title">This page is not here.</h1>
       <p className="mb-6 mt-4 text-sm text-muted-foreground">

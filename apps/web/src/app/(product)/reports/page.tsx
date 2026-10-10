@@ -1,3 +1,9 @@
+import {
+  PageHeader,
+  StatusBadge,
+  EmptyState,
+} from '../../../components/ui/product';
+import { LocalTime } from '../../../components/ui/local-time';
 import Link from 'next/link';
 import { releaseContext } from '../../../lib/releases/context';
 export default async function Reports({
@@ -12,26 +18,47 @@ export default async function Reports({
       reports = await c.repo.reports(c.workspace.id, c.project.id, page);
     return (
       <main className="space-y-5">
-        <h1>Release Reports</h1>
+        <PageHeader
+          title="Release Reports"
+          description="Immutable evidence snapshots, ready to inspect and share."
+        />
         <p>
           Immutable evidence snapshots. Human decisions remain separate from
           TestPilot assessments.
         </p>
         {!reports.length ? (
-          <p>No reports generated. Create and assess a release first.</p>
+          <EmptyState
+            title="No reports on this page"
+            description="Create and assess a release to preserve its evidence in an immutable report."
+            href="/releases"
+            action="Open Release Center"
+          />
         ) : (
-          <ul>
+          <ul className="grid gap-3 md:grid-cols-2">
             {reports.map((r) => (
-              <li key={r.id}>
-                <Link href={'/reports/' + r.id}>{r.snapshot.release.name}</Link>{' '}
-                | {r.snapshot.environmentType} | generated {r.generated_at} |{' '}
-                {r.snapshot.assessment.result.status} | human:{' '}
-                {r.snapshot.decision?.decision ?? 'No decision'} | quality{' '}
-                {r.snapshot.assessment.result.inputs.quality?.result.overall ??
-                  'Unknown'}{' '}
-                | sufficiency{' '}
-                {r.snapshot.assessment.result.inputs.quality?.result
-                  .sufficiency ?? 'Unknown'}
+              <li key={r.id} className="product-card">
+                <Link href={'/reports/' + r.id} className="block">
+                  <span className="font-semibold">
+                    {r.snapshot.release.name}
+                  </span>
+                  <span className="mt-2 flex flex-wrap items-center gap-2">
+                    <StatusBadge value={r.snapshot.assessment.result.status} />
+                    <span className="text-xs text-muted-foreground">
+                      {r.snapshot.environmentType} |{' '}
+                      <LocalTime value={r.generated_at} />
+                    </span>
+                  </span>
+                  <span className="mt-3 block text-xs text-muted-foreground">
+                    Human decision:{' '}
+                    {r.snapshot.decision?.decision ?? 'No decision'}. Quality:{' '}
+                    {r.snapshot.assessment.result.inputs.quality?.result
+                      .overall ?? 'Unknown'}
+                    ; sufficiency:{' '}
+                    {r.snapshot.assessment.result.inputs.quality?.result
+                      .sufficiency ?? 'Unknown'}
+                    .
+                  </span>
+                </Link>
               </li>
             ))}
           </ul>

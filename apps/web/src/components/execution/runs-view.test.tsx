@@ -39,13 +39,15 @@ vi.mock('./action-form', () => ({
   ExecutionActionForm: ({
     children,
     label,
+    disabled,
   }: {
     children: React.ReactNode;
     label: string;
+    disabled?: boolean;
   }) => (
     <form>
       {children}
-      <button>{label}</button>
+      <button disabled={disabled}>{label}</button>
     </form>
   ),
 }));
@@ -80,6 +82,17 @@ it('member cannot approve privileged execution', () => {
   const html = renderToStaticMarkup(<RunsView runs={[run]} role="MEMBER" />);
   expect(html).not.toContain('Approve this exact request');
   expect(html).toContain('No observed response');
+});
+it('unavailable worker disables approval while preserving cancellation', () => {
+  const html = renderToStaticMarkup(<RunsView runs={[run]} role="OWNER" />);
+  expect(html).toContain(
+    '<button disabled="">Approve this exact request</button>',
+  );
+  expect(html).toContain('<button>Request cancellation</button>');
+  const enabled = renderToStaticMarkup(
+    <RunsView runs={[run]} role="OWNER" executionAvailable />,
+  );
+  expect(enabled).toContain('<button>Approve this exact request</button>');
 });
 it('owner approval binds fingerprint, BLOCK offers no override', () => {
   expect(
@@ -254,7 +267,7 @@ it('completed run links to real derived findings without changing execution auth
     />,
   );
   expect(html).toContain('/findings/fixture-finding');
-  expect(html).toContain('fixture-package');
+  expect(html).toContain('Technical details: evidence package and findings');
   expect(html).not.toContain('Approve this exact request');
 });
 

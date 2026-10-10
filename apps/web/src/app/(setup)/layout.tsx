@@ -22,8 +22,11 @@ export default async function SetupLayout({
           </form>
         </div>
       </header>
-      <main id="main-content" className="mx-auto max-w-xl px-6 pb-16 pt-12">
-        {children}
+      <main
+        id="main-content"
+        className="product-content mx-auto max-w-xl px-6 pb-16 pt-12"
+      >
+        <div className="product-card">{children}</div>
       </main>
     </div>
   );

@@ -155,8 +155,48 @@ export function deriveQa(context: QaContext): QaAnalysisInput {
       );
     for (const response of op.responses) {
       const refs = new Set<string>();
-      for (const media of Object.values(obj(response.content))) {
-        const schema = obj(obj(media)['schema']);
+      for (const [mediaType, media] of Object.entries(obj(response.content))) {
+        const value = obj(media)['schema'];
+        const schema = obj(value);
+        // Inline response contracts are as explicit as component references.
+        // Reuse the graph's existing schema fact; never infer response behavior.
+        if (value !== undefined && value !== null && !schema['$ref']) {
+          const schemaId = graphLogicalId(
+            'SCHEMA',
+            graphLogicalId(
+              'inline',
+              graphLogicalId(
+                graphLogicalId(op.key, 'response', response.status),
+                mediaType,
+              ),
+            ),
+          );
+          const inline = index.nodes.get(schemaId);
+          const relation = index
+            .outgoing(
+              graphLogicalId('RESPONSE', `${op.key}:${response.status}`),
+            )
+            .find(
+              (edge) =>
+                edge.type === 'RESPONSE_USES_SCHEMA' && edge.to === schemaId,
+            );
+          if (!inline || !relation)
+            throw new ValidationError('Source graph response schema mismatch.');
+          add(
+            'REQUIREMENT',
+            'REQ_RESPONSE_SCHEMA',
+            graphLogicalId(op.key, response.status, mediaType),
+            'Declared response contract',
+            `${op.key} declares response ${response.status} with an inline ${mediaType} schema.`,
+            'DATA_CONTRACT',
+            [
+              response.sourcePointer,
+              `${response.sourcePointer}/content/${pointerPart(mediaType)}/schema`,
+            ],
+            [n.id, inline.id],
+            [relation.id],
+          );
+        }
         const ref = schema['$ref'] ?? obj(schema['items'])['$ref'];
         if (typeof ref === 'string' && ref.startsWith('#/components/schemas/'))
           refs.add(ref);

@@ -5,6 +5,14 @@ const m = vi.hoisted(() => ({
   list: vi.fn(),
   detail: vi.fn(),
 }));
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn() }),
+  usePathname: () => '/memory',
+  useSearchParams: () => new URLSearchParams(),
+  notFound: () => {
+    throw new Error('not found');
+  },
+}));
 vi.mock('./context', () => ({ intelligenceContext: m.context }));
 vi.mock('../../components/memory-quality/action-form', () => ({
   IntelligenceActionForm: () => <button>Refresh Memory</button>,
@@ -27,7 +35,7 @@ it('empty memory never fabricates knowledge', async () => {
     await Memory({ searchParams: Promise.resolve({}) }),
   );
   expect(html).toContain('No matching observations');
-  expect(html).toContain('blocked and cancelled runs do not prove behavior');
+  expect(html).toContain('Blocked and cancelled runs do not prove behavior');
 });
 it('no project gives controlled empty state', async () => {
   m.context.mockResolvedValue(null);
@@ -65,7 +73,7 @@ it('fact shows provenance currentness environment and counts without raw bodies'
     fact: {
       id: 'f',
       kind: 'ASSERTION_FAILURE_OBSERVED',
-      currentness: 'HISTORICAL',
+      currentness: 'Historical',
       operation_id: 'GET /fixture',
       environment_id: 'e',
       api_import_id: 'source',
@@ -96,13 +104,13 @@ it('fact shows provenance currentness environment and counts without raw bodies'
     }),
   );
   for (const text of [
-    'HISTORICAL',
+    'Historical',
     'DEVELOPMENT',
     'Count: 3',
     '/memory/evidence/o',
     '/findings/finding',
     '/investigations/investigation',
-    'Human review review',
+    'Human review available in provenance.',
     'run-run',
   ])
     expect(html).toContain(text);

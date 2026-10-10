@@ -75,6 +75,24 @@ in 500-row batches. Counts and scope checks reject missing/malformed provider da
 
 ## Human review and history
 
+The Requirements page shows a selected analysis with browser-local creation dates,
+compact total/awaiting/approved/rejected cards, source breakdown and searchable
+status/category/source/entity filters. Counts reflect effective review history,
+not the original generated count. Endpoint/entity labels and display-only row
+numbers distinguish repeated titles; persisted titles and IDs remain unchanged.
+Expanded cards separate requirement text, rationale, traceability and review
+history. Original codes, references and reviewer identities remain in collapsed
+technical details. Approve, Request changes and Reject map to APPROVE, EDIT and
+REJECT and require an explicit confirmation submission. Revision fields preserve
+unsaved text while changing actions; confirmed edits require re-review. Choosing
+an analysis never generates one; creating an analysis remains a separate explicit
+action using the existing server handler. Unavailable selected analyses are
+reported rather than silently replaced. Risks reuse this analysis and review
+presentation, with a collapsible filter panel that retains selections, an active
+filter count, severity filtering and breakdowns, and an expandable human-risk
+form. Severity describes specification-derived risk signals, not confirmed
+vulnerabilities.
+
 OWNER/ADMIN can approve, reject or edit. MEMBER can view, add and edit proposals,
 but cannot approve/reject. Every edit resets the effective state to PROPOSED and
 preserves the original generated title/statement/provenance. Approval/rejection

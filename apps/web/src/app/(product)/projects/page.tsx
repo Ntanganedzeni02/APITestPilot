@@ -1,3 +1,4 @@
+import { PageHeader } from '../../../components/ui/product';
 import Link from 'next/link';
 import { getTenantContext } from '../../../lib/tenancy/context';
 import { selectProjectAction } from '../../../lib/tenancy/actions';
@@ -14,7 +15,10 @@ export default async function Projects({
   return (
     <div>
       <p className="eyebrow">{workspace?.name}</p>
-      <h1 className="page-title">Your projects</h1>
+      <PageHeader
+        title="Your projects"
+        description="One workspace for your specification, deliberate plans and evidence."
+      />
       <p className="mt-3 text-sm text-muted-foreground">
         Select a project to open its overview.
       </p>
@@ -31,10 +35,7 @@ export default async function Projects({
       {projects.length ? (
         <ul className="mt-7 grid gap-4 sm:grid-cols-2">
           {projects.map((project) => (
-            <li
-              key={project.id}
-              className="rounded-lg border border-border bg-surface p-5"
-            >
+            <li key={project.id} className="product-card">
               <h2 className="break-words font-medium">{project.name}</h2>
               <form action={selectProjectAction} className="mt-4">
                 <input
