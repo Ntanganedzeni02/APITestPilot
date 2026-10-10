@@ -5,6 +5,8 @@ const m = vi.hoisted(() => ({
   approve: vi.fn(),
   cancel: vi.fn(),
   list: vi.fn(),
+  configure: vi.fn(),
+  environments: vi.fn(),
 }));
 vi.mock('../auth/server', () => ({
   requireUser: async () => ({ client: {} }),
@@ -18,8 +20,9 @@ vi.mock('@testpilot/database', async (original) => ({
     approve: m.approve,
     cancel: m.cancel,
     list: m.list,
+    configure: m.configure,
   }),
-  createTenantService: vi.fn(),
+  createTenantService: () => ({ getProjectEnvironments: m.environments }),
 }));
 import { executionAction } from './actions';
 import { ExecutionPersistenceError } from '@testpilot/database';
@@ -45,7 +48,12 @@ beforeEach(() => {
   vi.clearAllMocks();
   m.request.mockReset();
   vi.stubEnv('EXECUTION_RUNNER_READY', 'false');
-  m.tenant.mockResolvedValue({ workspace: { id }, project: { id } });
+  m.configure.mockReset();
+  m.tenant.mockResolvedValue({
+    workspace: { id, role: 'OWNER' },
+    project: { id },
+  });
+  m.environments.mockResolvedValue([{ id }]);
   m.list.mockResolvedValue([{ id }]);
 });
 afterEach(() => vi.unstubAllEnvs());
@@ -91,6 +99,80 @@ it('preserves normal request admission when explicitly enabled', async () => {
 it('retains cancellation while execution is unavailable', async () => {
   expect(await executionAction({}, form('CANCEL'))).toEqual({ saved: true });
   expect(m.cancel).toHaveBeenCalledWith(id);
+});
+it('saves a valid target independently of runner readiness', async () => {
+  const data = form('CONFIGURE');
+  data.set('baseUrl', 'https://jsonplaceholder.typicode.com');
+  expect(await executionAction({}, data)).toEqual({ saved: true });
+  expect(m.configure).toHaveBeenCalledWith(
+    id,
+    'https://jsonplaceholder.typicode.com/',
+    443,
+    false,
+  );
+  expect(m.request).not.toHaveBeenCalled();
+});
+it.each([
+  'not-a-url',
+  'ftp://example.com',
+  'https://localhost',
+  'https://user:password@example.com',
+  'https://example.com?token=fixture',
+  'https://example.com#fragment',
+  'https://example.com/has space',
+  'http://127.0.0.1',
+  'http://10.0.0.1',
+  'http://[::1]',
+])(
+  'rejects unsafe target with actionable validation feedback: %s',
+  async (target) => {
+    const data = form('CONFIGURE');
+    data.set('baseUrl', target);
+    const result = await executionAction({}, data);
+    expect(result.errorCode).toBe('VALIDATION');
+    expect(result.error).not.toContain('unexpected server error');
+    expect(m.configure).not.toHaveBeenCalled();
+  },
+);
+it('rejects a foreign environment before saving', async () => {
+  m.environments.mockResolvedValue([]);
+  const data = form('CONFIGURE');
+  data.set('baseUrl', 'https://example.com');
+  expect(await executionAction({}, data)).toMatchObject({
+    error: 'Environment unavailable.',
+  });
+  expect(m.configure).not.toHaveBeenCalled();
+});
+it('rejects a member configuration update', async () => {
+  m.tenant.mockResolvedValue({
+    workspace: { id, role: 'MEMBER' },
+    project: { id },
+  });
+  const data = form('CONFIGURE');
+  data.set('baseUrl', 'https://example.com');
+  expect(await executionAction({}, data)).toMatchObject({
+    errorCode: 'ACCESS',
+  });
+  expect(m.configure).not.toHaveBeenCalled();
+});
+it('correlates unknown target-save failures without logging target or error contents', async () => {
+  const log = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  try {
+    m.configure.mockRejectedValue(new Error('sensitive transport details'));
+    const data = form('CONFIGURE');
+    data.set('baseUrl', 'https://example.com');
+    expect(await executionAction({}, data)).toMatchObject({
+      errorCode: 'SERVER',
+    });
+    expect(log).toHaveBeenCalledWith('EXECUTION_ACTION_FAILED', {
+      category: 'SERVER',
+      stage: 'TARGET_SAVE',
+    });
+    expect(JSON.stringify(log.mock.calls)).not.toContain('sensitive');
+    expect(JSON.stringify(log.mock.calls)).not.toContain('example.com');
+  } finally {
+    log.mockRestore();
+  }
 });
 it('still requires an authorized project context', async () => {
   vi.stubEnv('EXECUTION_RUNNER_READY', 'true');

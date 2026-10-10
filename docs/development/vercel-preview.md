@@ -49,9 +49,17 @@ deployment commit and environment scope when UI and server behavior disagree.
 
 Execution RPC failures now report safe categories: permission, planning eligibility,
 target configuration, missing database functions/schema cache, concurrent state
-changes or database failure. `EXECUTION_ACTION_REJECTED` logs only the category,
+changes or database failure. `EXECUTION_ACTION_REJECTED` logs only the category and stage,
 never database messages, credentials or request contents. A saved action does not
 prove HTTP execution. Use persisted observed results to establish execution.
+
+Target configuration is independent of runner readiness and restricted to OWNER
+and ADMIN. Invalid URL/safety inputs return validation feedback before persistence.
+Unknown failures log `EXECUTION_ACTION_FAILED` with a safe stage such as
+`ENVIRONMENT_SCOPE`, `TARGET_VALIDATION` or `TARGET_SAVE`; neither the URL nor the
+raw error is logged. Hosted diagnosis still requires the submitted target shape,
+deployed commit and sanitized stage/category; do not infer a database defect from
+a generic message alone.
 
 ## Hosted verification (administrator, read-only)
 

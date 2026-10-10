@@ -26,6 +26,12 @@ export async function executionAction(
   const { client } = await requireUser();
   const { workspace, project } = await getTenantContext();
   if (!workspace || !project) return { error: 'Select a project first.' };
+  let stage:
+    | 'ACTION'
+    | 'ENVIRONMENT_SCOPE'
+    | 'TARGET_VALIDATION'
+    | 'TARGET_SAVE'
+    | 'REVALIDATION' = 'ACTION';
   try {
     const id = (key: string) => validateId(form.get(key));
     const mode = form.get('mode');
@@ -36,24 +42,41 @@ export async function executionAction(
       };
     const repo = createExecutionRepository(client);
     if (mode === 'CONFIGURE') {
+      if (!['OWNER', 'ADMIN'].includes(workspace.role))
+        return {
+          error:
+            'Only workspace owners and administrators can configure execution targets.',
+          errorCode: 'ACCESS',
+        };
       const environment = id('environmentId');
+      stage = 'ENVIRONMENT_SCOPE';
       const environments = await createTenantService(
         client,
       ).getProjectEnvironments(workspace.id, project.id);
       if (!environments.some((e) => e.id === environment))
         throw new ValidationError('Environment unavailable.');
       const raw = form.get('baseUrl');
+      stage = 'TARGET_VALIDATION';
       if (typeof raw !== 'string' || raw.length > 2048)
         throw new ValidationError('Invalid target.');
-      const url = new URL(raw);
-      const port = Number(url.port || (url.protocol === 'https:' ? 443 : 80));
-      validateTarget(raw, port);
+      let url: URL;
+      let port: number;
+      try {
+        url = new URL(raw);
+        port = Number(url.port || (url.protocol === 'https:' ? 443 : 80));
+        validateTarget(raw, port);
+      } catch {
+        throw new ValidationError(
+          'Enter a valid public HTTP or HTTPS base URL without credentials, query strings, fragments or whitespace. Localhost and unsafe ports are not allowed.',
+        );
+      }
       const host = url.hostname.replace(/^\[|\]$/g, '');
       if (
         (host.includes(':') || /^\d+(\.\d+){3}$/.test(host)) &&
         !publicAddress(host)
       )
         throw new ValidationError('Private/internal targets are blocked.');
+      stage = 'TARGET_SAVE';
       await repo.configure(
         environment,
         url.toString(),
@@ -79,6 +102,7 @@ export async function executionAction(
         await repo.approve(runId, fingerprint, mode === 'APPROVE');
       } else throw new ValidationError('Unknown action.');
     }
+    stage = 'REVALIDATION';
     revalidatePath('/runs');
     return { saved: true };
   } catch (error) {
@@ -97,11 +121,16 @@ export async function executionAction(
         DATABASE:
           'The execution action could not be saved because the database is unavailable or rejected the operation. No successful execution is confirmed.',
       };
-      console.warn('EXECUTION_ACTION_REJECTED', { category: error.reason });
+      console.warn('EXECUTION_ACTION_REJECTED', {
+        category: error.reason,
+        stage,
+      });
       return { error: messages[error.reason], errorCode: error.reason };
     }
     if (error instanceof PersistenceError)
       return { error: error.message, errorCode: error.kind };
+    if (!(error instanceof ValidationError))
+      console.warn('EXECUTION_ACTION_FAILED', { category: 'SERVER', stage });
     return {
       error:
         error instanceof ValidationError
