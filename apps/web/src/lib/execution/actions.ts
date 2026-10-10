@@ -3,6 +3,8 @@ import { revalidatePath } from 'next/cache';
 import {
   createExecutionRepository,
   createTenantService,
+  ExecutionPersistenceError,
+  PersistenceError,
 } from '@testpilot/database';
 import { validateId, ValidationError } from '@testpilot/domain';
 import { validateTarget, publicAddress } from '@testpilot/safety';
@@ -15,6 +17,7 @@ import {
 export interface ExecutionActionState {
   error?: string;
   saved?: boolean;
+  errorCode?: string;
 }
 export async function executionAction(
   _previous: ExecutionActionState,
@@ -24,11 +27,14 @@ export async function executionAction(
   const { workspace, project } = await getTenantContext();
   if (!workspace || !project) return { error: 'Select a project first.' };
   try {
-    const repo = createExecutionRepository(client);
     const id = (key: string) => validateId(form.get(key));
     const mode = form.get('mode');
     if ((mode === 'REQUEST' || mode === 'APPROVE') && !executionAvailable())
-      return { error: executionUnavailableMessage };
+      return {
+        error: executionUnavailableMessage,
+        errorCode: 'EXECUTION_UNAVAILABLE',
+      };
+    const repo = createExecutionRepository(client);
     if (mode === 'CONFIGURE') {
       const environment = id('environmentId');
       const environments = await createTenantService(
@@ -76,11 +82,32 @@ export async function executionAction(
     revalidatePath('/runs');
     return { saved: true };
   } catch (error) {
+    if (error instanceof ExecutionPersistenceError) {
+      const messages = {
+        ACCESS:
+          'You do not have permission to perform this execution action. Check your project access and role.',
+        ELIGIBILITY:
+          'This execution action is no longer eligible. Check current case and scenario reviews, approved requirements, and the selected project environment.',
+        CONFIGURATION:
+          'The selected environment or execution target is unavailable, disabled or rejected. Check project environment configuration and the public HTTPS target.',
+        SCHEMA:
+          'Execution database functions are unavailable. Ask an administrator to verify deployed migrations and the Data API schema cache.',
+        CONFLICT:
+          'Execution state changed. Reload Runs before submitting again.',
+        DATABASE:
+          'The execution action could not be saved because the database is unavailable or rejected the operation. No successful execution is confirmed.',
+      };
+      console.warn('EXECUTION_ACTION_REJECTED', { category: error.reason });
+      return { error: messages[error.reason], errorCode: error.reason };
+    }
+    if (error instanceof PersistenceError)
+      return { error: error.message, errorCode: error.kind };
     return {
       error:
         error instanceof ValidationError
           ? error.message
-          : 'Unable to save execution request. Check configuration, eligibility and permissions.',
+          : 'An unexpected server error prevented saving this action. No successful execution is confirmed. Ask an administrator to inspect server diagnostics.',
+      errorCode: error instanceof ValidationError ? 'VALIDATION' : 'SERVER',
     };
   }
 }
