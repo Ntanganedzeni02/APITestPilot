@@ -1,0 +1,42 @@
+{
+  "name": "@testpilot/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1",
+    "build": "next build",
+    "start": "next start --hostname 127.0.0.1",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "pnpm --filter @testpilot/safety... build && pnpm --filter @testpilot/test-engine... build && pnpm --filter @testpilot/qa-intelligence... build && pnpm --filter @testpilot/behaviour-graph... build && pnpm --filter @testpilot/api-spec... build && pnpm --filter @testpilot/database... build && next typegen && tsc --noEmit",
+    "test": "vitest run --root ../.. apps/web/src"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "1.2.0",
+    "@radix-ui/react-slot": "1.4.0",
+    "@supabase/ssr": "0.12.7",
+    "@supabase/supabase-js": "2.117.2",
+    "@testpilot/api-spec": "workspace:*",
+    "@testpilot/database": "workspace:*",
+    "@testpilot/domain": "workspace:*",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "lucide-react": "1.52.0",
+    "next": "16.3.8",
+    "next-themes": "0.4.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "tailwind-merge": "3.7.0",
+    "@testpilot/behaviour-graph": "workspace:*",
+    "@testpilot/qa-intelligence": "workspace:*",
+    "@testpilot/test-engine": "workspace:*",
+    "@testpilot/safety": "workspace:*",
+    "@testpilot/ai": "workspace:*"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "tailwindcss": "4.3.3"
+  }
+}

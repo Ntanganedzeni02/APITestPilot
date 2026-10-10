@@ -1,33 +1,134 @@
-
-<div align="center">
-
 # TestPilot
 
-### AI-Powered API Quality Assurance Platform
+M1.3 imports deterministic OpenAPI 3.0/3.1 knowledge. M1.4 builds immutable
+deterministic Behaviour Graphs. M1.5 adds specification/graph-backed requirements
+and risk proposals, provenance and append-only human review. See
+[requirements/risk rules and security](docs/development/qa-intelligence.md),
+[graph rules](docs/development/behaviour-graph.md) and
+[API import](docs/development/api-knowledge.md).
 
-**From API specification to release confidence.**
+M1.2/M1.3/M1.4/M1.5 migrations are deployed to Development Supabase per supplied
+evidence. M1.6 migration deployment is confirmed by supplied evidence; hosted planning acceptance remains separate.
+Hosted authenticated acceptance remains deferred. AI proposals have a validated
+provider-independent contract; M1.12.3 adds an opt-in server-only OpenAI adapter. AI/LLM graph
+inference and speculative graph generation do not exist. M1.7 introduces a local
+safe execution foundation; its migration is deployed per supplied evidence, while hosted execution acceptance remains separate.
 
-Turn API specifications into structured requirements, risk assessments, test plans, execution evidence, and informed release decisions.
+TestPilot is a planned AI-powered API quality and testing SaaS platform.
+Give it your API to understand behavior, investigate risks and provide
+evidence-backed release confidence.
 
-<br/>
+**M1.6: deterministic test planning implemented and migration deployed; hosted planning acceptance remains separate.**
+pnpm workspaces, strict TypeScript, ESLint, Prettier, Vitest and GitHub Actions CI
+are configured. `apps/web` has Supabase SSR email/password authentication,
+protected routes, persisted workspace onboarding and project selection. Domain
+rules are provider independent; database operations use a dedicated adapter and
+version-controlled RLS migrations. Projects create DEVELOPMENT, STAGING and
+PRODUCTION environments atomically. M1.3–M1.5 add API knowledge, graphs and reviewable QA intelligence; the separate runner and opt-in real model adapter are implemented; hosted runtime acceptance remains separate.
+Without Supabase configuration, auth pages explain setup and product access is
+closed. No sample tenant data is displayed.
 
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![React](https://img.shields.io/badge/React-149ECA?style=for-the-badge&logo=react&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)
-![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
+## Documentation map
 
-<br/>
+- [Engineering constitution](AGENTS.md)
+- Product: [vision](docs/product/vision.md), [principles](docs/product/principles.md),
+  [user journey](docs/product/user-journey.md)
+- Architecture: [overview](docs/architecture/overview.md),
+  [data model](docs/architecture/data-model.md),
+  [AI](docs/architecture/ai-architecture.md),
+  [execution](docs/architecture/execution-engine.md),
+  [security](docs/architecture/security.md)
+- Development: [setup](docs/development/setup.md),
+  [testing](docs/development/testing.md),
+  [conventions](docs/development/conventions.md)
+- ADRs: [monorepo](docs/adr/0001-monorepo-architecture.md),
+  [graph storage](docs/adr/0002-postgresql-behaviour-graph.md),
+  [runner](docs/adr/0003-separate-api-runner.md),
+  [AI abstraction](docs/adr/0004-provider-independent-ai.md),
+  [identity and context](docs/adr/0005-supabase-identity-and-tenant-context.md)
 
-![Development](https://img.shields.io/badge/Status-Active%20Development-blue?style=flat-square)
-![API Testing](https://img.shields.io/badge/Focus-API%20Quality%20Assurance-purple?style=flat-square)
-![Human Oversight](https://img.shields.io/badge/Release%20Decisions-Human%20Controlled-success?style=flat-square)
+Directories separate `apps/web`, `workers/api-runner` and focused packages.
+Domain, database, api-spec, behaviour-graph, qa-intelligence and ai implement M1.2–M1.5; test-engine implements deterministic planning/execution; safety, evidence and the separate runner implement M1.7. M1.8 derives findings outside runner authority; shared retains its foundation scope.
+The web app composes domain-owned persistence operations through the database adapter.
+Root `pnpm build` builds Next.js and verifies workspace compilation; other checks
+and setup are documented in [setup](docs/development/setup.md).
+CI exists in [.github/workflows/ci.yml](.github/workflows/ci.yml); it has no deployment.
 
-</div>
+Run `pnpm --filter @testpilot/web dev` and open http://127.0.0.1:3000.
+Configure Supabase first using [setup](docs/development/setup.md). See
+[testing](docs/development/testing.md) for real SQL policy tests and the remaining
+live authentication/tenancy verification checklist.
 
----
+M1.6 adds immutable, traceable Test Studio plans/scenarios/cases and independent human review. Its migration passed security re-preflight and was deployed by the user; hosted authenticated planning remains deferred. See [test planning](docs/development/test-planning.md).
 
-##  Introducing TestPilot
+M1.7 activates Runs, explicit environment targets and a separate deterministic
+worker. Planning approval does not authorize HTTP; Safety and exact approval govern
+execution. See [safe execution limits, worker setup and trust boundary](docs/development/safe-execution.md).
+
+## M1.8 evidence and findings
+
+Completed persisted results can be explicitly derived into immutable evidence
+references and deterministic finding candidates from Runs. Findings supports
+paginated observation history, requirement/risk references and attributed human
+confirmation/dismissal. Repeated observations preserve prior review decisions.
+Timeout/transport observations do not automatically establish API defects.
+AI interpretation has a validated provider-neutral proposal contract only.
+See [evidence and finding boundaries](docs/development/evidence-findings.md).
+M1.8 Evidence + Findings is deployed: migration
+`20261007000700_evidence_findings.sql` is applied to hosted Supabase, and local
+and hosted migration histories are aligned through 00700. Final hosted M1.8
+verification passed. Actual AI provider interpretation remains intentionally
+deferred.
+
+## M1.9 bounded curiosity
+
+Investigations connects persisted observations to grounded follow-up proposals,
+exact human review, bounded dependency/attempt budgets and existing M1.7 execution.
+M1.8 owns resulting evidence/findings. Eligible HTTP status observations support
+narrow numeric query bindings; redacted resource identifiers remain ineligible.
+Bounded OpenAI hypotheses are opt-in in M1.12.3; live provider acceptance remains deferred. Migration
+`20261007000800_curiosity_engine.sql` is deployed to hosted Supabase; local and hosted
+migrations are aligned through 00800. M1.9 post-deployment verification passed.
+M1.10 Evidence Memory + API Quality Intelligence is deployed; hosted verification passed and migration histories align through 00900. M1.11 Release Intelligence + Reports is implemented and deployed; hosted catalog/function verification passed and local/remote migrations align through 01000. See [curiosity boundaries](docs/development/curiosity-engine.md).
+
+## M1.10 evidence memory and API quality
+
+Memory now derives bounded provenance-linked observations; Overview and Quality
+explain deterministic versioned scores, gaps, sufficiency and trends. Humans retain
+finding and release authority. Migration
+`20261007000900_memory_quality_intelligence.sql` is deployed and final hosted verification passed. See
+[exact formulas, security and verification](docs/development/memory-quality-intelligence.md).
+
+## M1.11 release intelligence and reports
+
+Release Center now creates environment/source-scoped releases, derives deterministic immutable assessments, preserves explicit human decisions and generates immutable in-product/JSON reports. TestPilot assesses; humans decide. Migration `20261007001000_release_intelligence_reports.sql` is deployed; local/remote histories align through 01000 and hosted catalog/function verification passed with no blocking defects. Local concurrency tests passed; authenticated hosted browser acceptance and hosted concurrency behavior were not exercised. M1.12 hardening is in progress; 01100 is deployed and local/remote migrations align through 01100. No automatic release approval or deployment control is implemented. See [policy, authority, report snapshots and verification](docs/development/release-intelligence-reports.md).
+
+## M1.12.1 deployment foundations
+
+Deployment/configuration preparation is available in [the deployment runbook](docs/development/deployment.md). This is not a launch: M1.12.2 adds [leased runner recovery and operational health](docs/development/runner-operations.md), with additive migration 01100 deployed successfully. Hosted catalog/function verification passed on PostgreSQL 17.11; local/remote migrations align through 01100 and the runner retains five authorized RPCs. Hosted worker runtime and HTTP execution remain untested; Docker runtime and PostgreSQL 17 CI execution remain pending. Production launch has not occurred.
+
+## M1.12.3 bounded OpenAI reasoning
+
+Test Studio and Investigations support opt-in, server-only OpenAI Responses with
+strict Structured Outputs. Suggestions remain unverified and require human review;
+AI cannot authorize execution. Migrations `20261008001200_ai_reasoning.sql`, `20261008001300_ai_retry.sql`
+and `20261009001400_bulk_review.sql` are deployed to Development per supplied
+verification. Local/hosted histories align through 01400. Real AI-assisted
+planning has succeeded in Development; this does not establish general hosted
+acceptance or runner operation. Production launch has not occurred. See [configuration, budgets and
+limitations](docs/development/openai-reasoning.md).
+
+## Vercel beta preparation
+
+See [Preview deployment checklist](docs/development/vercel-preview.md). API execution
+defaults unavailable until the dedicated runner is configured and verified.
+
+## Product overview
+
+The following describes the intended connected workflow. Runtime execution remains
+subject to the deployment and acceptance limitations documented above.
+
+## Introducing TestPilot
 
 **TestPilot is an AI-assisted, evidence-driven API quality assurance platform designed to help engineering teams understand, test, and evaluate their APIs.**
 
@@ -39,9 +140,7 @@ Instead of treating API testing as a collection of disconnected tasks, TestPilot
 
 > **Our mission:** Make API quality assurance more intelligent, structured, traceable, and accessible without removing human judgment.
 
----
-
-##  The Problem We're Solving
+## The Problem We're Solving
 
 API quality assurance can be challenging when teams face:
 
@@ -55,80 +154,7 @@ API quality assurance can be challenging when teams face:
 
 **TestPilot aims to reduce this complexity through automation, AI-assisted reasoning, structured workflows, and evidence-backed quality assessments.**
 
----
-
-##  What TestPilot Can Do
-
-<table>
-<tr>
-<td width="50%" valign="top">
-
-###  API Map
-
-Import OpenAPI specifications and explore API operations, schemas, security declarations, and relationships through an interactive Behaviour Graph.
-
-</td>
-<td width="50%" valign="top">
-
-###  Requirements Intelligence
-
-Derive specification-backed requirements, inspect their evidence, and approve, revise, or reject proposals through human review.
-
-</td>
-</tr>
-<tr>
-<td valign="top">
-
-###  Risk Intelligence
-
-Identify potential API testing risks, review severity and traceability, and create additional human-authored risks.
-
-</td>
-<td valign="top">
-
-###  Test Studio
-
-Generate structured test plans, scenarios, and test cases from approved requirements, with coverage and traceability views.
-
-</td>
-</tr>
-<tr>
-<td valign="top">
-
-###  Controlled API Execution
-
-Use a policy-governed execution workflow designed to protect environments and restrict unsafe requests.
-
-</td>
-<td valign="top">
-
-###  Findings & Investigations
-
-Connect observed behaviour to execution evidence, investigate suspicious results, and maintain reviewable findings.
-
-</td>
-</tr>
-<tr>
-<td valign="top">
-
-###  Quality Intelligence
-
-Evaluate API quality using available evidence, risk information, execution results, and freshness signals.
-
-</td>
-<td valign="top">
-
-###  Release Intelligence
-
-Support release reviews with structured quality information, reports, and explicit human decisions.
-
-</td>
-</tr>
-</table>
-
----
-
-##  How TestPilot Works
+## How TestPilot Works
 
 ```mermaid
 flowchart TD
@@ -179,347 +205,41 @@ Review execution observations and investigate potential issues.
 
 Evaluate the available quality evidence and support an informed human release decision.
 
----
+## Platform Modules
 
-##  Platform Modules
+| Module                   | Purpose                                            |
+| ------------------------ | -------------------------------------------------- |
+| **Overview**             | Project quality status and key insights            |
+| **API Map**              | API specification exploration and Behaviour Graph  |
+| **Requirements**         | Requirement proposals, traceability, and approvals |
+| **Risks**                | Risk assessment and human review                   |
+| **Test Studio**          | Test planning, scenarios, cases, and coverage      |
+| **Runs**                 | Controlled API execution and results               |
+| **Investigations**       | Evidence-driven investigation workflows            |
+| **Findings**             | Potential defects and observed issues              |
+| **Quality Intelligence** | Evidence-based quality assessment                  |
+| **Release Center**       | Release preparation and human decisions            |
+| **Reports**              | Structured quality and release reporting           |
 
-| Module | Purpose |
-|---|---|
-| **Overview** | Project quality status and key insights |
-| **API Map** | API specification exploration and Behaviour Graph |
-| **Requirements** | Requirement proposals, traceability, and approvals |
-| **Risks** | Risk assessment and human review |
-| **Test Studio** | Test planning, scenarios, cases, and coverage |
-| **Runs** | Controlled API execution and results |
-| **Investigations** | Evidence-driven investigation workflows |
-| **Findings** | Potential defects and observed issues |
-| **Quality Intelligence** | Evidence-based quality assessment |
-| **Release Center** | Release preparation and human decisions |
-| **Reports** | Structured quality and release reporting |
-
----
-
-##  Product Preview
-
-TestPilot is undergoing active UI/UX improvements.
-
-The platform includes an interactive API Map, requirements and risk review workflows, and a Test Studio for planning and traceability.
-
-**Screenshots of the redesigned interface will be added as the visual experience is finalized.**
-
----
-
-##  AI-Assisted Quality Assurance
-
-TestPilot is designed to use AI as a reasoning assistant, not an unrestricted automation engine.
-
-AI-assisted capabilities are intended to help with:
-
-- Proposing additional test objectives.
-- Identifying potential testing gaps.
-- Supporting risk-aware test planning.
-- Investigating evidence and suspicious behaviour.
-- Reducing repetitive analysis work.
-
-AI functionality depends on server configuration, supported models, and available provider credits.
-
-### Our AI philosophy
-
-<div align="center">
-
-### AI reasons. Policy authorizes. Code executes. Evidence proves. Humans control.
-
-</div>
-
-AI-generated proposals require appropriate review.
-
-AI does not independently authorize API execution or approve a release.
-
----
-
-##  Safety by Design
+## Safety by Design
 
 TestPilot treats API execution as a controlled operation.
 
 Its safety architecture is designed around:
 
-| Principle | Description |
-|---|---|
-| **Human oversight** | People retain approval and release authority |
-| **Policy-based execution** | Execution is subject to explicit safety rules |
-| **Environment protection** | Requests are evaluated against configured restrictions |
-| **Evidence-first findings** | Runtime claims require supporting observations |
-| **Traceability** | Quality decisions can be linked to their sources |
-| **Tenant isolation** | Workspace data access is governed by authorization policies |
-| **Bounded AI reasoning** | AI activity is subject to configuration and resource limits |
+| Principle                   | Description                                                 |
+| --------------------------- | ----------------------------------------------------------- |
+| **Human oversight**         | People retain approval and release authority                |
+| **Policy-based execution**  | Execution is subject to explicit safety rules               |
+| **Environment protection**  | Requests are evaluated against configured restrictions      |
+| **Evidence-first findings** | Runtime claims require supporting observations              |
+| **Traceability**            | Quality decisions can be linked to their sources            |
+| **Tenant isolation**        | Workspace data access is governed by authorization policies |
+| **Bounded AI reasoning**    | AI activity is subject to configuration and resource limits |
 
 > TestPilot is not designed to let an AI agent freely send arbitrary HTTP requests to external systems.
 
----
-
-##  Technology Stack
-
-<div align="center">
-
-### Frontend
-
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg" height="48" alt="Next.js" />
-&nbsp;&nbsp;
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" height="48" alt="React" />
-&nbsp;&nbsp;
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg" height="48" alt="TypeScript" />
-&nbsp;&nbsp;
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" height="48" alt="Tailwind CSS" />
-
-<br/>
-
-**Next.js · React · TypeScript · Tailwind CSS**
-
-### Backend & Database
-
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg" height="48" alt="Supabase" />
-&nbsp;&nbsp;
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg" height="48" alt="PostgreSQL" />
-&nbsp;&nbsp;
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" height="48" alt="Node.js" />
-
-<br/>
-
-**Supabase · PostgreSQL · Node.js**
-
-### AI & Infrastructure
-
-<img src="https://cdn.simpleicons.org/openai/10A37F" height="48" alt="OpenAI" />
-&nbsp;&nbsp;
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg" height="48" alt="Docker" />
-&nbsp;&nbsp;
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" height="48" alt="Vercel" />
-
-<br/>
-
-**OpenAI API · Docker · Vercel**
-
-### Development Tools
-
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg" height="48" alt="Git" />
-&nbsp;&nbsp;
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" height="48" alt="GitHub" />
-&nbsp;&nbsp;
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg" height="48" alt="Visual Studio Code" />
-
-<br/>
-
-**Git · GitHub · VS Code · pnpm**
-
-</div>
-
----
-
-##  System Architecture
-
-TestPilot uses a modular architecture separating the user interface, quality intelligence, persistent data, AI reasoning, and controlled execution.
-
-```mermaid
-flowchart TB
-    U["QA Engineer / Engineering Team"] --> W["Next.js Web Application"]
-
-    W --> Q["QA Intelligence and Test Planning"]
-    W --> A["AI Reasoning Layer"]
-    W --> D["Supabase Auth and PostgreSQL"]
-
-    Q --> D
-    A --> O["OpenAI API"]
-    A --> D
-
-    W --> P["Execution Authorization and Safety Policy"]
-    P --> R["Controlled API Runner"]
-    R --> T["Authorized Target API"]
-    R --> D
-
-    D --> E["Evidence, Findings and Quality Intelligence"]
-    E --> W
-```
-
-### Architectural principles
-
-- Modular application and domain packages.
-- Workspace-scoped access control.
-- Server-side AI integration.
-- Strict separation between AI reasoning and HTTP execution.
-- Persistent provenance and review records.
-- Evidence-backed quality assessment.
-- Human-controlled release decisions.
-
----
-
-##  Project Structure
-
-TestPilot uses a pnpm monorepo organized around applications, shared packages, database infrastructure, and documentation.
-
-```text
-TestPilot/
-├── apps/
-│   └── web/                 # Next.js application
-│
-├── packages/                # Shared domain and QA packages
-│
-├── supabase/                # Database migrations and policies
-│
-├── docs/                    # Technical documentation
-│
-├── pnpm-workspace.yaml      # Workspace configuration
-│
-└── README.md
-```
-
-The structure may evolve as development continues.
-
----
-
-##  Getting Started
-
-### Prerequisites
-
-Before running TestPilot locally, ensure you have:
-
-- Node.js 24 or a compatible version supported by the repository.
-- pnpm.
-- Git.
-- A configured Supabase project.
-- The environment variables required by the application.
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/YOUR-USERNAME/TestPilot.git
-cd TestPilot
-```
-
-Replace `YOUR-USERNAME` with the actual GitHub account or organization hosting the repository.
-
-### 2. Install dependencies
-
-```bash
-pnpm install
-```
-
-### 3. Configure environment variables
-
-Create the appropriate local environment file for the web application, following the repository's environment examples and setup documentation.
-
-For AI integration, the server-side configuration includes:
-
-```dotenv
-OPENAI_API_KEY=your_openai_api_key
-OPENAI_MODEL=gpt-4.1-mini
-OPENAI_AI_ENABLED=false
-```
-
-Additional Supabase, authentication, and runner configuration is required for the corresponding features.
-
-**Never commit real API keys or other secrets to GitHub.**
-
-### 4. Start the development server
-
-```bash
-pnpm --dir apps/web dev
-```
-
-Open:
-
-```text
-http://localhost:3000
-```
-
-### 5. Explore the platform
-
-Once authenticated, create or select a workspace and project, then import an OpenAPI specification.
-
-You can begin exploring the API Map, requirements, risks, and standard test planning without enabling paid AI requests.
-
----
-
-##  Testing & Validation
-
-TestPilot includes automated tests covering its domain logic, user interface components, authorization-sensitive workflows, and QA planning functionality.
-
-Development validation includes:
-
-- Unit tests.
-- Regression tests.
-- TypeScript type checking.
-- Linting and formatting checks.
-- Production web builds.
-- Database migration and policy validation.
-- Manual browser acceptance testing.
-
-A successful local test run does not automatically establish production readiness. Runtime integration and deployment checks are tracked separately.
-
----
-
-##  Development Status
-
-**TestPilot is currently under active development.**
-
-| Capability | Status |
-|---|---|
-| OpenAPI import | Implemented |
-| API Behaviour Graph | Implemented |
-| Requirements intelligence | Implemented |
-| Risk intelligence | Implemented |
-| Human review workflows | Implemented |
-| Standard test planning | Implemented |
-| Test case traceability | Implemented |
-| Controlled execution foundation | Implemented |
-| Evidence and findings workflows | Implemented |
-| Quality intelligence foundation | Implemented |
-| Release intelligence foundation | Implemented |
-| OpenAI integration | Implemented, controlled live acceptance pending |
-| AI-assisted planning | Configuration-dependent |
-| Full production readiness | Not yet established |
-| Conversational AI assistant | Future product direction |
-
-Some features have passed automated and manual acceptance tests, while others still require integration, operational, or deployment verification.
-
----
-
-##  Roadmap
-
-### Phase 1 — Core QA Intelligence
-
-- [x] OpenAPI specification import.
-- [x] API Behaviour Graph.
-- [x] Requirement generation and review.
-- [x] Risk identification and review.
-- [x] Standard test planning.
-- [x] Traceability and coverage views.
-
-### Phase 2 — Execution & Evidence
-
-- [x] Controlled execution architecture.
-- [x] Evidence and findings foundation.
-- [x] Investigation workflows.
-- [ ] Complete end-to-end hosted execution acceptance.
-- [ ] Expand real-world API integration testing.
-
-### Phase 3 — AI-Assisted QA
-
-- [x] Server-side OpenAI integration.
-- [x] Structured AI reasoning safeguards.
-- [ ] Complete controlled live AI acceptance.
-- [ ] Improve AI-assisted test generation.
-- [ ] Develop a conversational QA assistant experience.
-
-### Phase 4 — Product Experience & Readiness
-
-- [ ] Complete platform-wide UI/UX refinement.
-- [ ] Expand accessibility and usability testing.
-- [ ] Complete deployment and operational validation.
-- [ ] Expand team collaboration and reporting capabilities.
-
----
-
-##  Our Vision
+## Our Vision
 
 We envision a future where QA engineers spend less time on repetitive setup and disconnected documentation, and more time understanding risks, investigating complex behaviour, and improving software quality.
 
@@ -527,17 +247,7 @@ TestPilot is being built to support that future.
 
 **Not to replace QA engineers — but to give them better tools, clearer evidence, and more confidence in their decisions.**
 
----
-
-##  Contributing
-
-TestPilot is currently being developed as an evolving project.
-
-Contribution guidelines and external contribution availability will be published when the project is ready for broader collaboration.
-
----
-
-##  License
+## License
 
 Please refer to the repository's `LICENSE` file, if present.
 
@@ -547,7 +257,7 @@ Until a license is explicitly published, no open-source usage rights should be a
 
 <div align="center">
 
-###  TestPilot
+### TestPilot
 
 **Smarter testing. Stronger evidence. Better release decisions.**
 
@@ -555,6 +265,6 @@ Built with a focus on API quality, responsible AI, and human-centered engineerin
 
 <br/>
 
- **Follow the project as TestPilot continues to evolve.**
+**Follow the project as TestPilot continues to evolve.**
 
 </div>

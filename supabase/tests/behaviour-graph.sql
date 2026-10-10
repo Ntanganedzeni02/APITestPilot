@@ -1,0 +1,74 @@
+-- Disposable local PostgreSQL/Supabase-compatible assertion fixture only.
+-- Requires bootstrap and M1.2/M1.3/M1.4 migrations; never bootstrap hosted Auth.
+begin;
+create temporary table graph_results(label text primary key);
+grant all on pg_temp.graph_results to authenticated;
+create function pg_temp.assert_true(ok boolean,label text) returns void language plpgsql as $$ begin if ok is distinct from true then raise exception 'Assertion failed: %',label; end if; insert into pg_temp.graph_results values(label); end; $$;
+create function pg_temp.expect_error(command text,expected text,label text) returns void language plpgsql as $$ declare actual text; begin begin execute command; exception when others then actual:=sqlstate; end; perform pg_temp.assert_true(actual=expected,label); end; $$;
+insert into auth.users(id,email) values ('14000000-0000-0000-0000-000000000001','m14-a@example.invalid'),('14000000-0000-0000-0000-000000000002','m14-b@example.invalid');
+set local role authenticated;
+select set_config('request.jwt.claim.sub','14000000-0000-0000-0000-000000000001',true);
+select set_config('test.g_wa',public.create_workspace('M14 fixture A')::text,true);
+select set_config('test.g_pa',public.create_project(current_setting('test.g_wa')::uuid,'M14 fixture project A')::text,true);
+select set_config('test.g_pa2',public.create_project(current_setting('test.g_wa')::uuid,'M14 fixture project A2')::text,true);
+select set_config('test.g_import',public.import_api_spec(current_setting('test.g_wa')::uuid,current_setting('test.g_pa')::uuid,'json',null,100,repeat('a',64),'{}','{"modelVersion":1,"title":"SQL graph fixture","version":"1","openapiVersion":"3.0.3","operations":[],"components":{}}')::text,true);
+select set_config('test.g_import2',public.import_api_spec(current_setting('test.g_wa')::uuid,current_setting('test.g_pa2')::uuid,'json',null,100,repeat('a',64),'{}','{"modelVersion":1,"title":"SQL graph fixture","version":"1","openapiVersion":"3.0.3","operations":[],"components":{}}')::text,true);
+create function pg_temp.fixture_graph() returns jsonb language sql as $$
+  select jsonb_build_object('modelVersion',1,'builderVersion','1.0.0','workspaceId',current_setting('test.g_wa'),'projectId',current_setting('test.g_pa'),'importId',current_setting('test.g_import'),
+    'nodes',jsonb_build_array(jsonb_build_object('id','["API","root"]','type','API','label','SQL fixture','provenance',p),jsonb_build_object('id','["OPERATION","GET /users"]','type','OPERATION','label','GET /users','provenance',p)),
+    'edges',jsonb_build_array(jsonb_build_object('id','["API_HAS_OPERATION","[\"API\",\"root\"]","[\"OPERATION\",\"GET /users\"]"]','type','API_HAS_OPERATION','from','["API","root"]','to','["OPERATION","GET /users"]','provenance',p)))
+  from (select jsonb_build_object('importId',current_setting('test.g_import'),'ruleId','DECLARED_STRUCTURE','sourcePointers',jsonb_build_array('#/info'),'derivation','EXPLICIT','confidence','EXACT','evidence',jsonb_build_array('SQL development fixture')) p) x;
+$$;
+create function pg_temp.save_fixture(payload jsonb) returns uuid language sql as $$ select public.build_behaviour_graph(current_setting('test.g_wa')::uuid,current_setting('test.g_pa')::uuid,current_setting('test.g_import')::uuid,payload); $$;
+select set_config('test.g_first',pg_temp.save_fixture(pg_temp.fixture_graph())::text,true);
+select set_config('test.g_second',pg_temp.save_fixture(pg_temp.fixture_graph())::text,true);
+select pg_temp.assert_true(current_setting('test.g_first')<>current_setting('test.g_second'),'rebuild creates distinct immutable snapshots');
+select pg_temp.assert_true((select count(*)=2 from public.behaviour_graphs),'two complete snapshots');
+select pg_temp.assert_true((select count(*)=4 from public.behaviour_graph_nodes),'all nodes persisted');
+select pg_temp.assert_true((select count(*)=2 from public.behaviour_graph_edges),'all edges persisted');
+select pg_temp.assert_true((select bool_and(created_by=auth.uid()) from public.behaviour_graphs),'actor derived from auth');
+select pg_temp.expect_error('update public.behaviour_graphs set builder_version=''9.0.0''','42501','snapshot update denied');
+select pg_temp.expect_error('delete from public.behaviour_graph_nodes','42501','node delete denied');
+select pg_temp.expect_error('delete from public.behaviour_graph_edges','42501','edge delete denied');
+select pg_temp.expect_error('update public.behaviour_graph_nodes set label=''forged''','42501','node update denied');
+select pg_temp.expect_error('update public.behaviour_graph_edges set type=''forged''','42501','edge update denied');
+select pg_temp.expect_error('insert into public.behaviour_graph_nodes(graph_id) values(gen_random_uuid())','42501','node direct insert denied');
+select pg_temp.expect_error('insert into public.behaviour_graph_edges(graph_id) values(gen_random_uuid())','42501','edge direct insert denied');
+select pg_temp.expect_error('insert into public.behaviour_graphs(id) values(gen_random_uuid())','42501','direct graph insert denied');
+select pg_temp.expect_error('select pg_temp.save_fixture(jsonb_set(pg_temp.fixture_graph(),''{nodes,1,id}'',''"[\"API\",\"root\"]"''))','23514','duplicate unsorted nodes rejected');
+select pg_temp.expect_error('select pg_temp.save_fixture(jsonb_set(pg_temp.fixture_graph(),''{edges,0,to}'',''"missing"''))','23514','missing endpoint rejected');
+select pg_temp.expect_error('select pg_temp.save_fixture(jsonb_set(pg_temp.fixture_graph(),''{edges,0,type}'',''"OPERATION_RETURNS_RESPONSE"''))','23514','wrong endpoint combination rejected');
+select pg_temp.expect_error('select pg_temp.save_fixture(jsonb_set(pg_temp.fixture_graph(),''{nodes,0,provenance,importId}'',''"14000000-0000-0000-0000-000000000099"''))','23514','cross import provenance rejected');
+select pg_temp.expect_error('select pg_temp.save_fixture(pg_temp.fixture_graph()-''projectId'')','23514','missing scope rejected');
+select pg_temp.expect_error('select pg_temp.save_fixture(jsonb_set(pg_temp.fixture_graph(),''{builderVersion}'',''"bad"''))','23514','invalid builder version rejected');
+select pg_temp.expect_error('select pg_temp.save_fixture(jsonb_set(pg_temp.fixture_graph(),''{nodes}'',''[]''))','23514','empty graph rejected');
+select pg_temp.expect_error('select pg_temp.save_fixture(jsonb_set(pg_temp.fixture_graph(),''{nodes,0,provenance,sourcePointers}'',''[]''))','23514','missing provenance rejected');
+select pg_temp.expect_error('select pg_temp.save_fixture(jsonb_set(pg_temp.fixture_graph(),''{nodes,0,provenance,ruleId}'',''"UNKNOWN"''))','23514','unknown inference rule rejected');
+select pg_temp.expect_error('select pg_temp.save_fixture(jsonb_set(pg_temp.fixture_graph(),''{edges,0,id}'',''"[\"forged\"]"''))','23514','malformed logical edge identity rejected');
+select pg_temp.expect_error('select pg_temp.save_fixture(jsonb_set(pg_temp.fixture_graph(),''{nodes,0,id}'',''"[\"API\", \"root\"]"''))','23514','noncanonical identity rejected');
+select pg_temp.expect_error('select pg_temp.save_fixture(jsonb_set(pg_temp.fixture_graph(),''{edges}'',(pg_temp.fixture_graph()->''edges'')||(pg_temp.fixture_graph()->''edges'')))','23514','duplicate edges rejected atomically');
+select pg_temp.expect_error('select pg_temp.save_fixture(jsonb_set(pg_temp.fixture_graph(),''{nodes,0,label}'',to_jsonb(repeat(''x'',8388609))))','23514','oversized graph rejected');
+select pg_temp.assert_true((select count(*)=2 from public.behaviour_graphs),'failed graph saves leave no partial snapshots');
+select pg_temp.assert_true((select count(*)=4 from public.behaviour_graph_nodes),'failed graph saves leave no partial nodes');
+select pg_temp.assert_true((select count(*)=2 from public.behaviour_graph_edges),'failed graph saves leave no partial edges');
+select pg_temp.expect_error('select public.build_behaviour_graph(current_setting(''test.g_wa'')::uuid,current_setting(''test.g_pa2'')::uuid,current_setting(''test.g_import'')::uuid,pg_temp.fixture_graph())','42501','cross project import rejected');
+select set_config('request.jwt.claim.sub','14000000-0000-0000-0000-000000000002',true);
+select set_config('test.g_wb',public.create_workspace('M14 fixture B')::text,true);
+select pg_temp.assert_true((select count(*)=0 from public.behaviour_graphs),'B cannot read A graphs');
+select pg_temp.assert_true((select count(*)=0 from public.behaviour_graph_nodes),'B cannot read A nodes');
+select pg_temp.assert_true((select count(*)=0 from public.behaviour_graph_edges),'B cannot read A edges');
+select pg_temp.expect_error('select pg_temp.save_fixture(pg_temp.fixture_graph())','42501','cross tenant build rejected');
+select set_config('request.jwt.claim.sub','',true);
+select pg_temp.expect_error('select pg_temp.save_fixture(pg_temp.fixture_graph())','42501','authenticated role requires actual caller');
+select pg_temp.assert_true((select count(*)=0 from public.behaviour_graphs),'no caller cannot read graphs');
+reset role;
+select pg_temp.assert_true((select bool_and(relrowsecurity) from pg_class where oid in ('public.behaviour_graphs'::regclass,'public.behaviour_graph_nodes'::regclass,'public.behaviour_graph_edges'::regclass)),'RLS enabled on all graph tables');
+select pg_temp.assert_true(not has_table_privilege('anon','public.behaviour_graphs','SELECT'),'anonymous graph read denied');
+select pg_temp.assert_true(not has_function_privilege('anon','public.build_behaviour_graph(uuid,uuid,uuid,jsonb)','EXECUTE'),'anonymous build denied');
+select pg_temp.assert_true((select prosecdef and proconfig @> array['search_path=""'] from pg_proc where oid='public.build_behaviour_graph(uuid,uuid,uuid,jsonb)'::regprocedure),'writer has safe search path');
+select pg_temp.assert_true(not has_function_privilege('authenticated','public.graph_provenance_valid(jsonb,uuid)','EXECUTE'),'private validator not exposed');
+select pg_temp.expect_error('insert into public.behaviour_graph_nodes select graph_id,current_setting(''test.g_import2'')::uuid,current_setting(''test.g_pa2'')::uuid,workspace_id,''forged'',type,label,jsonb_set(provenance,''{importId}'',to_jsonb(current_setting(''test.g_import2''))) from public.behaviour_graph_nodes limit 1','23503','composite graph import FK independent');
+select pg_temp.expect_error('insert into public.behaviour_graph_edges select graph_id,api_import_id,project_id,workspace_id,''forged'',''API_HAS_OPERATION'',from_id,''missing'',provenance from public.behaviour_graph_edges limit 1','23503','edge endpoint FK independent');
+select pg_temp.assert_true((select count(*)=2 from public.behaviour_graphs),'prior snapshots preserved');
+select count(*) as passed_assertions from pg_temp.graph_results;
+rollback;

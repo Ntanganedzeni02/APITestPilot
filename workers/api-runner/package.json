@@ -1,0 +1,28 @@
+{
+  "name": "@testpilot/api-runner",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "M1.7 deterministic safe execution foundation",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "@testpilot/domain": "workspace:*",
+    "@testpilot/safety": "workspace:*",
+    "@testpilot/test-engine": "workspace:*",
+    "@testpilot/evidence": "workspace:*"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@testpilot/database",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Supabase persistence adapter for authenticated workspace and project operations.",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.117.2",
+    "@testpilot/domain": "workspace:*"
+  }
+}

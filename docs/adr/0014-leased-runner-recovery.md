@@ -1,0 +1,15 @@
+# ADR 0014: Leased claims and conservative send recovery
+
+Status: Accepted and implemented for M1.12.2; 01100 deployed successfully. Hosted PostgreSQL 17.11 catalog/function verification passed and local/remote migrations align through 01100. The runner retains five authorized RPCs. Hosted worker runtime and HTTP execution remain untested; Docker runtime and PostgreSQL 17 CI execution remain pending. Production launch has not occurred.
+
+The existing M1.7 final authorization transaction already persists send intent before the HTTP connector is constructed. Keep that transaction and all original policy/result validation unchanged behind private core functions. Wrap the existing five runner RPCs with row-locked lease fencing rather than widening the worker role or introducing another queue.
+
+Each claim has an unguessable ownership nonce, monotonically increasing generation, a 45-second lease and a 120-second absolute lifetime. Existing cancellation polling renews a valid owned claim; expired or replaced nonces never renew, send or overwrite results. The worker polls every second. Claim polling recovers at most 64 abandoned claims per transaction. Only claims with no durable send intent can return to REQUESTED, at most three times, clearing approval and rerunning safety/policy. The final authorization boundary remains one-use.
+
+A durable intent is not proof of delivery, but is sufficient to forbid automatic replay. After it, crashes and unresolved outcomes become ERROR with recovery_outcome INDETERMINATE, preserving the send timestamp and leaving no invented execution result. No HTTP method is assumed replay-safe. Recovery never resends possibly-delivered requests, including side-effecting GETs. Human reconciliation is required; this package does not add reconciliation UI or reset authority.
+
+Result persistence retries are limited to the same nonce and exact JSON payload. An already committed identical result returns an acknowledgment without modifying rows or timestamps. Changed results, foreign claims and recovered claims are rejected. The M1.7 duplicate-result regression now rejects a changed payload; additional tests verify identical acknowledgment and unchanged authoritative results.
+
+No new runner RPCs or direct table grants are introduced. New recovery audit rows have composite workspace/run foreign keys, membership RLS reads and no application writes. Historical migrations, execution results, evidence, investigations, memory and human release authority are preserved. Deployed 01100 also updates private quality/release input functions to fingerprint unresolved delivery and prevent CLEAR without fabricating evidence; Runs displays the reconciliation requirement. Temporary local fixture role/clock manipulation is test-only and never a hosted operational mechanism.
+
+This provides conservative automatic at-most-one send attempt, not guaranteed exactly-once delivery. It deliberately sacrifices automatic replay of unsent-but-intent-recorded work for safety. Operational probes are per worker, not a global queue census. Token issuance/rotation remains external; no credential refresher or signing secret is added.

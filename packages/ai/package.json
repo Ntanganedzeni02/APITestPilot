@@ -1,0 +1,30 @@
+{
+  "name": "@testpilot/ai",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Provider-independent AI proposal contracts and runtime validation.",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "@testpilot/domain": "workspace:*",
+    "openai": "7.30.0",
+    "server-only": "0.0.1"
+  }
+}

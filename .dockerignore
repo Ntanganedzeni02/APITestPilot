@@ -1,0 +1,15 @@
+**/node_modules
+**/dist
+**/.next
+**/*.tsbuildinfo
+.git
+.tools
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+coverage
+**/*.log
+supabase/.temp
+supabase/.branches
